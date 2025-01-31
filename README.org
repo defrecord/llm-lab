@@ -1,8 +1,71 @@
-* llm-lab
-  :PROPERTIES:
-  :CUSTOM_ID: llm-lab
-  :END:
-LLM Tools Lab: Testing environment for exploring LLM CLI tools (llm,
-ttok, strip-tags) with multiple providers (Ollama, Gemini, Claude,
-OpenAI). Features template management, ground truth verification, and
-content processing pipelines. Built with UV package management.
+#+TITLE: LLM Lab
+#+PROPERTY: header-args :mkdirp yes :tangle yes 
+#+STARTUP: showeverything
+
+* Overview
+Testing environment for LLM CLI tools with metrics and comparison.
+
+* Quick Start
+
+#+begin_src shell :results output
+make
+#+end_src
+
+#+RESULTS:
+: [36mhelp                [0m Display this help
+: [36minit                [0m Initialize project with UV
+: [36mtest                [0m Run test suite
+: [36mclean               [0m Clean generated files
+: [36mtangle              [0m Tangle all org files
+: [36mdocs                [0m Generate documentation
+
+
+* Structure
+
+#+begin_src shell :results table 
+paste <(ls -d */) <(cat */.description)
+#+end_src
+
+#+RESULTS:
+| config/    | Metrics, logs, baselines  |
+| data/      | Setup and utility scripts |
+| docs/      | Core library code         |
+| examples/  | LLM prompt templates      |
+| scripts/   | Test suite                |
+| src/       |                           |
+| templates/ |                           |
+| tests/     |                           |
+
+
+* Testing
+Test individual model:
+#+begin_src sh :results output :exports both
+llm -m gemini-1.5-pro-latest "Write a hello world function in uiua" 2>&1 | \
+ tee data/test.log | head -n 5
+#+end_src
+
+#+RESULTS:
+: ```uiua
+: 'Hello, world!'
+: ```
+: 
+: This is the simplest and most direct way.  UIUA implicitly prints the last expression in a program.  Therefore, the string literal `'Hello, world!'` is evaluated and automatically printed to the console.
+
+* Metrics  
+View performance metrics:
+
+#+begin_src sh :results output :exports both
+llm logs -c --json | jq '.[]|.duration_ms, .input_tokens, .output_tokens' 2>&1 | \
+ tee data/metrics.json | head -n 5
+#+end_src
+
+#+RESULTS:
+: 24765
+: 25
+: 1242
+
+See =scripts/metrics.sh= for full telemetry setup.
+
+* References
+- [[https://github.com/open-telemetry/semantic-conventions/blob/main/docs/gen-ai/gen-ai-metrics.md][OpenTelemetry LLM Metrics]]
+- [[https://llm.datasette.io/][LLM CLI Documentation]]

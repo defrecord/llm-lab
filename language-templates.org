@@ -79,141 +79,28 @@ def binary_search(arr: List[int], target: int) -> Optional[int]:
    :PROPERTIES:
    :CUSTOM_ID: rust-function
    :END:
-#+begin_src shell
+#+begin_src shell :tangle data/template_rust_function.sh :mkdirp t
   llm --system "Write a safe Rust function with proper error handling. Include documentation comments, type annotations, and example usage." --extract --save rust-function
 #+end_src
 
 #+RESULTS:
 
 #+begin_src shell :results output
-  llm -m gemini-1.5-pro-latest -t rust-function "implement quicksort"
+  llm -m gemini-1.5-pro-latest -t rust-function "implement quicksort" | tee data/quicksort.rs | head
 #+end_src
 
 #+RESULTS:
 #+begin_example
-/// Sorts a mutable slice using the Quicksort algorithm.
-///
-/// This function uses the Hoare partition scheme for improved performance on average.
-/// It handles potential stack overflow by using a hybrid approach with insertion sort for small sub-slices.
-///
-/// Returns an `Ok(())` on successful sorting and an `Err(String)` if the slice is too large to sort
-/// due to recursion depth limitations (highly unlikely with the hybrid approach).
-///
-/// # Examples
-///
-/// ```
-/// use quicksort::quicksort;
-///
-/// let mut data = vec![3, 1, 4, 1, 5, 9, 2, 6];
-/// match quicksort(&mut data) {
-///     Ok(_) => println!("Sorted data: {:?}", data),
-///     Err(e) => println!("Error: {}", e),
-/// }
-/// // Output: Sorted data: [1, 1, 2, 3, 4, 5, 6, 9]
-/// ```
-pub fn quicksort<T: Ord>(data: &mut [T]) -> Result<(), String> {
-    const MAX_DEPTH: usize = 1000; // A reasonable limit to prevent stack overflow
-    
-    fn inner_quicksort<T: Ord>(data: &mut [T], depth: usize) -> Result<(), String> {
-        if depth > MAX_DEPTH {
-            return Err("Maximum recursion depth exceeded. Possible stack overflow.".to_string());
-        }
+use std::cmp::Ordering;
+use std::error::Error;
+use std::fmt;
 
-        if data.len() <= 10 { // Use insertion sort for small sub-slices
-            data.sort();
-            return Ok(());
-        }
-
-        let pivot_index = partition(data);
-
-        inner_quicksort(&mut data[..pivot_index], depth + 1)?;
-        inner_quicksort(&mut data[pivot_index + 1..], depth + 1)?;
-
-        Ok(())
-    }
-
-    inner_quicksort(data, 0)
+#[derive(Debug)]
+pub enum QuicksortError {
+    EmptyInput,
 }
 
-
-fn partition<T: Ord>(data: &mut [T]) -> usize {
-    let pivot = data.len() - 1; // Choose the last element as pivot
-    let mut i = 0;
-    let mut j = pivot -1;
-
-    loop{
-        while data[i] < data[pivot] {
-            i +=1;
-            if i == pivot { break} // avoid going over bound for equal elements case 
-        }
-
-        while j > 0 && data[j] > data[pivot]  { // j > 0 check for case with descending ordered array
-            j -= 1;
-        }
-
-        if i >= j {
-            data.swap(i, pivot);
-            return i;
-        }
-        data.swap(i,j);
-        i +=1;
-
-        if j > 0 { j-= 1} // prevent j underflow
-      
-    }
-
-}
-
-
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_quicksort_empty() {
-        let mut data: Vec<i32> = Vec::new();
-        assert!(quicksort(&mut data).is_ok());
-        assert!(data.is_empty());
-    }
-
-    #[test]
-    fn test_quicksort_single_element() {
-        let mut data = vec![5];
-        assert!(quicksort(&mut data).is_ok());
-        assert_eq!(data, vec![5]);
-    }
-
-    #[test]
-    fn test_quicksort_sorted() {
-        let mut data = vec![1, 2, 3, 4, 5];
-        assert!(quicksort(&mut data).is_ok());
-        assert_eq!(data, vec![1, 2, 3, 4, 5]);
-    }
-
-    #[test]
-    fn test_quicksort_reverse_sorted() {
-        let mut data = vec![5, 4, 3, 2, 1];
-        assert!(quicksort(&mut data).is_ok());
-        assert_eq!(data, vec![1, 2, 3, 4, 5]);
-    }
-
-        #[test]
-    fn test_quicksort_duplicates() {
-        let mut data = vec![3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5];
-        assert!(quicksort(&mut data).is_ok());
-        assert_eq!(data, vec![1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9]);
-    }
-
-    #[test]
-    fn test_quicksort_random() {
-        let mut data = vec![3, 1, 4, 1, 5, 9, 2, 6];
-        assert!(quicksort(&mut data).is_ok());
-        assert_eq!(data, vec![1, 1, 2, 3, 4, 5, 6, 9]);
-    }
-}
-
-
+impl fmt::Display for QuicksortError {
 #+end_example
 
 ** Go Function
@@ -228,9 +115,22 @@ mod tests {
 
 
 #+begin_src shell :results output
-
-  llm -m gemini-1.5-pro-latest -t go-function "implement http server"
+  llm -m gemini-1.5-pro-latest -t go-function "implement http server" -x | tee data/http-server.go | head 
 #+end_src
+
+#+RESULTS:
+#+begin_example
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+)
+
+// handleRoot serves the root path ("/") by writing a simple greeting.
+// It takes an http.ResponseWriter to write the response and an *http.Request (which is unused in this example).
+#+end_example
 
 ** Clojure Function
    :PROPERTIES:
@@ -241,6 +141,25 @@ mod tests {
 #+end_src
 
 #+RESULTS:
+
+
+#+begin_src shell :results output
+  llm -m gemini-1.5-pro-latest -t clojure-function "dfs [graph start]" -x | tee data/dfs.clj | head
+#+end_src
+
+#+RESULTS:
+#+begin_example
+(ns my-graph.core)
+
+(defn dfs
+  "Performs a Depth-First Search on a graph.
+
+  Specs:
+    graph :: {node [connected-nodes]}  (A map representing the graph)
+    start :: keyword                   (The starting node for the search)
+    visited :: #{keyword}             (Set of visited nodes, used internally)
+
+#+end_example
 
 ** Scheme Function
    :PROPERTIES:
@@ -253,9 +172,23 @@ mod tests {
 #+RESULTS:
 
 
-#+begin_src shell
-  llm -m gemini-1.5-pro-latest -t scheme-function "implement (append (l1 l2))"
+#+begin_src shell :results output
+  llm -m gemini-1.5-pro-latest -t scheme-function "implement (append (l1 l2))" -x | tee data/append.scm | head
 #+end_src
+
+#+RESULTS:
+#+begin_example
+#!r6rs
+(import (rnrs base)
+        (rnrs lists))
+
+;; append: list? list? -> list?
+;; Appends two lists together.
+;;
+;; Parameters:
+;;   l1: The first list.
+;;   l2: The second list.
+#+end_example
 
 ** Emacs Lisp Function
    :PROPERTIES:
@@ -266,6 +199,26 @@ mod tests {
 #+end_src
 
 #+RESULTS:
+
+
+
+#+begin_src shell :results output
+  llm -m gemini-1.5-pro-latest -t elisp-function "wrap the llm eco tools from curl+ strip-tags or files-to-prompt, ttok, and llm in a library" -x | tee data/llm-eco.el | head
+#+end_src
+
+#+RESULTS:
+#+begin_example
+(defvar llm-eco-tools-api-key nil
+  "API key for LLM Eco Tools (e.g., for 'ttok').  Set this before using the functions.")
+
+(defun llm-eco-tools-curl-and-strip-tags (url)
+  "Fetch content from URL and strip HTML/XML tags.
+
+Parameters:
+  URL: The URL to fetch.
+
+Return value:
+#+end_example
 
 ** Usage Examples
    :PROPERTIES:
@@ -281,12 +234,12 @@ Basic usage:
 
 With additional context:
 
-#+begin_src shell
+#+begin_src shell :results output
   llm -m gemini-1.5-pro-latest -t python-function --system "optimize for memory usage" "implement matrix multiplication"
 #+end_src
 
 Save modified template:
 
-#+begin_src shell
+#+begin_src shell :results output
   llm --system "Write a Python function optimized for numerical computations using NumPy" --extract --save python-numpy
 #+end_src

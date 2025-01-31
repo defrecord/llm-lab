@@ -1,0 +1,42 @@
+#+TITLE: LLM Command Examples
+#+PROPERTY: header-args :mkdirp yes :results output :exports both
+
+* Prompt Examples
+#+begin_src sh
+llm "Write a haiku about debugging"
+#+end_src
+
+* Alias Management 
+#+begin_src sh 
+llm aliases list
+llm aliases set g15 gemini-1.5-pro-latest
+#+end_src
+
+* Chat Sessions
+#+begin_src sh
+llm chat -m gemini-1.5-pro-latest
+#+end_src
+
+* Embeddings
+#+begin_src sh
+llm embed "Some text to embed" -m text-embedding-3-small
+#+end_src
+
+* Model Management
+#+begin_src sh
+llm models list 
+llm models search "gemini"
+#+end_src
+
+* Templates
+#+begin_src sh
+llm templates list
+llm --system "Write Python code" --save python-template
+#+end_src
+
+* Logs & History
+#+begin_src sh
+llm logs -c
+llm logs --json
+#+end_src
+

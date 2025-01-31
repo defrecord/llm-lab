@@ -1,0 +1,33 @@
+name: basic_template
+description: Basic analysis template
+version: "1.0.0"
+parameters:
+  - name: input
+    type: string
+    required: true
+  - name: format
+    type: string
+    default: markdown
+  - name: ground_truth
+    type: boolean
+    default: false
+provider_options:
+  gemini:
+    model: gemini-1.5-pro-latest
+    google_search: "{ground_truth}"
+  claude:
+    model: claude-3
+  openai:
+    model: gpt-4
+prompt: |
+  Analyze the following content:
+  
+  {input}
+  
+  Provide:
+  1. Key points
+  2. Main themes
+  3. Supporting evidence
+  4. Conclusions
+  
+  Format as: {format}

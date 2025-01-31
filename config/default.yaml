@@ -1,0 +1,28 @@
+providers:
+  ollama:
+    default_model: deepseek-coder
+    models:
+      - deepseek-coder
+      - llama2
+      - codellama
+      - llava
+  gemini:
+    default_model: gemini-1.5-pro-latest
+    models:
+      - gemini-1.5-pro-latest
+      - gemini-1.5-flash-latest
+  claude:
+    default_model: claude-3
+  openai:
+    default_model: gpt-4
+    
+templates:
+  path: templates
+  default_format: markdown
+  
+processing:
+  max_tokens: 4000
+  strip_tags_selectors:
+    - article
+    - .content
+    - main

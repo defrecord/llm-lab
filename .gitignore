@@ -1,7 +1,23 @@
+# Python
 .venv/
-.env
-.envrc
-.llm.db
-__pycache__/
+**/__pycache__/
 *.pyc
 .uv/
+
+# Environment
+.env
+.envrc
+.direnv/
+
+# Data
+.llm.db
+data/
+
+# Editor files 
+*~
+\#*\#
+.\#*
+
+# Project specific
+src/compare/
+src/metrics/

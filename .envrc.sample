@@ -1,14 +1,60 @@
-# Model Providers
-export OPENAI_API_KEY=""
-export ANTHROPIC_API_KEY=""
-export GOOGLE_AI_API_KEY=""
+# LLM Provider API Keys
 
-# AWS (for Bedrock/S3)
-export AWS_ACCESS_KEY_ID=""
-export AWS_SECRET_ACCESS_KEY=""
-export AWS_REGION="us-west-2"
+# Proxy Configuration for MITM/Debug
+# Uncomment and modify as needed:
+#export HTTP_PROXY="http://127.0.0.1:8080"
+#export HTTPS_PROXY="http://127.0.0.1:8080"
+#export NO_PROXY="localhost,127.0.0.1"
 
-# Python/UV Config
+# OpenAI (GPT-4, GPT-3.5)
+# https://platform.openai.com/api-keys
+export OPENAI_API_KEY=''
+# Default Organization: https://platform.openai.com/account/organization
+export OPENAI_ORG_ID=''
+
+# Google AI/Vertex (Gemini)
+# https://aistudio.google.com/app/apikey
+export GEMINI_API_KEY=''
+export GOOGLE_AI_API_KEY=''
+
+# Anthropic (Claude)
+# https://console.anthropic.com/settings/keys
+# Documentation: https://docs.anthropic.com/claude/reference/getting-started-with-the-api
+export ANTHROPIC_API_KEY=''
+
+# AWS/Bedrock
+# https://console.aws.amazon.com/iamv2/home#/users
+# Setup: https://docs.aws.amazon.com/bedrock/latest/userguide/setting-up.html
+export AWS_ACCESS_KEY_ID=''
+export AWS_SECRET_ACCESS_KEY=''
+export AWS_REGION='us-west-2'
+
+# Model Providers/Tools
+# Ollama: https://github.com/jmorganca/ollama
+export OLLAMA_HOST='http://localhost:11434'
+
+# Development Tools
+# GitHub: https://github.com/settings/tokens
+# Needed for: package registry, API access
+export GITHUB_TOKEN=''
+
+# Python/Development Environment
 layout python3
 export PYTHONPATH="$PWD/src:$PYTHONPATH"
 export UV_SYSTEM_PYTHON=1
+
+# Package Management
+# UV: https://github.com/astral-sh/uv
+use uv
+
+# Optional: Debug Settings
+#export LLM_DEBUG=1
+#export ANTHROPIC_DEBUG=1
+#export GOOGLE_AI_DEBUG=1
+#export REQUESTS_CA_BUNDLE="/path/to/mitmproxy-ca-cert.pem"  # If using MITM
+
+# Reference Documentation:
+# llm: https://llm.datasette.io/en/stable/
+# llm-bedrock: https://github.com/simonw/llm-bedrock
+# llm-claude: https://github.com/simonw/llm-claude
+# llm-gemini: https://github.com/simonw/llm-gemini

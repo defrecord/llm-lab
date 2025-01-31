@@ -15,9 +15,28 @@ init: tangle ## Initialize project with UV
 	@uv venv
 	@. .venv/bin/activate && uv pip install -r requirements.txt
 
+venv: ## Create virtualenv
+	uv venv
+	. .venv/bin/activate
+
+.PHONY: install check clean
+
+install:
+	uv run pip install -r requirements.txt
+	uv run pip install -r dev-requirements.txt
+
+check:
+	@uv run llm --version
+	@uv run ttok --version 
+	@uv run strip-tags --version
+	@uv run files-to-prompt --version
+
 test: ## Run test suite
 	@echo "Running tests..."
-	@pytest tests/
+	@uv run pytest tests/
+
+lint: ## Lint
+	@uv run black src
 
 clean: ## Clean generated files
 	@echo "Cleaning..."
@@ -39,4 +58,4 @@ docs: ## Generate documentation
 		--eval "(dolist (file (directory-files \"docs\" t \"\\.org$$\")) \
 			(with-current-buffer (find-file file) \
 			(org-babel-tangle)))" \
-		--kill
+		--killg

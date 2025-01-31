@@ -10,6 +10,10 @@ dependencies = [
     "llm-gemini",
     "llm-bedrock",
     "llm-claude",
+    "files-to-prompt>=0.4",
+    "pytest>=8.3.4",
+    "black>=25.1.0",
+    "mypy>=1.14.1",
 ]
 
 [project.optional-dependencies]

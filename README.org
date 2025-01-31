@@ -5,6 +5,22 @@
 * Overview
 Testing environment for LLM CLI tools with metrics and comparison.
 
+- https://simonwillison.net/2023/May/18/cli-tools-for-llms/
+- https://llm.datasette.io/en/stable/help.html
+- https://github.com/simonw/ttok
+- https://github.com/simonw/strip-tags
+- https://github.com/simonw/files-to-prompt
+- https://github.com/simonw/sqlite-utils
+- https://github.com/simonw/fetch-github-issues
+
+** Provider + Model Plugins
+
+- https://github.com/simonw/llm-claude-3/releases/tag/0.10
+- https://github.com/simonw/llm-gemini/releases/tag/0.9
+- https://github.com/simonw/llm-anthropic/releases/tag/0.12
+- https://github.com/simonw/llm-bedrock/releases/tag/0.4
+
+
 * Quick Start
 
 #+begin_src shell :results output

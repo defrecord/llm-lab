@@ -1,0 +1,11 @@
+llm==0.20.0           # Core CLI tool  
+ttok==0.3.0           # Token counting
+strip-tags==0.5.1     # HTML processing
+llm-gemini==0.9.0     # Gemini provider
+llm-bedrock==0.1      # AWS Bedrock
+llm-claude==0.1       # Anthropic Claude
+
+# Development
+pytest==8.1.1
+black==24.2.0
+mypy==1.8.0

@@ -1,0 +1,292 @@
+* Setup 
+
+#+begin_src shell
+uv run llm install llm-gemini
+
+#+end_src
+
+* Language Templates
+  :PROPERTIES:
+  :CUSTOM_ID: language-templates
+  :END:
+** Python Function
+   :PROPERTIES:
+   :CUSTOM_ID: python-function
+   :END:
+#+begin_src shell
+  llm --system "Write a clean, well-documented Python function that follows PEP 8 style guide. Include type hints, docstring with parameters and return value, and example usage in comments." --extract --save python-function
+#+end_src
+
+#+RESULTS:
+
+
+#+begin_src shell :results output
+  llm -m gemini-1.5-pro-latest -t python-function "implement binary search" -x
+#+end_src
+
+#+RESULTS:
+#+begin_example
+from typing import List, Optional
+
+def binary_search(arr: List[int], target: int) -> Optional[int]:
+    """
+    Performs a binary search on a sorted list.
+
+    Args:
+        arr: A sorted list of integers.
+        target: The integer value to search for.
+
+    Returns:
+        The index of the target element if found, otherwise None.
+
+    Examples:
+        >>> binary_search([2, 5, 7, 8, 11, 12], 13)
+        >>> binary_search([2, 5, 7, 8, 11, 12], 11)
+        4
+        >>> binary_search([2, 5, 7, 8, 11, 12], 0)
+        >>> binary_search([], 5)
+
+
+    """
+    low = 0
+    high = len(arr) - 1
+
+    while low <= high:
+        mid = (low + high) // 2  # Integer division
+
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            low = mid + 1
+        else:
+            high = mid - 1
+
+    return None  # Target not found
+
+#+end_example
+
+** JavaScript Function
+   :PROPERTIES:
+   :CUSTOM_ID: javascript-function
+   :END:
+#+begin_src shell
+  llm --system "Write a modern JavaScript function using ES6+ features. Include JSDoc documentation with parameters, return type, and example usage." --extract --save js-function
+#+end_src
+
+#+RESULTS:
+
+** Rust Function
+   :PROPERTIES:
+   :CUSTOM_ID: rust-function
+   :END:
+#+begin_src shell
+  llm --system "Write a safe Rust function with proper error handling. Include documentation comments, type annotations, and example usage." --extract --save rust-function
+#+end_src
+
+#+RESULTS:
+
+#+begin_src shell :results output
+  llm -m gemini-1.5-pro-latest -t rust-function "implement quicksort"
+#+end_src
+
+#+RESULTS:
+#+begin_example
+/// Sorts a mutable slice using the Quicksort algorithm.
+///
+/// This function uses the Hoare partition scheme for improved performance on average.
+/// It handles potential stack overflow by using a hybrid approach with insertion sort for small sub-slices.
+///
+/// Returns an `Ok(())` on successful sorting and an `Err(String)` if the slice is too large to sort
+/// due to recursion depth limitations (highly unlikely with the hybrid approach).
+///
+/// # Examples
+///
+/// ```
+/// use quicksort::quicksort;
+///
+/// let mut data = vec![3, 1, 4, 1, 5, 9, 2, 6];
+/// match quicksort(&mut data) {
+///     Ok(_) => println!("Sorted data: {:?}", data),
+///     Err(e) => println!("Error: {}", e),
+/// }
+/// // Output: Sorted data: [1, 1, 2, 3, 4, 5, 6, 9]
+/// ```
+pub fn quicksort<T: Ord>(data: &mut [T]) -> Result<(), String> {
+    const MAX_DEPTH: usize = 1000; // A reasonable limit to prevent stack overflow
+    
+    fn inner_quicksort<T: Ord>(data: &mut [T], depth: usize) -> Result<(), String> {
+        if depth > MAX_DEPTH {
+            return Err("Maximum recursion depth exceeded. Possible stack overflow.".to_string());
+        }
+
+        if data.len() <= 10 { // Use insertion sort for small sub-slices
+            data.sort();
+            return Ok(());
+        }
+
+        let pivot_index = partition(data);
+
+        inner_quicksort(&mut data[..pivot_index], depth + 1)?;
+        inner_quicksort(&mut data[pivot_index + 1..], depth + 1)?;
+
+        Ok(())
+    }
+
+    inner_quicksort(data, 0)
+}
+
+
+fn partition<T: Ord>(data: &mut [T]) -> usize {
+    let pivot = data.len() - 1; // Choose the last element as pivot
+    let mut i = 0;
+    let mut j = pivot -1;
+
+    loop{
+        while data[i] < data[pivot] {
+            i +=1;
+            if i == pivot { break} // avoid going over bound for equal elements case 
+        }
+
+        while j > 0 && data[j] > data[pivot]  { // j > 0 check for case with descending ordered array
+            j -= 1;
+        }
+
+        if i >= j {
+            data.swap(i, pivot);
+            return i;
+        }
+        data.swap(i,j);
+        i +=1;
+
+        if j > 0 { j-= 1} // prevent j underflow
+      
+    }
+
+}
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_quicksort_empty() {
+        let mut data: Vec<i32> = Vec::new();
+        assert!(quicksort(&mut data).is_ok());
+        assert!(data.is_empty());
+    }
+
+    #[test]
+    fn test_quicksort_single_element() {
+        let mut data = vec![5];
+        assert!(quicksort(&mut data).is_ok());
+        assert_eq!(data, vec![5]);
+    }
+
+    #[test]
+    fn test_quicksort_sorted() {
+        let mut data = vec![1, 2, 3, 4, 5];
+        assert!(quicksort(&mut data).is_ok());
+        assert_eq!(data, vec![1, 2, 3, 4, 5]);
+    }
+
+    #[test]
+    fn test_quicksort_reverse_sorted() {
+        let mut data = vec![5, 4, 3, 2, 1];
+        assert!(quicksort(&mut data).is_ok());
+        assert_eq!(data, vec![1, 2, 3, 4, 5]);
+    }
+
+        #[test]
+    fn test_quicksort_duplicates() {
+        let mut data = vec![3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5];
+        assert!(quicksort(&mut data).is_ok());
+        assert_eq!(data, vec![1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9]);
+    }
+
+    #[test]
+    fn test_quicksort_random() {
+        let mut data = vec![3, 1, 4, 1, 5, 9, 2, 6];
+        assert!(quicksort(&mut data).is_ok());
+        assert_eq!(data, vec![1, 1, 2, 3, 4, 5, 6, 9]);
+    }
+}
+
+
+#+end_example
+
+** Go Function
+   :PROPERTIES:
+   :CUSTOM_ID: go-function
+   :END:
+#+begin_src shell
+  llm --system "Write an idiomatic Go function following Go style conventions. Include documentation comments and example usage." --extract --save go-function
+#+end_src
+
+#+RESULTS:
+
+
+#+begin_src shell :results output
+
+  llm -m gemini-1.5-pro-latest -t go-function "implement http server"
+#+end_src
+
+** Clojure Function
+   :PROPERTIES:
+   :CUSTOM_ID: clojure-function
+   :END:
+#+begin_src shell
+  llm --system "Write a pure Clojure function following functional programming principles. Include docstring with specs, parameters, return value, and example usage." --extract --save clojure-function
+#+end_src
+
+#+RESULTS:
+
+** Scheme Function
+   :PROPERTIES:
+   :CUSTOM_ID: scheme-function
+   :END:
+#+begin_src shell
+  llm --system "Write a Scheme function following R6RS conventions. Include documentation with parameters, return value, and example usage." --extract --save scheme-function
+#+end_src
+
+#+RESULTS:
+
+
+#+begin_src shell
+  llm -m gemini-1.5-pro-latest -t scheme-function "implement (append (l1 l2))"
+#+end_src
+
+** Emacs Lisp Function
+   :PROPERTIES:
+   :CUSTOM_ID: emacs-lisp-function
+   :END:
+#+begin_src shell
+  llm --system "Write an Emacs Lisp function following elisp conventions. Include docstring with interactive form if needed, parameters, return value, and example usage." --extract --save elisp-function
+#+end_src
+
+#+RESULTS:
+
+** Usage Examples
+   :PROPERTIES:
+   :CUSTOM_ID: usage-examples
+   :END:
+Basic usage:
+
+#+begin_src shell
+  llm -m gemini-1.5-pro-latest -t python-function "implement binary search"
+  llm -m gemini-1.5-pro-latest -t rust-function "implement quicksort"
+  llm -m gemini-1.5-pro-latest -t go-function "implement http server"
+#+end_src
+
+With additional context:
+
+#+begin_src shell
+  llm -m gemini-1.5-pro-latest -t python-function --system "optimize for memory usage" "implement matrix multiplication"
+#+end_src
+
+Save modified template:
+
+#+begin_src shell
+  llm --system "Write a Python function optimized for numerical computations using NumPy" --extract --save python-numpy
+#+end_src

@@ -1,0 +1,14 @@
+# Model Providers
+export OPENAI_API_KEY=""
+export ANTHROPIC_API_KEY=""
+export GOOGLE_AI_API_KEY=""
+
+# AWS (for Bedrock/S3)
+export AWS_ACCESS_KEY_ID=""
+export AWS_SECRET_ACCESS_KEY=""
+export AWS_REGION="us-west-2"
+
+# Python/UV Config
+layout python3
+export PYTHONPATH="$PWD/src:$PYTHONPATH"
+export UV_SYSTEM_PYTHON=1

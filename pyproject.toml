@@ -1,0 +1,25 @@
+[project]
+name = "llm-lab"
+version = "0.1.0"
+description = "Testing environment for exploring LLM CLI tools"
+requires-python = ">=3.11"
+dependencies = [
+    "llm",
+    "ttok",
+    "strip-tags",
+    "llm-gemini",
+    "llm-bedrock",
+    "llm-claude",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "isort",
+    "mypy",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"

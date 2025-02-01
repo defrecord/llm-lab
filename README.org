@@ -119,3 +119,12 @@ See =scripts/metrics.sh= for full telemetry setup.
 * References
 - [[https://github.com/open-telemetry/semantic-conventions/blob/main/docs/gen-ai/gen-ai-metrics.md][OpenTelemetry LLM Metrics]]
 - [[https://llm.datasette.io/][LLM CLI Documentation]]
+
+** Provider + Model Plugins (Updated)
+
+- https://github.com/simonw/llm-claude-3/releases/tag/0.10
+- https://github.com/simonw/llm-gemini/releases/tag/0.9
+- https://github.com/simonw/llm-anthropic/releases/tag/0.12
+- https://github.com/simonw/llm-bedrock/releases/tag/0.4
+- https://github.com/simonw/llm-ollama/releases/tag/0.3.1  # Added Ollama support
+

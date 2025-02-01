@@ -119,3 +119,110 @@ See =scripts/metrics.sh= for full telemetry setup.
 * References
 - [[https://github.com/open-telemetry/semantic-conventions/blob/main/docs/gen-ai/gen-ai-metrics.md][OpenTelemetry LLM Metrics]]
 - [[https://llm.datasette.io/][LLM CLI Documentation]]
+# Control Flow Diagrams
+
+## System Architecture
+
+```mermaid
+graph TB
+    subgraph Client["Client Layer"]
+        CLI["LLM CLI"]
+        Scripts["Shell Scripts"]
+    end
+    
+    subgraph Core["Core Layer"]
+        Templates["Template Engine"]
+        Providers["Provider Manager"]
+        Metrics["Metrics Collector"]
+    end
+    
+    subgraph Integration["Integration Layer"]
+        LLM["LLM Providers"]
+        Storage["Local Storage"]
+        Telemetry["OpenTelemetry"]
+    end
+    
+    CLI --> Templates
+    Scripts --> Templates
+    Templates --> Providers
+    Providers --> LLM
+    Providers --> Metrics
+    Metrics --> Storage
+    Metrics --> Telemetry
+```
+
+## Template Processing Flow
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant T as Template Engine
+    participant P as Provider Manager
+    participant L as LLM Service
+    participant M as Metrics
+    
+    C->>T: Load Template
+    T->>T: Validate Parameters
+    T->>P: Request Provider
+    P->>L: Make API Call
+    L-->>P: Response
+    P->>M: Record Metrics
+    P-->>T: Processed Result
+    T-->>C: Formatted Output
+```
+
+## Provider Management
+
+```mermaid
+graph LR
+    subgraph Providers["Provider Management"]
+        Config["Configuration"]
+        Manager["Provider Manager"]
+        Cache["Response Cache"]
+    end
+    
+    subgraph Services["LLM Services"]
+        Gemini["Gemini"]
+        Claude["Claude"]
+        GPT["OpenAI GPT"]
+        Ollama["Ollama"]
+    end
+    
+    Config --> Manager
+    Manager --> Cache
+    Manager --> Gemini
+    Manager --> Claude
+    Manager --> GPT
+    Manager --> Ollama
+```
+
+## Metrics Pipeline
+
+```mermaid
+graph TD
+    subgraph Collection["Metric Collection"]
+        API["API Calls"]
+        Processing["Template Processing"]
+        System["System Stats"]
+    end
+    
+    subgraph Storage["Storage Layer"]
+        Local["Local SQLite"]
+        OTEL["OpenTelemetry"]
+    end
+    
+    subgraph Analysis["Analysis"]
+        Reports["Reports"]
+        Dashboards["Dashboards"]
+        Alerts["Alerts"]
+    end
+    
+    API --> Local
+    Processing --> Local
+    System --> Local
+    
+    Local --> OTEL
+    OTEL --> Reports
+    OTEL --> Dashboards
+    OTEL --> Alerts
+```

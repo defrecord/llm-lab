@@ -19,7 +19,7 @@ Testing environment for LLM CLI tools with metrics and comparison.
 - https://github.com/simonw/llm-gemini/releases/tag/0.9
 - https://github.com/simonw/llm-anthropic/releases/tag/0.12
 - https://github.com/simonw/llm-bedrock/releases/tag/0.4
-- https://github.com/simonw/llm-ollama/releases/tag/0.3.1
+- https://github.com/taketwo/llm-ollama/releases/tag/0.8.2
 
 * Quick Start
 

@@ -42,6 +42,9 @@ clean: ## Clean generated files
 	@echo "Cleaning..."
 	@rm -rf .venv build dist *.egg-info __pycache__ .pytest_cache
 
+emacs: ## Run Emacs
+	@emacs -f .emacs.d/init.el
+
 tangle: ## Tangle all org files
 	@echo "Tangling org files..."
 	@emacs --batch \

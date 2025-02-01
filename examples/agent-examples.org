@@ -12,17 +12,38 @@ llm -m "anthropic/claude-3-5-sonnet-20241022" -t memory-agent "New task discusse
   tee ../data/memory-claude-auth.md | head -n 5
 #+end_src
 
+#+RESULTS:
+: TIMESTAMP: 2023-11-10T00:00:00Z
+: TYPE: Context
+: CONTENT: New task initiated regarding authentication system implementation
+: PRIORITY: High
+: 
+
 ** CodeLlama Example
 #+begin_src sh :tangle examples/memory-codellama.sh
 llm -m codellama -t memory-agent "New task discussed: Implement authentication system" | \
   tee ../data/memory-codellama-auth.md | head -n 5
 #+end_src
 
+#+RESULTS:
+: ```
+: TIMESTAMP: 2025-02-01T10:30:00Z
+: TYPE: Decision
+: CONTENT: Team agreed to implement new auth system
+: PRIORITY: High
+
 ** DeepSeek Example
 #+begin_src sh :tangle examples/memory-deepseek.sh
 llm -m deepseek-r1 -t memory-agent "New task discussed: Implement authentication system" | \
   tee ../data/memory-deepseek-auth.md | head -n 5
 #+end_src
+
+#+RESULTS:
+: <think>
+: Alright, so I just saw this message from the user about setting up a Memory Agent. They provided some detailed background and instructions. Let me try to understand what they need.
+: 
+: First, they're creating a Memory Agent for a multi-agent system. Their main goal is to maintain context and history. That means the agent needs to keep track of important information across different interactions or "discussions."
+: 
 
 * Dialogue Agent
 ** Claude Example
@@ -31,11 +52,24 @@ llm -m "anthropic/claude-3-5-sonnet-20241022" -t dialogue-agent "Let's discuss t
   tee ../data/dialogue-claude-auth.md | head -n 5
 #+end_src
 
+#+RESULTS:
+: CONTEXT: Initial discussion of authentication system design
+: 
+: RESPONSE: I suggest we start by identifying our key requirements. What authentication methods need to be supported (OAuth, SSO, username/password, etc.) and what are our security compliance needs? This will help us determine the core authentication flow.
+: 
+: OBJECTIVE: Establish foundational requirements and constraints before discussing specific implementation details
+
 ** CodeLlama Example
 #+begin_src sh :tangle examples/dialogue-codellama.sh
 llm -m codellama -t dialogue-agent "Let's discuss the authentication system implementation approach" | \
   tee ../data/dialogue-codellama-auth.md | head -n 5
 #+end_src
+
+#+RESULTS:
+: 
+: CONTEXT: Discussing the authentication system implementation approach
+: RESPONSE: The proposed multi-factor authentication approach is a good one, as it adds an extra layer of security to prevent unauthorized access. However, we must ensure that the system is scalable enough to handle a large number of users and devices. One option could be to implement a distributed architecture with multiple layers of caching and load balancing. This would help to distribute the workload across multiple servers and reduce the strain on any one server.
+: OBJECTIVE: Address concerns about scalability and implement a distributed architecture for multi-factor authentication.
 
 * Reflection Agent
 ** DeepSeek Example
@@ -44,11 +78,25 @@ llm -m deepseek-r1 -t reflection-agent "Morning session focused on auth system d
   tee ../data/reflection-deepseek-auth.md | head -n 5
 #+end_src
 
+#+RESULTS:
+: <think>
+: Okay, I need to figure out how the reflection agent should respond to this user's query. The user provided a detailed scenario about analyzing interactions and system performance, along with an example response.
+: 
+: First, I'll read through the user's instructions again. They want me to review recent interactions for four main points: progress toward objectives, communication patterns, process improvements, guideline compliance, then provide actionable recommendations, flag concerns, and focus on constructive outcomes.
+: 
+
 ** Claude Example
 #+begin_src sh :tangle examples/reflection-claude.sh
 llm -m "anthropic/claude-3-5-sonnet-20241022" -t reflection-agent "Morning session focused on auth system design choices" | \
   tee ../data/reflection-claude-auth.md | head -n 5
 #+end_src
+
+#+RESULTS:
+: PERIOD: Morning Design Session 
+: 
+: OBSERVATIONS:
+: - Discussion centered on authentication system architecture
+: - Multiple stakeholders shared differing security requirements
 
 * Summary Agent
 ** Llama Example
@@ -57,11 +105,25 @@ llm -m llama3.2 -t summary-agent "Show keep patterns in creating and maintaining
   tee ../data/summary-llama-makefiles.md | head -n 5
 #+end_src
 
+#+RESULTS:
+: **Best Practices for Creating and Maintaining Makefiles**
+: 
+: ### 1. Use a Consistent Naming Convention
+: 
+: *   Use `Makefile` as the standard file name.
+
 ** Claude Example
 #+begin_src sh :tangle examples/summary-claude.sh
 llm -m "anthropic/claude-3-5-sonnet-20241022" -t summary-agent "Document action items from our auth system design review" | \
   tee ../data/summary-claude-auth.md | head -n 5
 #+end_src
+
+#+RESULTS:
+: TOPIC: Auth System Design Review Summary
+: 
+: KEY POINTS:
+: - Reviewed OAuth 2.0 implementation approach
+: - Discussed user session management requirements
 
 * Complete Workflow Example
 ** Auth System Design Workflow
@@ -84,6 +146,28 @@ llm -m deepseek-r1 -t reflection-agent "Review morning auth system design sessio
 llm -m llama3.2 -t summary-agent "Summarize auth system design decisions and next steps" | \
   tee ../data/workflow-summary.md | head -n 5
 #+end_src
+
+#+RESULTS:
+#+begin_example
+Let me start tracking this new task and establish the initial context.
+
+TIMESTAMP: 2024-02-14T00:00:00Z
+TYPE: Context
+CONTENT: New authentication system design project initiated. Need to maintain record of design decisions and requirements.
+CONTEXT: Implementing authorization in a multi-agent system
+RESPONSE: It would be beneficial to consider implementing roles and permissions for each agent. This would ensure that each agent has access to only the information they need, while also allowing for flexible changes as the system evolves.
+OBJECTIVE: Provide a secure framework for accessing information
+<think>
+Okay, so I have to review the morning authentication system design session. Let me see what information is provided.
+
+First, there's a section on objectives and key success metrics. The goals include improving efficiency, reducing manual errors, enhancing user satisfaction, speeding up process times, and minimizing downtime during onboarding. The key metrics are average time per sign-on, number of failed attempts, system availability, time to issue a new token after request, and the rate of successful logins.
+
+TOPIC: Auth System Design Decisions and Next Steps
+
+KEY POINTS:
+,* Decided on a hybrid authentication approach combining username/password, OAuth, and API keys.
+,* Chosen to implement OAuth 2.0 with JWT tokens for secure token exchange.
+#+end_example
 
 * Model Comparison Analysis
 Add notes and observations about how different models perform with each agent type.

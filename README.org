@@ -128,3 +128,20 @@ See =scripts/metrics.sh= for full telemetry setup.
 - https://github.com/simonw/llm-bedrock/releases/tag/0.4
 - https://github.com/simonw/llm-ollama/releases/tag/0.3.1  # Added Ollama support
 
+
+* Environment Setup
+
+#+begin_src shell :results output
+source ~/.anthropic/.envrc
+./scripts/check-env.sh
+#+end_src
+
+* Ollama Examples
+
+#+begin_src shell :results output
+# Fibonacci implementation with Llama
+llm -m llama3.2:latest "Implement fib(n)"
+
+# Org-mode with Deepseek
+llm -m deepseek-r1:latest "Create an org-mode file for Getting Started with Scheme using Babel :tangle and :mkdirp t"
+#+end_src

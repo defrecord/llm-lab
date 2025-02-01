@@ -5,6 +5,21 @@
 * Overview
 Testing environment for LLM CLI tools with metrics and comparison.
 
+- https://simonwillison.net/2023/May/18/cli-tools-for-llms/
+- https://llm.datasette.io/en/stable/help.html
+- https://github.com/simonw/ttok
+- https://github.com/simonw/strip-tags
+- https://github.com/simonw/files-to-prompt
+- https://github.com/simonw/sqlite-utils
+- https://github.com/simonw/fetch-github-issues
+
+** Provider + Model Plugins
+
+- https://github.com/simonw/llm-claude-3/releases/tag/0.10
+- https://github.com/simonw/llm-gemini/releases/tag/0.9
+- https://github.com/simonw/llm-anthropic/releases/tag/0.12
+- https://github.com/simonw/llm-bedrock/releases/tag/0.4
+
 * Quick Start
 
 #+begin_src shell :results output
@@ -18,7 +33,6 @@ make
 : [36mclean               [0m Clean generated files
 : [36mtangle              [0m Tangle all org files
 : [36mdocs                [0m Generate documentation
-
 
 * Structure
 
@@ -36,7 +50,6 @@ paste <(ls -d */) <(cat */.description)
 | templates/ |                           |
 | tests/     |                           |
 
-
 * Testing
 Test individual model:
 #+begin_src sh :results output :exports both
@@ -50,6 +63,43 @@ llm -m gemini-1.5-pro-latest "Write a hello world function in uiua" 2>&1 | \
 : ```
 : 
 : This is the simplest and most direct way.  UIUA implicitly prints the last expression in a program.  Therefore, the string literal `'Hello, world!'` is evaluated and automatically printed to the console.
+
+** strip-tags
+
+#+begin_src shell :results output :exports both
+curl -s https://news.ycombinator.com/ | uv run strip-tags | uv run ttok -t 1000 | uv run llm -m gemini-pro  "Summarize popular topics"
+#+end_src
+
+#+RESULTS:
+#+begin_example
+1. OpenAI and advancements in AI technology
+2. Censorship and bypassing restrictions using innovative methods
+3. Cybersecurity and efforts to combat phishing attacks
+4. Linux debugging tools and their development
+5. Historical computing and the preservation of old code
+6. Theoretical limitations of machine learning models
+7. Game development and the challenges of porting classic games to new platforms
+8. Shell scripting and its implementation in different programming languages
+9. Assembly programming and the complexities of working with classic hardware
+10. Corporate restructuring and the potential impact on the tech industry
+11. Object-oriented programming concepts in Ruby
+12. Personal experiences with health conditions and their impact on daily life
+13. Job opportunities in the tech industry
+14. Space exploration and discoveries related to exoplanets
+15. The efficiency and effectiveness of large language models
+16. Legal proceedings and antitrust concerns in the tech industry
+17. Social media censorship and its implications for healthcare access
+18. Environmental monitoring and the tracking of pollution sources
+19. Database technology and the development of new data storage solutions
+20. Events and gatherings focused on peer-to-peer technology
+21. Key-value databases and their implementation in Go
+#+end_example
+
+** files-to-prompt
+
+#+begin_src shell
+uv run files-to-prompt -c scripts |  llm -m claude-3-5-sonnet-20241022 -s "Explain this code"
+#+end_src
 
 * Metrics  
 View performance metrics:

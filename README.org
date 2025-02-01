@@ -19,10 +19,11 @@ Testing environment for LLM CLI tools with metrics and comparison.
 - https://github.com/simonw/llm-gemini/releases/tag/0.9
 - https://github.com/simonw/llm-anthropic/releases/tag/0.12
 - https://github.com/simonw/llm-bedrock/releases/tag/0.4
+- https://github.com/simonw/llm-ollama/releases/tag/0.3.1
 
 * Quick Start
 
-#+begin_src shell :results output
+#+begin_src sh :results output
 make
 #+end_src
 
@@ -36,7 +37,7 @@ make
 
 * Structure
 
-#+begin_src shell :results table 
+#+begin_src sh :results table 
 paste <(ls -d */) <(cat */.description)
 #+end_src
 
@@ -50,7 +51,17 @@ paste <(ls -d */) <(cat */.description)
 | templates/ |                           |
 | tests/     |                           |
 
+
+* Environment Setup
+
+
+#+begin_src sh :results output
+make check-env
+#+end_src
+
 * Testing
+
+** Gemini
 Test individual model:
 #+begin_src sh :results output :exports both
 llm -m gemini-1.5-pro-latest "Write a hello world function in uiua" 2>&1 | \
@@ -66,7 +77,7 @@ llm -m gemini-1.5-pro-latest "Write a hello world function in uiua" 2>&1 | \
 
 ** strip-tags
 
-#+begin_src shell :results output :exports both
+#+begin_src sh :results output :exports both
 curl -s https://news.ycombinator.com/ | uv run strip-tags | uv run ttok -t 1000 | uv run llm -m gemini-pro  "Summarize popular topics"
 #+end_src
 
@@ -97,9 +108,23 @@ curl -s https://news.ycombinator.com/ | uv run strip-tags | uv run ttok -t 1000 
 
 ** files-to-prompt
 
-#+begin_src shell
-uv run files-to-prompt -c scripts |  llm -m claude-3-5-sonnet-20241022 -s "Explain this code"
+#+begin_src sh :results output :exports both
+uv run files-to-prompt -c scripts |  llm -m claude-3-5-sonnet-20241022 -s "Explain this code" | tee data/scripts-explained.md | head -n 5
 #+end_src
+
+** Ollama
+
+#+begin_src shell :results output
+# Fibonacci implementation with Llama
+llm -m llama3.2:latest "Implement fib(n)" | tee data/fib.md | head -n 5
+#+end_src
+
+#+begin_src shell :results output
+# Org-mode with Deepseek
+llm -m deepseek-r1:latest "Create an org-mode file for Getting Started with Scheme using Babel :tangle and :mkdirp t" | tee data/org-scheme.md | head -n 5
+#+end_src
+
+#+RESULTS:
 
 * Metrics  
 View performance metrics:
@@ -119,29 +144,3 @@ See =scripts/metrics.sh= for full telemetry setup.
 * References
 - [[https://github.com/open-telemetry/semantic-conventions/blob/main/docs/gen-ai/gen-ai-metrics.md][OpenTelemetry LLM Metrics]]
 - [[https://llm.datasette.io/][LLM CLI Documentation]]
-
-** Provider + Model Plugins (Updated)
-
-- https://github.com/simonw/llm-claude-3/releases/tag/0.10
-- https://github.com/simonw/llm-gemini/releases/tag/0.9
-- https://github.com/simonw/llm-anthropic/releases/tag/0.12
-- https://github.com/simonw/llm-bedrock/releases/tag/0.4
-- https://github.com/simonw/llm-ollama/releases/tag/0.3.1  # Added Ollama support
-
-
-* Environment Setup
-
-#+begin_src shell :results output
-source ~/.anthropic/.envrc
-./scripts/check-env.sh
-#+end_src
-
-* Ollama Examples
-
-#+begin_src shell :results output
-# Fibonacci implementation with Llama
-llm -m llama3.2:latest "Implement fib(n)"
-
-# Org-mode with Deepseek
-llm -m deepseek-r1:latest "Create an org-mode file for Getting Started with Scheme using Babel :tangle and :mkdirp t"
-#+end_src

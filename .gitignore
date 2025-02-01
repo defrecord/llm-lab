@@ -20,4 +20,5 @@ data/
 
 # Project specific
 src/compare/
-src/metrics/
+src/metrics/README.sh
+README.shell

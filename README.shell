@@ -1,7 +1,0 @@
-make
-
-paste <(ls -d */) <(cat */.description)
-
-curl -s https://news.ycombinator.com/ | uv run strip-tags | uv run ttok -t 1000 | uv run llm -m gemini-pro  "Summarize popular topics"
-
-uv run files-to-prompt -c scripts |  llm -m claude-3-5-sonnet-20241022 -s "Explain this code"

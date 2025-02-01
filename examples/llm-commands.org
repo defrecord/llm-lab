@@ -209,7 +209,6 @@ git diff --staged | llm -t commit
 
 #+end_src
 
-
 * Logs & History
 #+begin_src sh
 llm logs -c | head

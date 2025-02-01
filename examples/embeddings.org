@@ -1,0 +1,160 @@
+#+TITLE: LLM Embeddings Tutorial
+#+PROPERTY: header-args:sh :mkdirp yes :tangle yes :exports both
+#+STARTUP: showeverything
+
+* Introduction
+Exploring embeddings with LLM CLI tools based on Simon Willison's tutorial.
+
+* Setup
+:PROPERTIES:
+:header-args:sh: :tangle data/setup-embeddings.sh
+:END:
+
+#+begin_src sh
+#!/bin/bash
+# Install LLM and plugins
+pip install llm
+
+# Upgrade LLM if needed
+llm install -U llm
+
+# Install sentence-transformers plugin
+llm install llm-sentence-transformers
+
+# Register embedding model
+llm sentence-transformers register all-MiniLM-L6-v2
+#+end_src
+
+* Basic Embeddings
+:PROPERTIES:
+:header-args:sh: :tangle data/basic-embeddings.sh
+:END:
+
+#+begin_src sh
+#!/bin/bash
+# Generate embedding for a simple string
+llm embed -m ada-002 -c "Hello world"
+
+# Store in a collection
+llm embed phrases hello -m ada-002 -c "Hello world"
+llm embed phrases goodbye -c "Goodbye world"
+
+# View collections
+llm embed-db collections
+#+end_src
+
+* Bulk File Processing
+:PROPERTIES:
+:header-args:sh: :tangle data/bulk-embeddings.sh
+:END:
+
+#+begin_src sh
+#!/bin/bash
+# Embed all README files
+llm embed-multi readmes \
+  --model sentence-transformers/all-MiniLM-L6-v2 \
+  --files . '**/README.md'
+
+# Run similarity search
+llm similar readmes -c "python implementation"
+#+end_src
+
+* Clustering
+:PROPERTIES:
+:header-args:sh: :tangle data/clustering.sh
+:END:
+
+#+begin_src sh
+#!/bin/bash
+# Install clustering plugin
+llm install llm-cluster
+
+# Get issues and embed them
+curl -s "https://api.github.com/repos/defrecord/llm-lab/issues" | \
+  jq '[.[] | {id: .id, title: .title}]' | \
+  llm embed-multi llm-lab-issues - \
+    --database issues.db \
+    --model sentence-transformers/all-MiniLM-L6-v2 \
+    --store
+
+# Run clustering
+llm cluster llm-lab-issues --database issues.db 5 --summary
+#+end_src
+
+* Python Integration
+:PROPERTIES:
+:header-args:python: :tangle data/embeddings.py
+:END:
+
+#+begin_src python
+#!/usr/bin/env python3
+import llm
+
+def embed_text():
+    """Example of embedding text with Python."""
+    # Get embedding model
+    model = llm.get_embedding_model("sentence-transformers/all-MiniLM-L6-v2")
+    
+    # Embed a string
+    vector = model.embed("This is text to embed")
+    print(f"Embedding vector: {vector[:5]}...")  # Show first 5 elements
+
+def work_with_collections():
+    """Example of working with collections."""
+    collection = llm.Collection("entries", model_id="ada-002")
+    
+    # Store items with metadata
+    collection.embed_multi(
+        [
+            ("code", "Python implementation details"),
+            ("docs", "Documentation and examples"),
+            ("test", "Test suite and coverage"),
+        ],
+        store=True,
+    )
+    
+    # Find similar items
+    results = collection.similar("implementation guide")
+    for result in results:
+        print(f"Match: {result.id} - Score: {result.score}")
+
+if __name__ == "__main__":
+    embed_text()
+    work_with_collections()
+#+end_src
+
+* Usage Examples
+** Basic Search
+:PROPERTIES:
+:header-args:sh: :tangle data/search-examples.sh
+:END:
+
+#+begin_src sh
+#!/bin/bash
+# Search for implementation-related content
+llm similar readmes -c "implementation details"
+
+# Search for documentation
+llm similar readmes -c "documentation and examples"
+
+# Search for testing
+llm similar readmes -c "testing and verification"
+#+end_src
+
+** Advanced Usage
+:PROPERTIES:
+:header-args:sh: :tangle data/advanced-examples.sh
+:END:
+
+#+begin_src sh
+#!/bin/bash
+# Combine with jq for JSON processing
+llm embed -m ada-002 -c "Advanced example" | \
+  jq -r '.embedding | length'
+
+# Use with clustering
+llm cluster entries --database vector.db 3 --summary
+
+# Export embeddings
+llm embed-db export entries > embeddings.json
+#+end_src

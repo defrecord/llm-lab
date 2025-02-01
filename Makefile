@@ -59,3 +59,8 @@ docs: ## Generate documentation
 			(with-current-buffer (find-file file) \
 			(org-babel-tangle)))" \
 		--killg
+
+check-env: ## Check environment variables
+	@echo "Checking environment..."
+	@./scripts/check-env.sh
+

@@ -1,39 +1,36 @@
-#!/usr/bin/env bash
-# scripts/check_env.sh
+#!/bin/bash
 
-set -euo pipefail
-
-# Required environment variables
-declare -A REQUIRED_VARS=(
-    ["OPENAI_API_KEY"]="OpenAI API key"
-    ["GEMINI_API_KEY"]="Gemini API key"
-    ["GOOGLE_AI_API_KEY"]="Google AI API key"
-    ["ANTHROPIC_API_KEY"]="Anthropic API key"
-    ["AWS_ACCESS_KEY_ID"]="AWS Access Key ID"
-    ["AWS_REGION"]="AWS Region"
-    ["AWS_SECRET_ACCESS_KEY"]="AWS Secret Access Key"
-    ["GITHUB_TOKEN"]="GitHub Token"
-    ["PYTHONPATH"]="Python Path"
-    ["UV_SYSTEM_PYTHON"]="UV System Python"
-)
-
-# Check each variable
-all_set=true
-for var in "${!REQUIRED_VARS[@]}"; do
-    if [ -n "${!var:-}" ]; then
-        echo "✅ $var is set"
+check_var() {
+    local var_name=$1
+    local description=${2:-$var_name}
+    if [ -z "${!var_name}" ]; then
+        echo "❌ $var_name is not set - $description"
+        return 1
     else
-        echo "❌ $var is not set - ${REQUIRED_VARS[$var]}"
-        all_set=false
+        echo "✅ $var_name is set"
+        return 0
     fi
-done
+}
 
-# Final status
-if $all_set; then
-    echo "All required environment variables are set"
-    exit 0
-else
+# API Keys
+check_var "ANTHROPIC_API_KEY"
+check_var "GEMINI_API_KEY"
+check_var "GOOGLE_AI_API_KEY"
+check_var "OPENAI_API_KEY"
+
+# AWS Configuration
+check_var "AWS_REGION"
+check_var "GITHUB_TOKEN"
+check_var "AWS_SECRET_ACCESS_KEY"
+check_var "AWS_ACCESS_KEY_ID"
+
+# Development Environment
+check_var "UV_SYSTEM_PYTHON" "UV System Python"
+check_var "PYTHONPATH" "Python Path"
+
+# Count failures
+failures=$(env | grep -c "^❌")
+if [ $failures -gt 0 ]; then
     echo "Some required environment variables are missing"
     exit 1
 fi
-

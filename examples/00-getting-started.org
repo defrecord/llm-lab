@@ -97,109 +97,108 @@ git diff --staged | llm -t commit
 
 #+RESULTS:
 #+begin_example
-The provided script is written in Bash and appears to be a test suite for a Natural Language Processing (NLP) model called SIN. The script consists of three main parts:
+class CommitMessageGenerator:
+    def __init__(self):
+        self.types = {
+            "feat": "new feature",
+            "fix": "bug fix",
+            "docs": "documentation changes",
+            "style": "formatting changes",
+            "refactor": "code refactoring",
+            "test": "adding/modifying tests",
+            "chore": "maintenance tasks"
+        }
+    
+    def analyze_diff(self, diff_output):
+        # Implement logic to determine the type from the diff output
+        # This may involve regular expressions or string manipulation
+        type_ = None
+        for line in diff_output.splitlines():
+            if line.startswith("+ ") or line.startswith("- "):
+                action = line[2:]
+                if action == "+f" or action == "-d":
+                    continue
+                elif action == "+a":
+                    type_ = "test"
+                elif action == "+r":
+                    type_ = "refactor"
+                elif action == "+m":
+                    type_ = "docs"
+                else:
+                    if line.startswith("+ ") and not line.startswith("+feat "):
+                        type_ = "feat"
+                    elif line.startswith("- ") and (line.startswith("-fix ") or line.startswith("-feat ")) and not line.startswith("-feat -"):
+                        type_ = "fix"
+        return type_
 
-1.  **`register_sin_template`**: This function registers the SIN template by generating it if it doesn't exist, then saving it with the `--save` option.
-2.  **`test_sin_template`**: This function tests the registered SIN template by running a repository analysis and saving the results to an output file.
+    def format_commit_message(self, diff_output, issues=None, major_version_change=False):
+        commit_type = self.analyze_diff(diff_output)
+        if commit_type is None:
+            raise ValueError("Failed to determine the commit type from the diff output")
 
-However, there are some potential issues and improvements that can be made:
+        subject_line = f"{commit_type}{' (' + self.types.get(commit_type, 'unknown') + ')' if self.types[commit_type] else ''}"
+        body = ""
+        
+        for line in diff_output.splitlines():
+            if line.startswith("+ ") or line.startswith("- "):
+                continue
+            elif not line.strip():
+                break
+            body += f"{line}\n"
+        
+        # Check if there are any breaking changes
+        if commit_type == "refactor" and ("BREAKING CHANGE:" in diff_output or "-- BREAKING CHANGE" in diff_output):
+            subject_line = f"BREAKING CHANGE {subject_line}"
+        
+        footer = ""
+        if major_version_change:
+            footer += f"# Major version changed to {major_version_change}\n"
+        elif issues:
+            for issue in issues:
+                footer += f"# Issues: {issue}\n"
 
-,*   The script uses `git rev-parse --show-toplevel` to get the repository root directory. If this fails (e.g., due to no Git installation), it will fail instead of providing a meaningful error message.
-,*   The script assumes that the `llm` executable is in the system's PATH. If it's not, you'll need to specify the full path to the executable or modify the script to find it.
-,*   There are some hardcoded values and directories (e.g., `${REPO_ROOT}`) throughout the script. Consider making these configurable for better flexibility.
-,*   Error handling is minimal in the script. You might want to add more robust error handling, especially for file operations.
+        # Group related changes
+        body_grouped = False
+        grouped_body_lines = []
+        lines = diff_output.splitlines()
+        new_lines = []
+        for line in lines:
+            if not line.strip():
+                break
+            if line.startswith("+ ") or line.startswith("- "):
+                continue
+            new_lines.append(line)
+            if not body_grouped and len(new_lines) > 50:
+                grouped_body_lines.extend(new_lines)
+                new_lines = [line]
+        if new_lines:
+            grouped_body_lines.extend(new_lines)
+        
+        # Format the commit message
+        formatted_message = f"{subject_line}\n\n{body or 'No changes'}\n{'\n' + '\n'.join(grouped_body_lines) if grouped_body_lines else ''}\n{'\n'.join(footer.splitlines()) if footer else ''}"
+        
+        return subject_line, formatted_message
 
-Here's a refactored version of the script with these improvements:
+    def generate_commit_message(self, diff_output, issues=None, major_version_change=False):
+        return self.format_commit_message(diff_output, issues, major_version_change)
 
-```bash
-#!/bin/bash
+# Example usage
+commit_generator = CommitMessageGenerator()
+diff_output = """
++ This is a new feature
+feat add user authentication
 
-# Configuration
-TEMPLATE_DIR="${REPO_ROOT}/prompts"
-OUTPUT_DIR="${REPO_ROOT}/analysis/sin"
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+- Bug fix in the login form
+fix fix bug in login form
 
-# Function to register SIN template
-register_sin_template() {
-  local template_file="${TEMPLATE_DIR}/sin_template.txt"
++ Documentation for the new user interface
+docs update documentation for UI
 
-  # Create template if it doesn't exist
-  if [ ! -f "$template_file" ]; then
-    cat > "$template_file" << 'EOL'
-name: sin_framework
-model: llama2
-temperature: 0.7
-system: |
-  You are a Structured Insight Navigator (SIN) specialized in:
-  1. Structure: Organizing and analyzing codebases
-  2. Interpretation: Understanding patterns and relationships
-  3. Naming: Evaluating and suggesting consistent naming conventions
+- Formatting changes
+style formatting change
+"""
 
-  Input: Repository content or code segment
-  Output: Structured analysis following:
-
-  1. Input Review
-     - Repository structure
-     - Key components
-     - Existing patterns
-
-  2. Framework Selection
-     - Recommended analysis framework
-     - Justification
-     - Alternatives
-
-  3. Systematic Analysis
-     - Using selected framework
-     - Evidence-based observations
-     - Pattern identification
-
-  4. Recommendations
-     - High priority items
-     - Medium priority items
-     - Low priority items
-
-  5. Implementation Plan
-     - Concrete steps
-     - Timeline
-     - Dependencies
-EOL
-
-    fi
-  # Register the template
-  llm --system "$(cat "$template_file")" --save sin_framework || echo "Failed to register template"
-}
-
-# Function to test template with repository analysis
-test_sin_template() {
-  local output_file="${OUTPUT_DIR}/sin_analysis_${TIMESTAMP}.md"
-
-  # Generate repository structure
-  if [ ! -f "${OUTPUT_DIR}/repo_structure.txt" ]; then
-    tree -a -I '.git|.venv|__pycache__|*.pyc|*.pyo|*.pyd|.DS_Store|node_modules' "${REPO_ROOT}" > "${OUTPUT_DIR}/repo_structure.txt"
-  fi
-
-  # Run SIN analysis
-  if [ ! -f "$output_file" ]; then
-    cat "${OUTPUT_DIR}/repo_structure.txt" | llm -t sin_framework > "$output_file"
-  fi
-
-  echo "Analysis complete. Results saved to: $output_file"
-
-  # Display output
-  cat "$output_file"
-}
-
-# Main execution
-echo "=== Testing SIN Template ==="
-register_sin_template || echo "Failed to register template"
-
-test_sin_template || echo "Failed to run test analysis"
-```
-
-This refactored version includes:
-
-,*   Improved error handling with `||` for conditional execution.
-,*   Conditional file existence checks for repository structure and output files.
-,*   More robust configuration using environment variables or command-line arguments (not shown here).
-,*   Potential fixes for hardcoded values and directories.
+subject_line, formatted_message = commit_generator.generate_commit_message(diff_output)
+print("Subject line:", subject_line)
+print("Formatted message:\n", formatted_message)
 #+end_example

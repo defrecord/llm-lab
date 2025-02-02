@@ -26,3 +26,4 @@ examples/*.db
 examples/*.txt
 examples/*.md
 examples/*.json
+*.tmp

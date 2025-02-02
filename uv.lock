@@ -210,18 +210,6 @@ wheels = [
 ]
 
 [[package]]
-name = "files-to-prompt"
-version = "0.4"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "click" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/47/01/ae9d0081f74df8de4149de31db4acdc864822dc2dec026b43c8facf7876b/files_to_prompt-0.4.tar.gz", hash = "sha256:aa1c65bdb7fa123a3a36c5f105af34aa8f3f70495fc90dcb5f7fa995fda3463d", size = 9522 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/fb/30/923fa6daf3f50e6ed2d4762a4769b804c66a8afdfe20f366d83d070b594c/files_to_prompt-0.4-py3-none-any.whl", hash = "sha256:81a3746dfd976b8b76a69ddf8c01c4cfafa7a01d1d5069e9f2dbb8a98b6aca9b", size = 9187 },
-]
-
-[[package]]
 name = "h11"
 version = "0.14.0"
 source = { registry = "https://pypi.org/simple" }
@@ -453,14 +441,10 @@ name = "llm-lab"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "black" },
-    { name = "files-to-prompt" },
     { name = "llm" },
     { name = "llm-bedrock" },
     { name = "llm-claude" },
     { name = "llm-gemini" },
-    { name = "mypy" },
-    { name = "pytest" },
     { name = "strip-tags" },
     { name = "ttok" },
 ]
@@ -475,17 +459,13 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "black", specifier = ">=25.1.0" },
     { name = "black", marker = "extra == 'dev'" },
-    { name = "files-to-prompt", specifier = ">=0.4" },
     { name = "isort", marker = "extra == 'dev'" },
     { name = "llm" },
     { name = "llm-bedrock" },
     { name = "llm-claude" },
     { name = "llm-gemini" },
-    { name = "mypy", specifier = ">=1.14.1" },
     { name = "mypy", marker = "extra == 'dev'" },
-    { name = "pytest", specifier = ">=8.3.4" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "strip-tags" },
     { name = "ttok" },

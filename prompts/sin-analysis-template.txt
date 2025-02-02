@@ -1,0 +1,7 @@
+### SIN Analysis Template ###
+Welcome to SIN Analysis:
+1. Input Review
+2. Framework Selection
+3. Systematic Analysis
+4. Insight Generation
+5. Recommendations

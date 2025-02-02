@@ -7,38 +7,58 @@ Exploring embeddings with LLM CLI tools based on Simon Willison's tutorial.
 
 * Setup
 :PROPERTIES:
-:header-args:sh: :tangle data/setup-embeddings.sh
 :END:
 
-#+begin_src sh
+#+begin_src sh :tangle ../scripts/install-embeddings.sh
 #!/bin/bash
 # Install LLM and plugins
-pip install llm
+uv install llm
 
 # Upgrade LLM if needed
 llm install -U llm
 
 # Install sentence-transformers plugin
 llm install llm-sentence-transformers
+#+end_src
 
+#+begin_src sh :tangle ../scripts/install-embeddings.sh
 # Register embedding model
 llm sentence-transformers register all-MiniLM-L6-v2
 #+end_src
 
+#+RESULTS:
+
+
+#+begin_src sh
+llm models default llama3.2
+#+end_src
+
+#+RESULTS:
+
+
 * Basic Embeddings
 :PROPERTIES:
-:header-args:sh: :tangle data/basic-embeddings.sh
+:header-args:sh: :tangle ../data/basic-embeddings.sh
 :END:
 
 #+begin_src sh
 #!/bin/bash
 # Generate embedding for a simple string
 llm embed -m ada-002 -c "Hello world"
+#+end_src
 
+#+RESULTS:
+
+#+begin_src sh
 # Store in a collection
 llm embed phrases hello -m ada-002 -c "Hello world"
-llm embed phrases goodbye -c "Goodbye world"
+#+end_src
 
+#+begin_src sh
+llm embed phrases goodbye -c "Goodbye world"
+#+end_src
+
+#+begin_src sh
 # View collections
 llm embed-db collections
 #+end_src
@@ -54,7 +74,9 @@ llm embed-db collections
 llm embed-multi readmes \
   --model sentence-transformers/all-MiniLM-L6-v2 \
   --files . '**/README.md'
+#+end_src
 
+#+begin_src sh
 # Run similarity search
 llm similar readmes -c "python implementation"
 #+end_src
@@ -68,6 +90,9 @@ llm similar readmes -c "python implementation"
 #!/bin/bash
 # Install clustering plugin
 llm install llm-cluster
+#+end_src
+
+#+begin_src sh
 
 # Get issues and embed them
 curl -s "https://api.github.com/repos/defrecord/llm-lab/issues" | \
@@ -76,6 +101,9 @@ curl -s "https://api.github.com/repos/defrecord/llm-lab/issues" | \
     --database issues.db \
     --model sentence-transformers/all-MiniLM-L6-v2 \
     --store
+#+end_src
+
+#+begin_src sh
 
 # Run clustering
 llm cluster llm-lab-issues --database issues.db 5 --summary
@@ -133,9 +161,15 @@ if __name__ == "__main__":
 #!/bin/bash
 # Search for implementation-related content
 llm similar readmes -c "implementation details"
+#+end_src
+
+#+begin_src sh
 
 # Search for documentation
 llm similar readmes -c "documentation and examples"
+#+end_src
+
+#+begin_src sh
 
 # Search for testing
 llm similar readmes -c "testing and verification"
@@ -151,10 +185,15 @@ llm similar readmes -c "testing and verification"
 # Combine with jq for JSON processing
 llm embed -m ada-002 -c "Advanced example" | \
   jq -r '.embedding | length'
+#+end_src
+
+#+begin_src sh
 
 # Use with clustering
 llm cluster entries --database vector.db 3 --summary
+#+end_src
 
+#+begin_src sh
 # Export embeddings
 llm embed-db export entries > embeddings.json
 #+end_src

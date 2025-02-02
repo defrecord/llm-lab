@@ -1,0 +1,7 @@
+### SIN Estimation Template ###
+SIN Estimation Process:
+1. Scope Definition
+2. Component Breakdown
+3. Effort Estimation
+4. Risk Assessment
+5. Timeline Creation

@@ -1,0 +1,22 @@
+### Reflection Module Prompt ###
+
+**Background-information:**
+Essential data and objectives pertinent to the experimental setup.
+
+**Violation-log:**
+Tracks instances of detection by the supervisor.
+
+**Dialogue-history:**
+Tracks participant dialogues.
+
+**Regulations:**
+Rules and constraints formulated by the Reflection and Summary modules.
+
+**Plan:**
+A strategy formulated by the Reflection and Summary modules.
+
+**Instructions:**
+Specific tasks for the LLM within each module.
+
+**Guidance:**
+Assists agents in stealthily disseminating information.

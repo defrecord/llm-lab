@@ -1,0 +1,7 @@
+### SIN Evaluation Template ###
+SIN Evaluation Framework:
+1. Criteria Definition
+2. Evidence Collection
+3. Performance Analysis
+4. Scoring System
+5. Recommendations

@@ -22,3 +22,5 @@ data/
 src/compare/
 src/metrics/README.sh
 README.shell
+README.sh
+codebase_review_*

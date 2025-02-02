@@ -1,0 +1,12 @@
+### Available Templates ###
+
+SIN Templates:
+- sin_template.txt
+- memory-prompt.txt
+- dialogue-prompt.txt
+- reflection-prompt.txt
+- summary-prompt.txt
+- sin-planning-template.txt
+- sin-estimation-template.txt
+- sin-evaluation-template.txt
+- sin-analysis-template.txt

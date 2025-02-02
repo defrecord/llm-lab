@@ -1,0 +1,205 @@
+#+TITLE: LLM Command Examples
+#+PROPERTY: header-args :mkdirp yes :results output :exports both
+#+PROPERTY: header-args:sh :dir (concat (projectile-project-root) "data")
+
+* Initial Setup
+First, ensure we have a default model set.
+
+#+begin_src shell :llm t :results silent
+llm models default llama3.2
+#+end_src
+
+* Basic LLM Usage
+Let's start with a simple prompt example.
+
+#+begin_src shell :llm t :results file :file haiku.md
+llm "Write a haiku about debugging"
+#+end_src
+
+#+RESULTS:
+[[file:haiku.md]]
+
+* Model Information
+View available models and configuration.
+
+#+begin_src shell :llm t :results file :file models.txt
+llm models list | head -n 10
+#+end_src
+
+#+RESULTS:
+[[file:models.txt]]
+
+* Template Management
+First, list available templates.
+
+#+begin_src shell :llm t :results file :file templates.txt
+llm templates list
+#+end_src
+
+#+RESULTS:
+[[file:templates.txt]]
+
+Register a basic Python template. Note: We mark this :llm nil as it's a one-time setup.
+
+#+begin_src shell :llm nil
+llm --system "Write Python code" --save python-template
+#+end_src
+
+#+RESULTS:
+
+* Session Agent Example
+Here's an example using the session agent template.
+
+#+begin_src shell :llm t :results file :file session-example.txt
+llm -t session-agent "Reviewing LLM commands" 2>&1 | head -n 15
+#+end_src
+
+#+RESULTS:
+[[file:session-example.txt]]
+
+* Command History and Logs
+View recent command history.
+
+#+begin_src shell :llm t :results file :file command-history.txt
+llm logs -c | head -n 10
+#+end_src
+
+#+RESULTS:
+[[file:command-history.txt]]
+
+Analyze model usage.
+
+#+begin_src shell :llm t :results file :file model-usage.txt
+llm logs --json | jq -r '.[]|.model' | sort | uniq -c | sort -rn
+#+end_src
+
+#+RESULTS:
+[[file:model-usage.txt]]
+
+* Note on Interactive Commands
+The following commands require user interaction and are not suitable for automated execution:
+
+# Interactive chat session - marked as :llm nil
+#+begin_src shell :llm nil
+llm chat -m llama3.2
+#+end_src
+
+#+RESULTS:
+: Chatting with llama3.2:latest
+: Type 'exit' or 'quit' to exit
+: Type '!multi' to enter multiple lines, then '!end' to finish
+: > 
+
+# Git operations - marked as :llm nil
+#+begin_src shell :llm nil
+git diff --staged | llm -t commit
+#+end_src
+
+#+RESULTS:
+#+begin_example
+The provided script is written in Bash and appears to be a test suite for a Natural Language Processing (NLP) model called SIN. The script consists of three main parts:
+
+1.  **`register_sin_template`**: This function registers the SIN template by generating it if it doesn't exist, then saving it with the `--save` option.
+2.  **`test_sin_template`**: This function tests the registered SIN template by running a repository analysis and saving the results to an output file.
+
+However, there are some potential issues and improvements that can be made:
+
+,*   The script uses `git rev-parse --show-toplevel` to get the repository root directory. If this fails (e.g., due to no Git installation), it will fail instead of providing a meaningful error message.
+,*   The script assumes that the `llm` executable is in the system's PATH. If it's not, you'll need to specify the full path to the executable or modify the script to find it.
+,*   There are some hardcoded values and directories (e.g., `${REPO_ROOT}`) throughout the script. Consider making these configurable for better flexibility.
+,*   Error handling is minimal in the script. You might want to add more robust error handling, especially for file operations.
+
+Here's a refactored version of the script with these improvements:
+
+```bash
+#!/bin/bash
+
+# Configuration
+TEMPLATE_DIR="${REPO_ROOT}/prompts"
+OUTPUT_DIR="${REPO_ROOT}/analysis/sin"
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+
+# Function to register SIN template
+register_sin_template() {
+  local template_file="${TEMPLATE_DIR}/sin_template.txt"
+
+  # Create template if it doesn't exist
+  if [ ! -f "$template_file" ]; then
+    cat > "$template_file" << 'EOL'
+name: sin_framework
+model: llama2
+temperature: 0.7
+system: |
+  You are a Structured Insight Navigator (SIN) specialized in:
+  1. Structure: Organizing and analyzing codebases
+  2. Interpretation: Understanding patterns and relationships
+  3. Naming: Evaluating and suggesting consistent naming conventions
+
+  Input: Repository content or code segment
+  Output: Structured analysis following:
+
+  1. Input Review
+     - Repository structure
+     - Key components
+     - Existing patterns
+
+  2. Framework Selection
+     - Recommended analysis framework
+     - Justification
+     - Alternatives
+
+  3. Systematic Analysis
+     - Using selected framework
+     - Evidence-based observations
+     - Pattern identification
+
+  4. Recommendations
+     - High priority items
+     - Medium priority items
+     - Low priority items
+
+  5. Implementation Plan
+     - Concrete steps
+     - Timeline
+     - Dependencies
+EOL
+
+    fi
+  # Register the template
+  llm --system "$(cat "$template_file")" --save sin_framework || echo "Failed to register template"
+}
+
+# Function to test template with repository analysis
+test_sin_template() {
+  local output_file="${OUTPUT_DIR}/sin_analysis_${TIMESTAMP}.md"
+
+  # Generate repository structure
+  if [ ! -f "${OUTPUT_DIR}/repo_structure.txt" ]; then
+    tree -a -I '.git|.venv|__pycache__|*.pyc|*.pyo|*.pyd|.DS_Store|node_modules' "${REPO_ROOT}" > "${OUTPUT_DIR}/repo_structure.txt"
+  fi
+
+  # Run SIN analysis
+  if [ ! -f "$output_file" ]; then
+    cat "${OUTPUT_DIR}/repo_structure.txt" | llm -t sin_framework > "$output_file"
+  fi
+
+  echo "Analysis complete. Results saved to: $output_file"
+
+  # Display output
+  cat "$output_file"
+}
+
+# Main execution
+echo "=== Testing SIN Template ==="
+register_sin_template || echo "Failed to register template"
+
+test_sin_template || echo "Failed to run test analysis"
+```
+
+This refactored version includes:
+
+,*   Improved error handling with `||` for conditional execution.
+,*   Conditional file existence checks for repository structure and output files.
+,*   More robust configuration using environment variables or command-line arguments (not shown here).
+,*   Potential fixes for hardcoded values and directories.
+#+end_example

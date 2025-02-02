@@ -1,0 +1,149 @@
+#+TITLE: LLM Embeddings Tutorial
+#+PROPERTY: header-args :mkdirp yes :results output :exports both
+#+PROPERTY: header-args:sh :dir (concat (projectile-project-root) "data")
+
+* Initial Setup
+First, ensure we have the necessary embedding models installed.
+
+** Register Embedding Model
+We'll use the MiniLM model for local embeddings.
+
+#+begin_src shell :llm t :results silent
+llm sentence-transformers register all-MiniLM-L6-v2
+#+end_src
+
+* Basic Embeddings
+Let's start with some simple embedding examples.
+
+** Generate Single Embedding
+Create an embedding for a basic string.
+
+#+begin_src shell :llm t :results file :file embeddings/basic.json
+llm embed -m sentence-transformers/all-MiniLM-L6-v2 -c "Hello world"
+#+end_src
+
+** Create Collection
+Store embeddings in a named collection.
+
+#+begin_src shell :llm t :results file :file embeddings/collection_phrases.txt
+# Store first phrase
+llm embed phrases hello -m sentence-transformers/all-MiniLM-L6-v2 -c "Hello world"
+
+# Store second phrase
+llm embed phrases goodbye -c "Goodbye world"
+
+# View collections
+llm embed-db collections
+#+end_src
+
+* File Processing
+Process multiple files and create embeddings.
+
+** Embed README Files
+Process all README files in the repository.
+
+#+begin_src shell :llm t :results file :file embeddings/readme_embeddings.txt
+llm embed-multi readmes \
+  --model sentence-transformers/all-MiniLM-L6-v2 \
+  --files . '**/README.md'
+#+end_src
+
+** Search Similar Content
+Find similar content in our embedded documents.
+
+#+begin_src shell :llm t :results file :file embeddings/similar_results.txt
+llm similar readmes -c "python implementation"
+#+end_src
+
+* Clustering Examples
+Demonstrate clustering capabilities with embeddings.
+
+** Set Up Clustering
+First, install the clustering plugin.
+
+#+begin_src shell :llm t :results silent
+llm install llm-cluster
+#+end_src
+
+** Process Repository Issues
+Get and embed GitHub issues.
+
+#+begin_src shell :llm t :results file :file embeddings/issues.txt
+curl -s "https://api.github.com/repos/defrecord/llm-lab/issues" | \
+  jq '[.[] | {id: .id, title: .title}]' | \
+  llm embed-multi llm-lab-issues - \
+    --database data/embeddings/issues.db \
+    --model sentence-transformers/all-MiniLM-L6-v2 \
+    --store
+
+# Run clustering analysis
+llm cluster llm-lab-issues --database data/embeddings/issues.db 5 --summary
+#+end_src
+
+* Python Integration
+Example of using embeddings in Python code.
+
+#+begin_src python :llm t :tangle embeddings/example.py
+#!/usr/bin/env python3
+import llm
+
+def embed_text():
+    """Example of embedding text with Python."""
+    model = llm.get_embedding_model("sentence-transformers/all-MiniLM-L6-v2")
+    vector = model.embed("This is text to embed")
+    print(f"Embedding vector: {vector[:5]}...")  # Show first 5 elements
+
+def work_with_collections():
+    """Example of working with collections."""
+    collection = llm.Collection("entries", 
+                              model_id="sentence-transformers/all-MiniLM-L6-v2")
+    
+    # Store items with metadata
+    collection.embed_multi(
+        [
+            ("code", "Python implementation details"),
+            ("docs", "Documentation and examples"),
+            ("test", "Test suite and coverage"),
+        ],
+        store=True,
+    )
+    
+    # Find similar items
+    results = collection.similar("implementation guide")
+    for result in results:
+        print(f"Match: {result.id} - Score: {result.score}")
+
+if __name__ == "__main__":
+    embed_text()
+    work_with_collections()
+#+end_src
+
+* Advanced Examples
+
+** JSON Processing
+Process embedding output as JSON.
+
+#+begin_src shell :llm t :results file :file embeddings/advanced/vector_length.txt
+llm embed -m sentence-transformers/all-MiniLM-L6-v2 -c "Advanced example" | \
+  jq -r '.embedding | length'
+#+end_src
+
+** Clustering Analysis
+Run clustering on a collection.
+
+#+begin_src shell :llm t :results file :file embeddings/advanced/clusters.txt
+llm cluster entries --database data/embeddings/vector.db 3 --summary
+#+end_src
+
+** Export Data
+Export embeddings for external use.
+
+#+begin_src shell :llm t :results file :file embeddings/advanced/export.json
+llm embed-db export entries
+#+end_src
+
+* Implementation Notes
+- All outputs are stored in data/embeddings/
+- Using sentence-transformers/all-MiniLM-L6-v2 for local embeddings
+- Python examples are tangled to data/embeddings/
+- Clustering requires the llm-cluster plugin

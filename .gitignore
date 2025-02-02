@@ -19,8 +19,10 @@ data/
 .\#*
 
 # Project specific
-src/compare/
-src/metrics/README.sh
 README.shell
 README.sh
 codebase_review_*
+examples/*.db
+examples/*.txt
+examples/*.md
+examples/*.json

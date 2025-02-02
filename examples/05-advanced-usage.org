@@ -1,0 +1,52 @@
+#+TITLE: LLM Advanced Usage Examples
+#+PROPERTY: header-args :mkdirp yes :results output :exports both
+#+PROPERTY: header-args:sh :dir (concat (projectile-project-root) "data")
+
+* Multi-Agent Design Discussions
+
+This example demonstrates how multiple agents can collaborate on a design task.
+
+** Dialogue Agent - Implementation Strategy
+First, use the dialogue agent to explore implementation approaches.
+
+#+begin_src shell :llm t :results file :file advanced/auth/01-dialogue.md
+llm -m llama3.2 -t dialogue-agent \
+    "Discuss auth system implementation strategy. Consider:
+     - Authentication methods (OAuth, JWT, etc.)
+     - Security requirements
+     - Scalability concerns
+     - User experience"
+#+end_src
+
+** Summary Agent - Decision Documentation
+Then use the summary agent to document the key decisions.
+
+#+begin_src shell :llm t :results file :file advanced/auth/02-summary.md
+llm -m llama3.2 -t summary-agent \
+    "Summarize auth system design decisions and next steps. Include:
+     - Chosen approaches
+     - Implementation priorities
+     - Technical requirements
+     - Action items"
+#+end_src
+
+** Combined Analysis
+Generate a comprehensive report combining both perspectives.
+
+#+begin_src shell :llm t :results file :file advanced/auth/03-report.md
+# Combine dialogue and summary outputs for analysis
+cat data/advanced/auth/01-dialogue.md data/advanced/auth/02-summary.md | \
+llm -m llama3.2 "Create a comprehensive report that:
+1. Synthesizes the discussion and decisions
+2. Identifies key technical requirements
+3. Outlines implementation phases
+4. Highlights potential risks and mitigations
+
+Format with markdown headings and clear sections."
+#+end_src
+
+* Implementation Notes
+- All outputs stored in data/advanced/
+- Using llama3.2 for consistency
+- Each agent's output preserved separately
+- Final report combines perspectives

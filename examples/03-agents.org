@@ -1,0 +1,147 @@
+#+TITLE: Multi-Agent Examples
+#+PROPERTY: header-args :mkdirp yes :results output :exports both
+#+PROPERTY: header-args:sh :dir (concat (projectile-project-root) "data")
+
+* Overview
+Examples demonstrating different agent templates and model behaviors. Each agent has a specific role:
+- Memory Agent: Records and tracks tasks and context
+- Dialogue Agent: Manages interactive discussions
+- Reflection Agent: Analyzes and reviews progress
+- Summary Agent: Synthesizes decisions and actions
+
+* Memory Agent Examples
+
+** Basic Memory Agent (llama3.2)
+Let's start with our default model recording a new task.
+
+#+begin_src shell :llm t :results file :file agents/memory/basic.md
+llm -m llama3.2 -t memory-agent "New task discussed: Implement authentication system"
+#+end_src
+
+** Claude Memory Agent
+See how Claude formats memory entries and handles context.
+
+#+begin_src shell :llm nil :results file :file agents/memory/claude.md
+llm -m "anthropic/claude-3-5-sonnet-20241022" -t memory-agent \
+    "New task discussed: Implement authentication system"
+#+end_src
+
+** CodeLlama Memory Agent
+Compare CodeLlama's structured approach to memory recording.
+
+#+begin_src shell :llm nil :results file :file agents/memory/codellama.md
+llm -m codellama -t memory-agent \
+    "New task discussed: Implement authentication system"
+#+end_src
+
+** DeepSeek Memory Agent
+Examine DeepSeek's memory organization style.
+
+#+begin_src shell :llm nil :results file :file agents/memory/deepseek.md
+llm -m deepseek-r1 -t memory-agent \
+    "New task discussed: Implement authentication system"
+#+end_src
+
+* Dialogue Agent Examples
+
+** Basic Dialogue Agent (llama3.2)
+Start a discussion about system implementation using our default model.
+
+#+begin_src shell :llm t :results file :file agents/dialogue/basic.md
+llm -m llama3.2 -t dialogue-agent \
+    "Let's discuss the authentication system implementation approach"
+#+end_src
+
+** Claude Dialogue Agent
+Notice how Claude structures the conversation flow.
+
+#+begin_src shell :llm nil :results file :file agents/dialogue/claude.md
+llm -m "anthropic/claude-3-5-sonnet-20241022" -t dialogue-agent \
+    "Let's discuss the authentication system implementation approach"
+#+end_src
+
+** CodeLlama Dialogue Agent
+See CodeLlama's technical focus in dialogue.
+
+#+begin_src shell :llm nil :results file :file agents/dialogue/codellama.md
+llm -m codellama -t dialogue-agent \
+    "Let's discuss the authentication system implementation approach"
+#+end_src
+
+* Reflection Agent Examples
+
+** Basic Reflection Agent (llama3.2)
+Analyze a morning design session with our default model.
+
+#+begin_src shell :llm t :results file :file agents/reflection/basic.md
+llm -m llama3.2 -t reflection-agent \
+    "Morning session focused on auth system design choices"
+#+end_src
+
+** DeepSeek Reflection Agent
+Compare DeepSeek's analytical approach.
+
+#+begin_src shell :llm nil :results file :file agents/reflection/deepseek.md
+llm -m deepseek-r1 -t reflection-agent \
+    "Morning session focused on auth system design choices"
+#+end_src
+
+** Claude Reflection Agent
+Examine Claude's structured reflection style.
+
+#+begin_src shell :llm nil :results file :file agents/reflection/claude.md
+llm -m "anthropic/claude-3-5-sonnet-20241022" -t reflection-agent \
+    "Morning session focused on auth system design choices"
+#+end_src
+
+* Summary Agent Examples
+
+** Basic Summary Agent (llama3.2)
+Document Makefile patterns with our default model.
+
+#+begin_src shell :llm t :results file :file agents/summary/makefiles.md
+llm -m llama3.2 -t summary-agent \
+    "Show key patterns in creating and maintaining Makefiles"
+#+end_src
+
+** Claude Summary Agent
+See how Claude structures action items and decisions.
+
+#+begin_src shell :llm nil :results file :file agents/summary/claude.md
+llm -m "anthropic/claude-3-5-sonnet-20241022" -t summary-agent \
+    "Document action items from our auth system design review"
+#+end_src
+
+* Complete Workflow Example
+
+This example demonstrates all agents working together on a single task.
+Note that we use llama3.2 for consistency in automated execution.
+
+#+begin_src shell :llm t :results file :file agents/workflow/auth-system.md
+# Step 1: Memory agent records the task
+llm -m llama3.2 -t memory-agent "New auth system design task" \
+    > data/agents/workflow/1-memory.md
+
+# Step 2: Dialogue agent discusses approach
+llm -m llama3.2 -t dialogue-agent "Discuss auth system implementation strategy" \
+    > data/agents/workflow/2-dialogue.md
+
+# Step 3: Reflection agent analyzes session
+llm -m llama3.2 -t reflection-agent "Review morning auth system design session" \
+    > data/agents/workflow/3-reflection.md
+
+# Step 4: Summary agent documents decisions
+llm -m llama3.2 -t summary-agent "Summarize auth system design decisions and next steps" \
+    > data/agents/workflow/4-summary.md
+
+# Combine all outputs for complete view
+cat data/agents/workflow/*.md
+#+end_src
+
+* Implementation Notes
+
+- Basic examples use llama3.2 and are marked with :llm t for automated execution
+- Model comparison examples use :llm nil as they're for manual exploration
+- All outputs are organized under data/agents/ in categorized subdirectories
+- The workflow example demonstrates practical agent collaboration
+- Each agent brings different strengths to the analysis process

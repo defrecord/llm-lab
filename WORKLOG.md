@@ -4,7 +4,7 @@
 
 ### Added
 1. **Session Agent Template**
-   - Created `scripts/create-session-agent-template.sh`
+   - Created `scripts/register-session-agent-template.sh`
    - Implemented YAML-safe formatting
    - Added template validation
    - Fixed path handling and directory structure

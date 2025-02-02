@@ -1,0 +1,109 @@
+#+TITLE: LLM Lab Code Analysis Example
+#+AUTHOR: LLM Lab Team
+#+DATE: 2025-02-02
+#+OPTIONS: toc:2 num:2
+#+PROPERTY: header-args :mkdirp yes :results output :exports both
+#+PROPERTY: header-args:sh :dir (concat (projectile-project-root) "data")
+
+* Available Analysis Templates
+
+First, check available analysis templates.
+
+#+begin_src shell :llm t :results file :file analysis/templates-sin.txt
+llm templates list | grep '^sin'
+#+end_src
+
+* Initial Code Analysis
+:PROPERTIES:
+:CUSTOM_ID: initial-analysis
+:END:
+
+** Framework Selection
+Analyze codebase to recommend suitable framework.
+
+#+begin_src shell :llm t :results file :file analysis/framework-recommendation.md 
+files-to-prompt -c scripts | llm -m llama3.2 -c -t sin \
+  "Analyze this codebase and recommend a suitable framework for summarizing, assessing risk, or strategic analysis."
+#+end_src
+
+* RAID Analysis
+:PROPERTIES:
+:CUSTOM_ID: raid-analysis
+:END:
+
+** Risks and Dependencies
+Run RAID framework analysis.
+
+#+begin_src shell :llm t :results file :file analysis/raid-analysis.md
+files-to-prompt -c scripts | llm -m llama3.2 -c -t memory \
+  "Using the RAID framework, identify and document risks, assumptions, issues, and dependencies in this codebase."
+#+end_src
+
+* Structure Analysis
+:PROPERTIES:
+:CUSTOM_ID: structure-analysis
+:END:
+
+** Project Organization
+Analyze repository structure.
+
+#+begin_src shell :llm t :results file :file analysis/structure-analysis.md
+tree -a -I '.git|.venv|__pycache__|*.pyc' . | llm -m llama3.2 -c -t memory \
+  "Identify the most important files and directories in this codebase and explain their purpose."
+#+end_src
+
+* Documentation Review
+:PROPERTIES:
+:CUSTOM_ID: documentation-review
+:END:
+
+#+begin_src shell :llm t :results file :file analysis/documentation-analysis.md
+find . -type f -name "*.md" -o -name "*.org" | files-to-prompt | llm -m llama3.2 -c -t memory \
+  "Assess the quality and completeness of the documentation, including READMEs, comments, and inline docs."
+#+end_src
+
+* Dependency Analysis
+:PROPERTIES:
+:CUSTOM_ID: dependency-analysis
+:END:
+
+#+begin_src shell :llm t :results file :file analysis/dependencies.md
+files-to-prompt -c scripts | llm -m llama3.2 -c -t memory \
+  "Identify external libraries or tools used in this project and assess their impact on the codebase."
+#+end_src
+
+* Testing Infrastructure
+:PROPERTIES:
+:CUSTOM_ID: testing-infrastructure
+:END:
+
+#+begin_src shell :llm t :results file :file analysis/testing-analysis.md
+files-to-prompt -c tests | llm -m llama3.2 -c -t memory \
+  "Evaluate the presence and quality of tests, CI/CD pipelines, and their coverage in this project."
+#+end_src
+
+* Technical Debt
+:PROPERTIES:
+:CUSTOM_ID: technical-debt
+:END:
+
+#+begin_src shell :llm t :results file :file analysis/tech-debt.md
+find . -type f -name "*.sh" -o -name "*.py" | xargs grep -l "TODO\|FIXME" | files-to-prompt | \
+  llm -m llama3.2 -c -t memory \
+  "Identify any TODOs or FIXMEs in the codebase and suggest actions to address them."
+#+end_src
+
+* Generate Executive Summary
+:PROPERTIES:
+:CUSTOM_ID: summary
+:END:
+
+#+begin_src shell :llm t :results file :file analysis/executive-summary.md
+cat data/analysis/*.md | llm -m llama3.2 "Create an executive summary of the codebase analysis, including:
+1. Key findings
+2. Critical risks and dependencies
+3. Recommended immediate actions
+4. Long-term improvements
+
+Format with markdown headings and bullet points."
+#+end_src

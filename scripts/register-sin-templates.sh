@@ -65,7 +65,7 @@ REVIEW_FILE="codebase_review_${TIMESTAMP}.md"
 echo "# Codebase Review - ${TIMESTAMP}" > "$REVIEW_FILE"
 
 # Step 1: Initialize context with the codebase
-find . -type f -name "*.sh" -o -name "*.py" | files-to-prompt > "$REVIEW_FILE"
+find . -type f -name "*.sh" -o -name "*.py" | uv run files-to-prompt > "$REVIEW_FILE"
 
 # Step 2: Add SIN Analysis section
 echo -e "\n## Structured Insight Navigator (SIN) Analysis" >> "$REVIEW_FILE"

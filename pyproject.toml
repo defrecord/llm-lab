@@ -10,6 +10,7 @@ dependencies = [
     "llm-gemini",
     "llm-bedrock",
     "llm-claude",
+    "files-to-prompt>=0.4",
 ]
 
 [project.optional-dependencies]

@@ -50,32 +50,32 @@ llm --system "Write an Emacs Lisp function following elisp conventions. Include 
 :END:
 
 ** Python Examples
-#+begin_src shell :llm t :results file :file python/binary_search.py
+#+begin_src shell :llm t :results file :file ../data/binary_search.py
 llm -m llama3.2 -t python-function "implement binary search" -x
 #+end_src
 
 ** Rust Examples
-#+begin_src shell :llm t :results file :file rust/quicksort.rs
+#+begin_src shell :llm t :results file :file ../data/quicksort.rs
 llm -m llama3.2 -t rust-function "implement quicksort" -x
 #+end_src
 
 ** Go Examples
-#+begin_src shell :llm t :results file :file go/http_server.go
+#+begin_src shell :llm t :results file :file ../data/http_server.go
 llm -m llama3.2 -t go-function "implement http server" -x
 #+end_src
 
 ** Clojure Examples
-#+begin_src shell :llm t :results file :file clojure/dfs.clj
+#+begin_src shell :llm t :results file :file ../data/dfs.clj
 llm -m llama3.2 -t clojure-function "dfs [graph start]" -x
 #+end_src
 
 ** Scheme Examples
-#+begin_src shell :llm t :results file :file scheme/append.scm
+#+begin_src shell :llm t :results file :file ../data/append.scm
 llm -m llama3.2 -t scheme-function "implement (append (l1 l2))" -x
 #+end_src
 
 ** Elisp Examples
-#+begin_src shell :llm t :results file :file elisp/llm-eco.el
+#+begin_src shell :llm t :results file :file ../data/llm-eco.el
 llm -m llama3.2 -t elisp-function "wrap the llm eco tools from curl+ strip-tags or files-to-prompt, ttok, and llm in a library" -x
 #+end_src
 
@@ -85,7 +85,7 @@ llm -m llama3.2 -t elisp-function "wrap the llm eco tools from curl+ strip-tags 
 :END:
 
 ** Custom Context Example
-#+begin_src shell :llm t :results file :file python/matrix_multiply.py
+#+begin_src shell :llm t :results file :file ../data/matrix_multiply.py
 llm -m llama3.2 -t python-function --system "optimize for memory usage" "implement matrix multiplication" -x
 #+end_src
 

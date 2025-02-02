@@ -85,10 +85,6 @@ llm chat -m llama3.2
 #+end_src
 
 #+RESULTS:
-: Chatting with llama3.2:latest
-: Type 'exit' or 'quit' to exit
-: Type '!multi' to enter multiple lines, then '!end' to finish
-: > 
 
 # Git operations - marked as :llm nil
 #+begin_src shell :llm nil
@@ -96,6 +92,3 @@ git diff --staged | llm -t commit
 #+end_src
 
 #+RESULTS:
-: Hello! I'm here to help you generate a conventional commit message for your Git diff output.
-: 
-: Can you please provide the Git diff output that you'd like me to analyze? You can paste the entire diff, and I'll do my best to identify the type of change and craft a suitable commit message according to the Conventional Commits specification.

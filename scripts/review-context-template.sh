@@ -45,7 +45,7 @@ REVIEW_FILE="context_analysis_${TIMESTAMP}.md"
 echo "# Context Analysis - ${TIMESTAMP}" > "$REVIEW_FILE"
 
 # Step 1: Initialize context with system state
-files-to-prompt -c . | llm -m llama3.2 -c | tee -a "$REVIEW_FILE"
+uv files-to-prompt -c . | llm -c | tee -a "$REVIEW_FILE"
 
 # Step 2: Review system context
 echo "## System Context Analysis" >> "$REVIEW_FILE"

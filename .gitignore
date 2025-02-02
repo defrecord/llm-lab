@@ -27,3 +27,6 @@ examples/*.txt
 examples/*.md
 examples/*.json
 *.tmp
+config/
+.init
+

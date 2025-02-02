@@ -1,0 +1,23 @@
+llm -m llama3.2 -t dialogue-agent \
+    "Discuss auth system implementation strategy. Consider:
+     - Authentication methods (OAuth, JWT, etc.)
+     - Security requirements
+     - Scalability concerns
+     - User experience"
+
+llm -m llama3.2 -t summary-agent \
+    "Summarize auth system design decisions and next steps. Include:
+     - Chosen approaches
+     - Implementation priorities
+     - Technical requirements
+     - Action items"
+
+# Combine dialogue and summary outputs for analysis
+cat data/advanced/auth/01-dialogue.md data/advanced/auth/02-summary.md | \
+llm -m llama3.2 "Create a comprehensive report that:
+1. Synthesizes the discussion and decisions
+2. Identifies key technical requirements
+3. Outlines implementation phases
+4. Highlights potential risks and mitigations
+
+Format with markdown headings and clear sections."

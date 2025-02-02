@@ -1,6 +1,7 @@
 llm
 ttok
 strip-tags
+files-to-prompt
 llm-gemini
 llm-bedrock
 llm-claude

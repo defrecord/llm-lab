@@ -69,10 +69,15 @@
   ;; Tangle settings
   (setq org-babel-default-header-args
         '((:mkdirp . "yes")              ; Create dirs if needed
-          (:tangle . "no")               ; Don't tangle by default
+          (:tangle . "yes")               ; Don't tangle by default
           (:exports . "both")            ; Export code and results
           (:results . "output")))        ; Default to output results
 
+  (setq org-confirm-babel-evaluate nil)
+  (setq make-backup-files nil)
+  (setq org-src-preserve-indentation t)
+
+  
   ;; Key bindings
   (global-set-key (kbd "C-c l") 'org-store-link)
   (global-set-key (kbd "C-c a") 'org-agenda)

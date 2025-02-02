@@ -25,7 +25,7 @@ The project is organized into the following directories:
 
 - ~examples/~ :: Numbered sequence of example workflows
 - ~scripts/~ :: Utility scripts and tools
-- ~templates/~ :: LLM prompt templates
+- ~prompts/~ :: LLM system prompts
 - ~docs/~ :: Documentation and RFCs
 - ~tests/~ :: Test suite
 - ~data/~ :: Working directory for outputs
@@ -36,7 +36,7 @@ The project is organized into the following directories:
 All examples are self-contained in the examples directory:
 
 1. [[file:examples/00-getting-started.org][Getting Started]] - Basic LLM usage and setup
-2. [[file:examples/01-templates.org][Templates]] - Working with system prompts and templates
+2. [[file:examples/01-prompts.org][Prompts]] - Working with system prompts
 3. [[file:examples/02-context-management.org][Context Management]] - Managing conversation state
 4. [[file:examples/03-agents.org][Agents]] - Multi-agent interactions and specialized roles
 5. [[file:examples/04-embeddings.org][Embeddings]] - Working with embeddings and vector search

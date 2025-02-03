@@ -5,7 +5,8 @@ set -euo pipefail
 BASE_URL="https://simonwillison.net/tags/llm/"
 OUTPUT_DIR="data/spider/simonwillison.net"
 PAGES_TO_FETCH=5  # Adjust as needed
-MODEL="llama3.2"  # Default to llama3.2 for cost efficiency
+MODEL="${MODEL:-llama3.2}"  # Default model if not specified
+
 EXAMPLES_DIR="examples"
 
 # Parse command line arguments
@@ -47,7 +48,7 @@ fetch_page() {
     curl -s "${BASE_URL}?page=${page_num}" > "$output_file"
     
     # Extract content using strip-tags and store as markdown
-    strip-tags < "$output_file" > "$parsed_file"
+    uv run strip-tags < "$output_file" > "$parsed_file"
     
     # Extract LLM commands using grep
     echo "Extracting LLM commands from page ${page_num}..."

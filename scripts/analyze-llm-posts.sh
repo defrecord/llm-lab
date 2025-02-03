@@ -8,7 +8,7 @@ PAGES_TO_FETCH=5  # Adjust as needed
 
 # Using llama3.2 by default for consistent, efficient processing
 # Override with --model if needed for specific analysis tasks
-MODEL="llama3.2"  # Default model
+MODEL="${MODEL:-llama3.2}"  # Default model if not specified
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -49,7 +49,7 @@ fetch_page() {
     curl -s "${BASE_URL}?page=${page_num}" > "$output_file"
     
     # Extract content using strip-tags and store as markdown
-    strip-tags < "$output_file" > "$parsed_file"
+    uv run strip-tags < "$output_file" > "$parsed_file"
     
     # Extract LLM commands using grep
     echo "Extracting LLM commands from page ${page_num}..."

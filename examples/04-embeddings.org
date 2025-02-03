@@ -51,7 +51,7 @@ llm embed-multi readmes \
 ** Search Similar Content
 Find similar content in our embedded documents.
 
-#+begin_src shell :llm t :results file :file ../embeddings/similar_results.txt :tangle ../embeddings/similar_results.sh 
+#+begin_src shell :llm t :results file :file ../data/embeddings/similar_results.txt :tangle ../data/embeddings/similar_results.sh 
 llm similar readmes -c "llm commands"
 #+end_src
 

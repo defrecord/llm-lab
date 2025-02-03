@@ -83,7 +83,7 @@ llm cluster llm-lab-issues --database data/embeddings/issues.db 5 --summary
 * Python Integration
 Example of using embeddings in Python code.
 
-#+begin_src python :llm t :tangle embeddings/example.py
+#+begin_src python :llm t :tangle ../data/embeddings/example.py :dir (concat (projectile-project-root) "data")
 #!/usr/bin/env python3
 import llm
 

@@ -34,7 +34,7 @@ files-to-prompt -c scripts | llm -m llama3.2 -c -t sin \
 ** Risks and Dependencies
 Run RAID framework analysis.
 
-#+begin_src shell :llm t :results file :file ../analysis/raid-analysis.md :tangle scripts/raid-analysis.sh
+#+begin_src shell :llm t :results file :file ../analysis/raid-analysis.md :tangle ../data/scripts/raid-analysis.sh :dir (concat (projectile-project-root) "data")
 files-to-prompt -c scripts | llm -m llama3.2 -c -t memory \
   "Using the RAID framework, identify and document risks, assumptions, issues, and dependencies in this codebase."
 #+end_src

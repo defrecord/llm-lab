@@ -1,0 +1,10 @@
+modules = ["bash", "python-3.11"]
+compile = "make"
+run = "make run"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+build = ["sh", "-c", "make"]
+run = ["sh", "-c", "make run"]

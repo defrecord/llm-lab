@@ -9,7 +9,7 @@ mkdir -p "$IMAGE_DIR"
 mkdir -p "$LOG_DIR"
 
 LOG_FILE="$LOG_DIR/download_$(date +%Y%m%d_%H%M%S).log"
-TOTAL_PAGES=10
+TOTAL_PAGES=1
 FORCE_DOWNLOAD=false
 
 # Parse command line arguments

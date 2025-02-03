@@ -172,18 +172,19 @@ for template in "${!additional_sin_templates[@]}"; do
     } > "$llm_template_file"
     echo "Created and registered template: ${template_name}"
 done
-
+BASE="/home/computeruse/.config/io.datasette.llm/templates"
+mkdir -p "$BASE"
 # Add base SIN template to llm
 {
     echo "system: |"
     cat "$SIN_FILE" | sed 's/^/  /'
-} > "/home/computeruse/.config/io.datasette.llm/templates/sin.yaml"
+} > "$BASE/sin.yaml"
 echo "Added base SIN template to llm"
 
 # Add module templates to llm if not already present
 for module in "${modules[@]}"; do
     template_file="$OUTPUT_DIR/${module}-prompt.txt"
-    llm_template_file="/home/computeruse/.config/io.datasette.llm/templates/${module}.yaml"
+    llm_template_file="$BASE/${module}.yaml"
     {
         echo "system: |"
         cat "$template_file" | sed 's/^/  /'

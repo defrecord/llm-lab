@@ -9,7 +9,7 @@
 
 First, check available analysis templates.
 
-#+begin_src shell :llm t :results file :file analysis/templates-sin.txt
+#+begin_src shell :llm t :results file :file ../data/analysis/templates-sin.txt :tangle ../data/analysis/templates-sin.sh :mkdirp t
 llm templates list | grep '^sin'
 #+end_src
 
@@ -47,7 +47,7 @@ files-to-prompt -c scripts | llm -m llama3.2 -c -t memory \
 ** Project Organization
 Analyze repository structure.
 
-#+begin_src shell :llm t :results file :file ../analysis/structure-analysis.md :tangle ../scripts/structure-analysis.sh
+#+begin_src shell :llm t :results file :file ../analysis/structure-analysis.md :tangle ../scripts/structure-analysis.sh :mkdirp t
 tree -a -I '.git|.venv|__pycache__|*.pyc' . | llm -m llama3.2 -c -t memory \
   "Identify the most important files and directories in this codebase and explain their purpose."
 #+end_src
@@ -57,7 +57,7 @@ tree -a -I '.git|.venv|__pycache__|*.pyc' . | llm -m llama3.2 -c -t memory \
 :CUSTOM_ID: documentation-review
 :END:
 
-#+begin_src shell :llm t :results file :file analysis/documentation-analysis.md
+#+begin_src shell :llm t :results file :file ../data/analysis/documentation-analysis.md :tangle ../data/analysis/documentation-analysis.sh :mkdirp t
 find . -type f -name "*.md" -o -name "*.org" | files-to-prompt | llm -m llama3.2 -c -t memory \
   "Assess the quality and completeness of the documentation, including READMEs, comments, and inline docs."
 #+end_src
@@ -67,7 +67,7 @@ find . -type f -name "*.md" -o -name "*.org" | files-to-prompt | llm -m llama3.2
 :CUSTOM_ID: dependency-analysis
 :END:
 
-#+begin_src shell :llm t :results file :file analysis/dependencies.md
+#+begin_src shell :llm t :results file :file ../data/analysis/dependencies.md :tangle ../data/analysis/dependencies.sh :mkdirp t
 files-to-prompt -c scripts | llm -m llama3.2 -c -t memory \
   "Identify external libraries or tools used in this project and assess their impact on the codebase."
 #+end_src
@@ -77,7 +77,7 @@ files-to-prompt -c scripts | llm -m llama3.2 -c -t memory \
 :CUSTOM_ID: testing-infrastructure
 :END:
 
-#+begin_src shell :llm t :results file :file analysis/testing-analysis.md
+#+begin_src shell :llm t :results file :file ../data/analysis/testing-analysis.md :tangle ../data/analysis/testing-analysis.sh :mkdirp t
 files-to-prompt -c tests | llm -m llama3.2 -c -t memory \
   "Evaluate the presence and quality of tests, CI/CD pipelines, and their coverage in this project."
 #+end_src
@@ -87,7 +87,7 @@ files-to-prompt -c tests | llm -m llama3.2 -c -t memory \
 :CUSTOM_ID: technical-debt
 :END:
 
-#+begin_src shell :llm t :results file :file analysis/tech-debt.md
+#+begin_src shell :llm t :results file :file ../data/analysis/tech-debt.md :tangle ../data/analysis/tech-debt.sh :mkdirp t
 find . -type f -name "*.sh" -o -name "*.py" | xargs grep -l "TODO\|FIXME" | files-to-prompt | \
   llm -m llama3.2 -c -t memory \
   "Identify any TODOs or FIXMEs in the codebase and suggest actions to address them."
@@ -98,7 +98,7 @@ find . -type f -name "*.sh" -o -name "*.py" | xargs grep -l "TODO\|FIXME" | file
 :CUSTOM_ID: summary
 :END:
 
-#+begin_src shell :llm t :results file :file analysis/executive-summary.md
+#+begin_src shell :llm t :results file :file ../data/analysis/executive-summary.md :tangle ../data/analysis/executive-summary.sh :mkdirp t
 cat data/analysis/*.md | llm -m llama3.2 "Create an executive summary of the codebase analysis, including:
 1. Key findings
 2. Critical risks and dependencies

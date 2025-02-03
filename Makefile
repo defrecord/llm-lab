@@ -60,6 +60,11 @@ llm-model-default: $(CONFIG_FILE) ## Set default LLM model based on environment
 run: llm-model-default ## Run core LLM commands
 	@./scripts/run-without-emacs.sh
 
+logs: ## Show logs 
+	@llm logs on
+	@llm logs status
+	@llm logs 
+	
 test: ## Run test suite
 	@echo "Running tests..."
 	@uv run pytest tests/
@@ -73,11 +78,15 @@ clean: ## Clean everything and force re-initialization
 	@rm -f $(CONFIG_FILE)
 	@rm -rf $(VENV_DIR) build dist *.egg-info **pycache** .pytest_cache
 
-check-env: scripts/check-env.sh $(CONFIG_FILE) ## Check environment variables
+check-env: scripts/check-env.sh $(CONFIG_FILE) ## Check environment variables (optional check)
 	@echo "Checking environment..."
 	@./scripts/check-env.sh
 	@echo "Model configuration:"
 	@. $(CONFIG_FILE) && echo "Using LLM model: $$LLM_MODEL"
+
+check-set: check-env ./scripts/set-providers.sh  ## Set LLM providers
+	@echo "Setting environment..."
+	@./scripts/set-providers.sh 
 
 .PHONY: plugins-upgrade
 llm-plugins-upgrade:
@@ -88,10 +97,14 @@ emacs: ## Run Emacs
 	@emacs -l .emacs.d/init.el
 
 ORG_FILES := README.org $(wildcard examples/*.org) $(wildcard docs/*.org)
+DATA_DIR = data
+TANGLE_SCRIPT = scripts/tangle.sh
+
 
 tangle: $(ORG_FILES) ## Tangle all org files
 	@echo "Tangling org files..."
-	@./scripts/tangle.sh $(ORG_FILES)
+	@$(TANGLE_SCRIPT) $(ORG_FILES) | tee $(DATA_DIR)/tangle.log
+
 
 docs: tangle ## Generate documentation
 
@@ -105,20 +118,37 @@ layout: ## Show directory purposes and descriptions
 		fi \
 	done
 
+
+# Labs specific
+
+## Advanced template usage 
+
 scripts/register-session-agent-template.sh: prompts/session-agent.md
 
 session-agent: scripts/register-session-agent-template.sh ## Interactively track status
 	@uv run files-to-prompt Makefile README.org examples scripts src | llm -c -t session-agent
 	@$(LLM) chat -c -t session-agent
 
-
 .PHONY: register-templates
 register-templates: ## Register all templates from scripts/register-* files
 	@echo "Registering all templates..."
 	@./scripts/register-templates.sh
 
-data/images: ## Get images for embedding examples
-	@ ./scripts/download-jwalsh-photos.sh
+## Use Flickr images to evaluate embeddings 
+
+IMAGES_DIR = $(DATA_DIR)/images
+DOWNLOAD_SCRIPT = scripts/download-jwalsh-photos.sh
+EMBEDDINGS_ORG = examples/04-embeddings.org
+
+$(IMAGES_DIR): $(DOWNLOAD_SCRIPT)
+				@$(DOWNLOAD_SCRIPT)
+
+$(EMBEDDINGS_ORG): $(IMAGES_DIR) $(TANGLE_SCRIPT)
+		@$(TANGLE_SCRIPT) $(EMBEDDINGS_ORG) | tee $(DATA_DIR)/tangle-embeddings.log
+
+embeddings: $(EMBEDDINGS_ORG) ## Run Embeddings scenarios
+
+## Review all posts to see if the examples are missing anything 
 
 check-coverage: scripts/check-llm-coverage.sh ## Check LLM command coverage in examples
 	@echo "Analyzing LLM command coverage..."
@@ -129,3 +159,34 @@ analyze-posts: scripts/analyze-llm-posts.sh ## Analyze LLM usage in Simon Willis
 	@echo "Analyzing LLM posts from simonwillison.net..."
 	@./scripts/analyze-llm-posts.sh
 	@echo "Analysis complete. Reports available in data/spider/simonwillison.net/"
+
+# SIN Analysis Workflow
+# Input
+SIN_DIR = $(DATA_DIR)/sin
+SIN_INPUT_FILE = $(SIN_DIR)/input.txt
+
+# SIN
+sin: ## Run SIN on chat analysis
+	@mkdir -p $(SIN_DIR)
+	
+# Framework Selection
+SIN_FRAMEWORK_FILE = $(SIN_DIR)/framework.txt
+$(SIN_FRAMEWORK_FILE): $(SIN_INPUT_FILE) sin
+	@# Analyze input and select framework using llm template
+	@llm -t sin-framework $(SIN_INPUT_FILE) | tee >(head -n 1) > $(SIN_FRAMEWORK_FILE)
+
+# Execution Plan
+SIN_EXECUTION_PLAN_FILE = $(SIN_DIR)/execution_plan.txt
+$(SIN_EXECUTION_PLAN_FILE): $(SIN_FRAMEWORK_FILE)
+	@# Generate execution plan using llm template
+	@llm -t sin-execution-plan $(SIN_FRAMEWORK_FILE) | tee >(head -n 3) > $(SIN_EXECUTION_PLAN_FILE)
+
+# Execute and Document
+SIN_ANALYSIS_OUTPUT = $(SIN_DIR)/sin_analysis.txt
+$(SIN_ANALYSIS_OUTPUT): $(SIN_EXECUTION_PLAN_FILE)
+	@# Execute the plan and document outcomes using llm template
+	@llm -t sin-execute-and-document $(SIN_EXECUTION_PLAN_FILE) > $(SIN_ANALYSIS_OUTPUT)
+
+# SIN Analysis Target
+sin_analysis: $(SIN_ANALYSIS_OUTPUT)
+	@echo "SIN analysis complete. Results saved to $(SIN_ANALYSIS_OUTPUT)"

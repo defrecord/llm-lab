@@ -1,0 +1,5 @@
+# Common Org-mode headers for LLM-Lab examples
+#+PROPERTY: header-args :mkdirp yes :results output :exports both
+#+PROPERTY: header-args:shell :dir (concat default-directory "../data")
+#+PROPERTY: header-args:sh :dir (concat default-directory "../data")
+#+OPTIONS: ^:nil

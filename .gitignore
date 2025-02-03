@@ -30,3 +30,5 @@ examples/*.json
 config/
 .init
 
+data/*
+/examples/*.shell

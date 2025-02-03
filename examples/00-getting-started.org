@@ -1,6 +1,5 @@
 #+TITLE: LLM Command Examples
-#+PROPERTY: header-args :mkdirp yes :results output :exports both
-#+PROPERTY: header-args:sh :dir (concat (projectile-project-root) "data")
+#+SETUPFILE: ./common-headers.org
 
 * Initial Setup
 First, ensure we have a default model set.

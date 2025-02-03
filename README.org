@@ -51,6 +51,14 @@ All examples are self-contained in the examples directory:
 3. Run ~make check-env~ to verify setup
 4. See examples directory for usage patterns
 
+** Plugins
+
+#+BEGIN_SRC sh :results output:exports both:tangle yes :tangle data/llm-install-plugins :mkdirp t
+uv run llm install --upgrade llm-anthropic llm-cluster llm-sentence-transformers llm-ollama llm-gemini
+llm sentence-transformers register all-MiniLM-L6-v2
+uv run llm plugins | jq -r '.[]|.name'
+#+END_SRC
+
 ** Available Tools
 - ~make check-coverage~ :: Analyze command coverage
 - ~make analyze-posts~ :: Compare with reference implementations

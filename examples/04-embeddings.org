@@ -8,7 +8,7 @@ First, ensure we have the necessary embedding models installed.
 ** Register Embedding Model
 We'll use the MiniLM model for local embeddings.
 
-#+begin_src shell :llm t :results silent
+#+begin_src shell :llm t :results silent :tangle ../data/llm-install.sh :mkdirp t
 llm sentence-transformers register all-MiniLM-L6-v2
 #+end_src
 
@@ -18,15 +18,15 @@ Let's start with some simple embedding examples.
 ** Generate Single Embedding
 Create an embedding for a basic string.
 
-#+begin_src shell :llm t :results file :file embeddings/basic.json
+#+begin_src shell :llm t :results file :file ../data/embeddings/basic.json :tangle ../data/embeddings/basic.sh :mkdirp t 
 llm embed -m sentence-transformers/all-MiniLM-L6-v2 -c "Hello world"
 #+end_src
 
 ** Create Collection
 Store embeddings in a named collection.
 
-#+begin_src shell :llm t :results file :file embeddings/collection_phrases.txt
-# Store first phrase
+#+begin_src shell :llm t :results file :file ../data/embeddings/collection_phrases.txt :tangle ../data/embeddings/collection_phrases.sh :mkdirp t
+ # Store first phrase
 llm embed phrases hello -m sentence-transformers/all-MiniLM-L6-v2 -c "Hello world"
 
 # Store second phrase
@@ -42,17 +42,17 @@ Process multiple files and create embeddings.
 ** Embed README Files
 Process all README files in the repository.
 
-#+begin_src shell :llm t :results file :file embeddings/readme_embeddings.txt
+#+begin_src shell :llm t :results file :file ../data/embeddings/readme_embeddings.txt :tangle ../data/embeddings/readme_embeddings.sh :mkdirp t
 llm embed-multi readmes \
   --model sentence-transformers/all-MiniLM-L6-v2 \
-  --files . '**/README.md'
+  --files . '**/*.org'
 #+end_src
 
 ** Search Similar Content
 Find similar content in our embedded documents.
 
-#+begin_src shell :llm t :results file :file embeddings/similar_results.txt
-llm similar readmes -c "python implementation"
+#+begin_src shell :llm t :results file :file ../embeddings/similar_results.txt :tangle ../embeddings/similar_results.sh 
+llm similar readmes -c "llm commands"
 #+end_src
 
 * Clustering Examples
@@ -61,14 +61,14 @@ Demonstrate clustering capabilities with embeddings.
 ** Set Up Clustering
 First, install the clustering plugin.
 
-#+begin_src shell :llm t :results silent
+#+begin_src shell :llm t :results silent :tangle ../data/llm-install-cluster.sh :mkdirp t
 llm install llm-cluster
 #+end_src
 
 ** Process Repository Issues
 Get and embed GitHub issues.
 
-#+begin_src shell :llm t :results file :file embeddings/issues.txt
+#+begin_src shell :llm t :results file :file ../data/embeddings/issues.txt :tangle ../data/embeddings/issues.sh :mkdirp t 
 curl -s "https://api.github.com/repos/defrecord/llm-lab/issues" | \
   jq '[.[] | {id: .id, title: .title}]' | \
   llm embed-multi llm-lab-issues - \
@@ -123,22 +123,22 @@ if __name__ == "__main__":
 ** JSON Processing
 Process embedding output as JSON.
 
-#+begin_src shell :llm t :results file :file embeddings/advanced/vector_length.txt
-llm embed -m sentence-transformers/all-MiniLM-L6-v2 -c "Advanced example" | \
+#+begin_src shell :llm t :results file :file ../data/embeddings/advanced/vector_length.txt :tangle ../data/embeddings/advanced/vector_length :mkdirp t
+ llm embed -m sentence-transformers/all-MiniLM-L6-v2 -c "Advanced example" | \
   jq -r '.embedding | length'
 #+end_src
 
 ** Clustering Analysis
 Run clustering on a collection.
 
-#+begin_src shell :llm t :results file :file embeddings/advanced/clusters.txt
+#+begin_src shell :llm t :results file :file ../data/embeddings/advanced/clusters.txt :tangle ../data/embeddings/advanced/clusters.sh :mkdirp t 
 llm cluster entries --database data/embeddings/vector.db 3 --summary
 #+end_src
 
 ** Export Data
 Export embeddings for external use.
 
-#+begin_src shell :llm t :results file :file embeddings/advanced/export.json
+#+begin_src shell :llm t :results file :file ../data/embeddings/advanced/export.json :tangle ../data/embeddings/advanced/export.sh
 llm embed-db export entries
 #+end_src
 

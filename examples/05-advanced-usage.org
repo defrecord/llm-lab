@@ -9,7 +9,7 @@ This example demonstrates how multiple agents can collaborate on a design task.
 ** Dialogue Agent - Implementation Strategy
 First, use the dialogue agent to explore implementation approaches.
 
-#+begin_src shell :llm t :results file :file advanced/auth/01-dialogue.md
+#+begin_src shell :llm t :results file :file ../data/advanced/auth/01-dialogue.md :tangle ../data/advanced/auth/01-dialogue.sh :mkdirp t
 llm -m llama3.2 -t dialogue-agent \
     "Discuss auth system implementation strategy. Consider:
      - Authentication methods (OAuth, JWT, etc.)
@@ -18,10 +18,13 @@ llm -m llama3.2 -t dialogue-agent \
      - User experience"
 #+end_src
 
+#+RESULTS:
+[[file:../data/advanced/auth/01-dialogue.md]]
+
 ** Summary Agent - Decision Documentation
 Then use the summary agent to document the key decisions.
 
-#+begin_src shell :llm t :results file :file advanced/auth/02-summary.md
+#+begin_src shell :llm t :results file :file ../data/advanced/auth/02-summary.md :tangle ../data/advanced/auth/02-summary.sh :mkdirp t
 llm -m llama3.2 -t summary-agent \
     "Summarize auth system design decisions and next steps. Include:
      - Chosen approaches
@@ -30,10 +33,13 @@ llm -m llama3.2 -t summary-agent \
      - Action items"
 #+end_src
 
+#+RESULTS:
+[[file:../data/advanced/auth/02-summary.md]]
+
 ** Combined Analysis
 Generate a comprehensive report combining both perspectives.
 
-#+begin_src shell :llm t :results file :file advanced/auth/03-report.md
+#+begin_src shell :llm t :results file :file ../data/advanced/auth/03-report.md :tangle ../data/advanced/auth/03-report.sh :mkdirp t
 # Combine dialogue and summary outputs for analysis
 cat data/advanced/auth/01-dialogue.md data/advanced/auth/02-summary.md | \
 llm -m llama3.2 "Create a comprehensive report that:
@@ -44,6 +50,9 @@ llm -m llama3.2 "Create a comprehensive report that:
 
 Format with markdown headings and clear sections."
 #+end_src
+
+#+RESULTS:
+[[file:../data/advanced/auth/03-report.md]]
 
 * Implementation Notes
 - All outputs stored in data/advanced/

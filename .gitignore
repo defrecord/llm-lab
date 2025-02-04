@@ -1,75 +1,49 @@
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
 *.so
 .Python
 .venv/
 .uv/
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
-*.egg
 
-# Environment and Config
-.env
-.envrc
-.direnv/
-.env.local
-.env.*.local
-config/
-.init
-
-# Data and Logs
-data/
-!data/.gitkeep
-.llm.db
-*.log
-logs/
-*.sqlite
-*.db
-
-# Editor and IDE
+# Editors
 *~
 \#*\#
 .\#*
 .idea/
 .vscode/
 *.swp
-*.swo
 .DS_Store
 
-# Project specific
-*.tmp
-tangle.log
-*.md.tmp
-data/sanity/*
-!data/sanity/.gitkeep
+# Environment
+.env
+.envrc
+.direnv/
+config/
 
-# Build markers
+# Data & Logs
+data/
+!data/.gitkeep
+.llm.db
+*.log
+*.sqlite
+*.db
+
+# Build
 .init
 .build
 .installed
 
-# Model and embedding files
-*.pt
-*.bin
-*.onnx
-*.safetensors
-embeddings/
-
-# Keep specific org and documentation files
+# Keep docs
 !*.org
 !docs/*.md
 !examples/*.org
+
+.#*
+*.tmp
+codebase_review_*.md
+language-templates.org
+tmp.*

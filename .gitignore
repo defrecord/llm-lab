@@ -1,34 +1,75 @@
 # Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 .venv/
-**/__pycache__/
-*.pyc
 .uv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Environment
+# Environment and Config
 .env
 .envrc
 .direnv/
-
-# Data
-.llm.db
-data/
-
-# Editor files 
-*~
-\#*\#
-.\#*
-
-# Project specific
-README.shell
-README.sh
-codebase_review_*
-examples/*.db
-examples/*.txt
-examples/*.md
-examples/*.json
-*.tmp
+.env.local
+.env.*.local
 config/
 .init
 
-data/*
-/examples/*.shell
+# Data and Logs
+data/
+!data/.gitkeep
+.llm.db
+*.log
+logs/
+*.sqlite
+*.db
+
+# Editor and IDE
+*~
+\#*\#
+.\#*
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Project specific
+*.tmp
+tangle.log
+*.md.tmp
+data/sanity/*
+!data/sanity/.gitkeep
+
+# Build markers
+.init
+.build
+.installed
+
+# Model and embedding files
+*.pt
+*.bin
+*.onnx
+*.safetensors
+embeddings/
+
+# Keep specific org and documentation files
+!*.org
+!docs/*.md
+!examples/*.org

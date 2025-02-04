@@ -1,0 +1,106 @@
+#+TITLE: Photo Embeddings and Semantic Search
+#+SETUPFILE: ./common-headers.org
+
+* Introduction
+This guide demonstrates using embeddings for semantic photo search.
+
+* Setup
+First, ensure we have the required model and directories.
+
+#+begin_src shell :llm t :results file :file ../data/photo-setup.txt :tangle ../data/photo-setup.sh
+# Register the model
+llm sentence-transformers register all-MiniLM-L6-v2
+
+# Verify directories
+ls -la ../data/images/jwalsh_* 2>/dev/null || echo "Photo directory not found"
+ls -la ../data/semantic-photos 2>/dev/null || echo "Semantic photos directory not found"
+#+end_src
+
+#+RESULTS:
+[[file:photo-setup.txt]]
+
+* Photo Semantics Demo
+Run the complete photo semantics demo script.
+
+#+begin_src shell :llm t :results file :file ../data/photo-demo.txt :tangle ../data/photo-demo.sh
+../scripts/photo-semantics.sh
+#+end_src
+
+#+RESULTS:
+[[file:photo-demo.txt]]
+
+* Semantic Search Examples
+Test specific semantic searches.
+
+#+begin_src shell :llm t :results file :file ../data/photo-search.txt :tangle ../data/photo-search.sh
+# Food-related searches
+llm similar photo-semantics -c "japanese cuisine and sushi"
+llm similar photo-semantics -c "pasta dishes with vegetables"
+
+# Urban scenes
+llm similar photo-semantics -c "city waterfront or harbor"
+
+# Documentation and UI
+llm similar photo-semantics -c "technical documentation or user interface"
+
+# Lifestyle
+llm similar photo-semantics -c "coffee shop and reading"
+#+end_src
+
+#+RESULTS:
+[[file:photo-search.txt]]
+
+* Analyzing Results
+Review embedding effectiveness.
+
+#+begin_src shell :llm t :results file :file ../data/photo-analysis.txt :tangle ../data/photo-analysis.sh
+# Check embedding collection info
+llm collections list | grep photo-semantics
+
+# Get embedding statistics
+llm similar photo-semantics --info
+
+# Check individual photo embeddings
+for photo in ../data/semantic-photos/*.jpg; do
+    echo "Analyzing: $(basename $photo)"
+    llm similar photo-semantics -f "$photo" -n 2
+    echo "---"
+done
+#+end_src
+
+#+RESULTS:
+[[file:photo-analysis.txt]]
+
+* Advanced Usage
+Example of more complex queries.
+
+#+begin_src shell :llm t :results file :file ../data/photo-advanced.txt :tangle ../data/photo-advanced.sh
+# Composite queries
+llm similar photo-semantics -c "food photography with natural lighting"
+llm similar photo-semantics -c "modern urban architecture near water"
+llm similar photo-semantics -c "work environment with technology"
+
+# Negative queries (should find few/no matches)
+llm similar photo-semantics -c "cars and transportation"
+llm similar photo-semantics -c "nature and landscapes"
+llm similar photo-semantics -c "portraits and people"
+#+end_src
+
+#+RESULTS:
+[[file:photo-advanced.txt]]
+
+* Notes
+- The demo uses the all-MiniLM-L6-v2 model for embeddings
+- Photos are semantically renamed for better organization
+- Results can vary based on the specific photos available
+- Consider experimenting with different embedding models
+
+* Interactive Examples
+Note: These examples require user interaction and are not suitable for automated execution.
+
+#+begin_src shell :llm nil
+# Interactive photo analysis
+llm chat "Analyze this photo" --file ../data/semantic-photos/coffee_and_book.jpg
+#+end_src
+
+#+RESULTS:

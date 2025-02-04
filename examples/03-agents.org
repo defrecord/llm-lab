@@ -1,5 +1,5 @@
 #+TITLE: Multi-Agent Examples
-#+PROPERTY: header-args :mkdirp yes :results output :exports both
+#+PROPERTY: header-args :mkdirp yes :results output :exports both :tangle ../data
 #+PROPERTY: header-args:sh :dir (concat (projectile-project-root) "data")
 
 * Overview

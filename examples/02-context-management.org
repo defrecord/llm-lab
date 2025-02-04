@@ -21,7 +21,7 @@ llm templates list | grep '^sin'
 ** Framework Selection
 Analyze codebase to recommend suitable framework.
 
-#+begin_src shell :llm t :results file :file analysis/framework-recommendation.md :tangle ../data/scripts/framework-recommendation.sh :mkdirp t
+#+begin_src shell :llm t :results file :file ../data/analysis/framework-recommendation.md :tangle ../data/scripts/framework-recommendation.sh :mkdirp t
 files-to-prompt -c scripts | llm -m llama3.2 -c -t sin \
   "Analyze this codebase and recommend a suitable framework for summarizing, assessing risk, or strategic analysis."
 #+end_src
@@ -34,7 +34,7 @@ files-to-prompt -c scripts | llm -m llama3.2 -c -t sin \
 ** Risks and Dependencies
 Run RAID framework analysis.
 
-#+begin_src shell :llm t :results file :file ../analysis/raid-analysis.md :tangle ../data/scripts/raid-analysis.sh :dir (concat (projectile-project-root) "data")
+#+begin_src shell :llm t :results file :file ../data/analysis/raid-analysis.md :tangle ../data/scripts/raid-analysis.sh :dir (concat (projectile-project-root) "data")
 files-to-prompt -c scripts | llm -m llama3.2 -c -t memory \
   "Using the RAID framework, identify and document risks, assumptions, issues, and dependencies in this codebase."
 #+end_src
@@ -47,7 +47,7 @@ files-to-prompt -c scripts | llm -m llama3.2 -c -t memory \
 ** Project Organization
 Analyze repository structure.
 
-#+begin_src shell :llm t :results file :file ../analysis/structure-analysis.md :tangle ../scripts/structure-analysis.sh :mkdirp t
+#+begin_src shell :llm t :results file :file ../data/analysis/structure-analysis.md :tangle ../data/scripts/structure-analysis.sh :mkdirp t
 tree -a -I '.git|.venv|__pycache__|*.pyc' . | llm -m llama3.2 -c -t memory \
   "Identify the most important files and directories in this codebase and explain their purpose."
 #+end_src

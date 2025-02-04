@@ -36,11 +36,13 @@ The project is organized into the following directories:
 All examples are self-contained in the examples directory:
 
 1. [[file:examples/00-getting-started.org][Getting Started]] - Basic LLM usage and setup
-2. [[file:examples/01-prompts.org][Prompts]] - Working with system prompts
+2. [[file:examples/01-templates.org][Templates]] - Working with system prompts and templates
 3. [[file:examples/02-context-management.org][Context Management]] - Managing conversation state
 4. [[file:examples/03-agents.org][Agents]] - Multi-agent interactions and specialized roles
-5. [[file:examples/04-embeddings.org][Embeddings]] - Working with embeddings and vector search
-6. [[file:examples/05-advanced-usage.org][Advanced Usage]] - Complex workflows and integrations
+5. [[file:examples/04-embeddings-intro.org][Embeddings Introduction]] - Basic embeddings and vector search
+6. [[file:examples/05-photo-embeddings.org][Photo Embeddings]] - Semantic photo search and analysis
+7. [[file:examples/06-advanced-usage.org][Advanced Usage]] - Complex workflows and integrations
+8. [[file:examples/50-ollama-models.org][Ollama Models]] - Testing and evaluating Ollama models
 
 
 * Development

@@ -106,3 +106,43 @@
 - Consider adding automated tests for template validation
 - Look into template versioning system
 - Need to document YAML formatting requirements
+
+## Latest Updates (2025-02-03)
+
+### Added
+1. **Ollama Models Testing Guide**
+   - Created `examples/50-ollama-models.org`
+   - Implemented comprehensive testing framework
+   - Added proxy and logging integration
+   - Created test scripts for various Ollama models
+   - Added performance metrics collection
+
+2. **Testing Framework Components**
+   - Basic completion testing
+   - Code generation comparisons
+   - Response time analysis
+   - Error handling examples
+   - Proxy and LLM log analysis
+
+### Issues and Resolutions
+1. **Model Testing**
+   - Issue: Missing UV tool for model listing
+   - Resolution: Added placeholder structure for model list
+   - TODO: Update with actual model list once UV is working
+
+2. **Log Integration**
+   - Issue: Proxy log path uncertainty
+   - Resolution: Added conditional checks for log file existence
+   - Added fallback messages for missing logs
+
+### Pending
+1. **Model Validation**
+   - Need to validate all Ollama model names
+   - Add specific token usage examples
+   - Add more complex prompt examples
+   - Add batch processing examples
+
+2. **Documentation**
+   - Add performance benchmarking results
+   - Document proxy configuration requirements
+   - Add troubleshooting examples

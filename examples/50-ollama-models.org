@@ -1,0 +1,168 @@
+#+TITLE: Ollama Models Testing and Logging [WIP]
+#+SETUPFILE: ./common-headers.org
+
+# STATUS: Work in Progress
+# Last Updated: 2025-02-03
+# TODO:
+# - Validate all model names once UV is working
+# - Add specific token usage examples
+# - Add more complex prompt examples
+# - Add batch processing examples
+
+* Introduction
+This guide focuses on testing Ollama models with comprehensive logging and proxy monitoring.
+
+* Setup and Configuration
+First, let's ensure we have our proxy configuration set up correctly.
+
+#+begin_src shell :llm t :results file :file ../data/proxy-config.txt :tangle ../data/proxy-config.sh
+echo $HTTP_PROXY
+echo $HTTPS_PROXY
+#+end_src
+
+#+RESULTS:
+[[file:proxy-config.txt]]
+
+* Available Ollama Models
+List all available Ollama models excluding custom ones.
+
+#+begin_src shell :llm t :results file :file ../data/ollama-models.txt :tangle ../data/ollama-models.sh
+llm models list | grep ^Ollama | grep -v jwalsh | grep -v legal-specialist | grep -v french-translator
+#+end_src
+
+#+RESULTS:
+[[file:ollama-models.txt]]
+
+* Model Testing Framework
+
+** Basic Completion Test
+Test basic completion with different Ollama models.
+
+#+begin_src shell :llm t :results file :file ../data/ollama-basic.txt :tangle ../data/ollama-basic.sh
+for model in ollama/llama2 ollama/mistral ollama/codellama; do
+    echo "Testing $model..."
+    echo "-------------------"
+    llm -m $model "Write a simple function to calculate fibonacci numbers" 2>&1
+    echo "\n"
+done
+#+end_src
+
+#+RESULTS:
+[[file:ollama-basic.txt]]
+
+** Code Generation Test
+Compare code generation capabilities.
+
+#+begin_src shell :llm t :results file :file ../data/ollama-code.txt :tangle ../data/ollama-code.sh
+for model in ollama/codellama ollama/llama2; do
+    echo "Testing $model for code generation..."
+    echo "------------------------------------"
+    llm -m $model "Write a Python function that implements a binary search tree insertion" 2>&1
+    echo "\n"
+done
+#+end_src
+
+#+RESULTS:
+[[file:ollama-code.txt]]
+
+** Response Time Analysis
+Measure and compare response times.
+
+#+begin_src shell :llm t :results file :file ../data/ollama-timing.txt :tangle ../data/ollama-timing.sh
+for model in ollama/llama2 ollama/mistral; do
+    echo "Testing response time for $model..."
+    time llm -m $model "What is 2+2?" 2>&1
+    echo "\n"
+done
+#+end_src
+
+#+RESULTS:
+[[file:ollama-timing.txt]]
+
+* Log Analysis
+
+** Proxy Logs
+Check proxy interaction logs.
+
+#+begin_src shell :llm t :results file :file ../data/proxy-logs.txt :tangle ../data/proxy-logs.sh
+if [ -f "/var/log/proxy/access.log" ]; then
+    grep "ollama" /var/log/proxy/access.log | tail -n 20
+else
+    echo "No proxy logs found at expected location"
+fi
+#+end_src
+
+#+RESULTS:
+[[file:proxy-logs.txt]]
+
+** LLM Command Logs
+Analyze LLM command history specific to Ollama models.
+
+#+begin_src shell :llm t :results file :file ../data/ollama-logs.txt :tangle ../data/ollama-logs.sh
+llm logs --json | jq -r '.[] | select(.model | startswith("ollama/")) | {model: .model, prompt_tokens: .prompt_tokens, completion_tokens: .completion_tokens, created: .created}' | head -n 20
+#+end_src
+
+#+RESULTS:
+[[file:ollama-logs.txt]]
+
+** Performance Metrics
+Generate performance statistics for Ollama models.
+
+#+begin_src shell :llm t :results file :file ../data/ollama-metrics.txt :tangle ../data/ollama-metrics.sh
+llm logs --json | jq -r '.[] | select(.model | startswith("ollama/")) | .model' | sort | uniq -c | sort -rn
+#+end_src
+
+#+RESULTS:
+[[file:ollama-metrics.txt]]
+
+* Error Handling and Recovery
+Example of handling common Ollama model errors.
+
+#+begin_src shell :llm t :results file :file ../data/ollama-errors.txt :tangle ../data/ollama-errors.sh
+# Test with invalid model name
+llm -m ollama/nonexistent "Test prompt" 2>&1 || echo "Error handled successfully"
+
+# Test with empty prompt
+llm -m ollama/llama2 "" 2>&1 || echo "Empty prompt handled successfully"
+
+# Test with very long prompt
+llm -m ollama/llama2 "$(yes 'test' | head -n 1000)" 2>&1 || echo "Long prompt handled successfully"
+#+end_src
+
+#+RESULTS:
+[[file:ollama-errors.txt]]
+
+* Interactive Examples
+Note: These examples require user interaction and are not suitable for automated execution.
+
+# Interactive chat session - marked as :llm nil
+#+begin_src shell :llm nil
+llm chat -m ollama/llama2
+#+end_src
+
+#+RESULTS:
+
+* Notes on Usage
+- Always check proxy configuration before running tests
+- Monitor system resources during model execution
+- Keep track of token usage for each model
+- Consider rate limiting for bulk tests
+- Review logs regularly for performance analysis
+
+* Troubleshooting Guide
+Common issues and their solutions:
+
+1. Proxy Connection Issues:
+   - Check HTTP_PROXY and HTTPS_PROXY settings
+   - Verify proxy server is running
+   - Check network connectivity
+
+2. Model Loading Issues:
+   - Verify model is properly installed
+   - Check system resources
+   - Review model compatibility
+
+3. Performance Issues:
+   - Monitor system load
+   - Check available memory
+   - Consider reducing batch size or concurrent requests

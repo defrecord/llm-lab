@@ -138,6 +138,17 @@
 - Core issue: Incomplete proxy/certificate configuration for Python package management under mitmproxy
 - Solution: Proper certificate path specification and native TLS handling enablement
 
+### Script Additions
+1. **Photo Semantics Script**
+   - Added `scripts/photo-semantics.sh`
+   - Features:
+     - Semantic photo naming and linking
+     - Embeddings creation with sentence-transformers
+     - Semantic search testing
+     - Support for both positive and negative test cases
+   - Includes mapping for 7 initial test photos
+   - Uses all-MiniLM-L6-v2 model for embeddings
+
 ### Added
 1. **Ollama Models Testing Guide**
    - Created `examples/50-ollama-models.org`

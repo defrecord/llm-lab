@@ -1,5 +1,14 @@
 # Common Org-mode headers for LLM-Lab examples
-#+PROPERTY: header-args :mkdirp yes :results output :exports both
-#+PROPERTY: header-args:shell :dir (concat default-directory "../data")
-#+PROPERTY: header-args:sh :dir (concat default-directory "../data")
+#+PROPERTY: header-args :mkdirp yes :results output :exports both 
+#+PROPERTY: header-args:shell :dir "../data" :tangle "../data/shell/%(file-name-base)s.sh"
+#+PROPERTY: header-args:sh :dir "../data" :tangle "../data/shell/%(file-name-base)s.sh"
+#+PROPERTY: header-args:python :dir "../data" :tangle "../data/python/%(file-name-base)s.py"
 #+OPTIONS: ^:nil
+
+# Ensure directories exist for tangled files
+#+begin_src emacs-lisp :results silent :tangle ../data/common-headers.el
+(let ((dirs '("../data/shell" "../data/python")))
+  (dolist (dir dirs)
+    (unless (file-exists-p dir)
+      (make-directory dir t))))
+#+end_src

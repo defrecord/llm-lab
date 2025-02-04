@@ -4,14 +4,14 @@
 * Initial Setup
 First, ensure we have a default model set.
 
-#+begin_src shell :llm t :results silent
+#+begin_src shell :llm t :results silent  :tangle ../data/llm-model-llama3.2.sh
 llm models default llama3.2
 #+end_src
 
 * Basic LLM Usage
 Let's start with a simple prompt example.
 
-#+begin_src shell :llm t :results file :file haiku.md
+#+begin_src shell :llm t :results file :file ../data/haiku.md :tangle  ../data/haiku.sh
 llm "Write a haiku about debugging"
 #+end_src
 
@@ -21,7 +21,7 @@ llm "Write a haiku about debugging"
 * Model Information
 View available models and configuration.
 
-#+begin_src shell :llm t :results file :file models.txt
+#+begin_src shell :llm t :results file :file ../data/models.txt :tangle ../data/models.sh
 llm models list | head -n 10
 #+end_src
 
@@ -31,7 +31,7 @@ llm models list | head -n 10
 * Template Management
 First, list available templates.
 
-#+begin_src shell :llm t :results file :file templates.txt
+#+begin_src shell :llm t :results file :file ../data/templates.txt :tangle ../data/templates.sh
 llm templates list
 #+end_src
 
@@ -40,7 +40,7 @@ llm templates list
 
 Register a basic Python template. Note: We mark this :llm nil as it's a one-time setup.
 
-#+begin_src shell :llm nil
+#+begin_src shell :llm nil :tangle ../data/llm-template-python.sh 
 llm --system "Write Python code" --save python-template
 #+end_src
 
@@ -59,7 +59,7 @@ llm -t session-agent "Reviewing LLM commands" 2>&1 | head -n 15
 * Command History and Logs
 View recent command history.
 
-#+begin_src shell :llm t :results file :file command-history.txt
+#+begin_src shell :llm t :tangle ../data/command-history.sh
 llm logs -c | head -n 10
 #+end_src
 
@@ -68,7 +68,7 @@ llm logs -c | head -n 10
 
 Analyze model usage.
 
-#+begin_src shell :llm t :results file :file model-usage.txt
+#+begin_src shell :llm t :results file :file ../data/model-usage.txt :tangle ../data/model-usage.sh
 llm logs --json | jq -r '.[]|.model' | sort | uniq -c | sort -rn
 #+end_src
 

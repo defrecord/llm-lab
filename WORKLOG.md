@@ -109,6 +109,35 @@
 
 ## Latest Updates (2025-02-03)
 
+### Proxy/Certificate Configuration (09:46-10:20)
+1. **Initial State Assessment**
+   - Identified missing `uv` package manager
+   - Environment using mitmproxy with cert at `~/.anthropic/mitmproxy-ca-cert.pem`
+   - Initial direnv setup with HTTP(S) proxy configuration
+
+2. **Certificate Issues (10:00-10:15)**
+   - Problem: TLS certificate errors during Python package fetching
+   - Root Cause Analysis:
+     - Leading space in REQUESTS_CA_BUNDLE path
+     - Missing SSL_CERT_FILE environment variable
+     - Need for UV_NATIVE_TLS setting
+
+3. **Resolution Implementation (10:15-10:20)**
+   - Added SSL_CERT_FILE environment variable
+   - Enabled UV_NATIVE_TLS=1 setting
+   - Verified certificate permissions (644)
+   - Updated .envrc with corrected paths
+   - Reloaded environment using `direnv allow`
+
+4. **Next Steps**
+   - Run `make clean` for environment reset
+   - Verify fix with `make all`
+   - Monitor package installation for TLS issues
+
+### Notes
+- Core issue: Incomplete proxy/certificate configuration for Python package management under mitmproxy
+- Solution: Proper certificate path specification and native TLS handling enablement
+
 ### Added
 1. **Ollama Models Testing Guide**
    - Created `examples/50-ollama-models.org`

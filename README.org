@@ -43,6 +43,7 @@ All examples are self-contained in the examples directory:
 6. [[file:examples/05-photo-embeddings.org][Photo Embeddings]] - Semantic photo search and analysis
 7. [[file:examples/06-advanced-usage.org][Advanced Usage]] - Complex workflows and integrations
 8. [[file:examples/50-ollama-models.org][Ollama Models]] - Testing and evaluating Ollama models
+9. [[file:examples/99-feature-requests.org][Feature Requests]] - Proposed enhancements and future features
 
 
 * Development
@@ -51,10 +52,34 @@ All examples are self-contained in the examples directory:
 1. Clone the repository
 2. Run ~make init~ to set up the environment
 3. Run ~make check-env~ to verify setup
-4. See examples directory for usage patterns
+4. Run ~make sanity~ for environment validation
+5. See examples directory for usage patterns
 
-** Testing
-See ~tests/~ directory for the test suite and ~examples/~ for functional examples.
+** Testing and Validation
+The project includes comprehensive testing and validation:
+
+*** Core Testing
+- Unit tests in ~tests/~ directory
+- Functional examples in ~examples/~
+- ~make test~ runs the full test suite
+- ~make pytest~ for Python unit tests only
+
+*** Sanity Checks
+The ~make sanity~ target provides comprehensive environment validation:
+- Validates core dependencies
+- Tests initialization process
+- Verifies LLM tool functionality
+- Checks template registration
+- Analyzes logs with multiple LLM models
+See ~scripts/sanity.sh~ for implementation details.
+
+*** Structured Analysis
+The SIN (Structured Insight Navigator) framework provides systematic analysis:
+- ~make sin~ runs the complete analysis pipeline
+- Framework selection based on input context
+- Automated execution plan generation
+- Detailed documentation output
+See ~scripts/register-sin-templates.sh~ for template definitions.
 
 * Metrics
 Performance metrics and telemetry are available through:

@@ -246,3 +246,7 @@ guides: scripts/generate-guides.sh ## [Core] Generate and process documentation 
 verify-guides: scripts/verify-guides.sh ## [Core] Verify guide format and content
         @echo "Verifying guides..."
         @./scripts/verify-guides.sh
+
+analyze-guides: scripts/analyze-guide-responses.sh ## [Core] Analyze guide responses and generate quality report
+        @echo "Analyzing guide responses..."
+        @./scripts/analyze-guide-responses.sh

@@ -1,15 +1,18 @@
-#!/bin/bash
-set -euo pipefail
+#!/usr/bin/env bash
+set -e  # Exit on error
 
-# set the base dir
-BASEDIR=$(dirname "$0")
-# echo "Base dir is $BASEDIR"
-# Loop through all register-template*.sh files in the base directory.
-find "$BASEDIR" -maxdepth 1 -type f -name "register-*.sh" -print0 |
-    while IFS= read -r -d $'\0' script_file; do
-        # Check if the script_file is the current script
-        if [[ "$script_file" != "$0" ]]; then
-            echo "Running: $script_file"
-            "$script_file"
-        fi
+# Get the full path of this script
+SCRIPT_PATH=$(realpath "$0")
+
+echo "Registering all templates..."
+for REGISTER_SCRIPT in $(dirname "$SCRIPT_PATH")/register-*.sh; do
+    # Skip this script itself
+    if [ "$REGISTER_SCRIPT" != "$SCRIPT_PATH" ]; then
+        echo "Running: $REGISTER_SCRIPT"
+        bash "$REGISTER_SCRIPT" || echo "Warning: $REGISTER_SCRIPT failed"
+    fi
 done
+
+echo -e "\nAll template registrations complete!"
+echo -e "\nAvailable templates:"
+llm templates list

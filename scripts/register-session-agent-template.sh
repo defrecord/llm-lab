@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
+set -e  # Exit on error
+
 # Configuration
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 PROMPTS_DIR="${REPO_ROOT}/prompts"
 SESSION_PROMPT="${PROMPTS_DIR}/session-agent.md"
-
-# Debug flag
 DEBUG=0
 
 # Help message
@@ -15,14 +15,12 @@ Register session agent template using llm command.
 By default uses llm session with llama3.2 model.
 Options:
     --debug     Enable debug logging
-    --manual    Use manual YAML template creation instead of llm session
     -h, --help  Show this help message
 EOF
     exit 1
 }
 
 # Parse arguments
-MANUAL_MODE=0
 while [[ $# -gt 0 ]]; do
     case $1 in
         --debug)
@@ -31,7 +29,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         -h|--help)
             usage
-            shift
             ;;
         *)
             echo "Unknown option: $1"
@@ -49,31 +46,28 @@ debug_log() {
 
 # Function to show llm status
 show_llm_status() {
-    debug_log "Current LLM Templates:"
-    llm templates list | head 
-    llm logs on
-    llm logs status 
+    if [ $DEBUG -eq 1 ]; then
+        echo "Current LLM Templates:"
+        llm templates list | head 
+        llm logs on
+        llm logs status 
+    fi
 }
 
 validate_template() {
-    debug_log "Active Templates: $(llm templates list | grep -c '^')"
-    
-    # Run basic calculation test
-    echo "2 + 2" | llm -t session-agent -c 
-    
-    # Get Scheme version
-    echo "Scheme version of above calculation" | llm -t session-agent -c -x
-    
-    # Create data directory and generate shell script
-    mkdir -p data
-    echo "Shell script allowing calc from cli" | llm -t session-agent -c -x | tee data/validate_template_calc.sh
-    
-    # Get a code review of the generated shell script
-    cat data/validate_template_calc.sh | llm -t session-agent -c "Code review this shell script: "
-    llm logs --json -n 0  | jq -r '.[]|.model' | llm -t session-agent -c "Summarize the models used"
+    if [ $DEBUG -eq 1 ]; then
+        debug_log "Running validation tests..."
+        echo "2 + 2" | llm -t session-agent -c 
+        echo "Scheme version of above calculation" | llm -t session-agent -c -x
+        mkdir -p data
+        echo "Shell script allowing calc from cli" | llm -t session-agent -c -x | tee data/validate_template_calc.sh
+        echo "Reviewing generated script..."
+        cat data/validate_template_calc.sh | llm -t session-agent -c "Code review this shell script: "
+        echo "Analyzing model usage..."
+        llm logs --json -n 0 | jq -r '.[]|.model' | llm -t session-agent -c "Summarize the models used"
+    fi
 }
 
-# Function to register template manually (legacy method)
 register_template() {
     local template_dir="${REPO_ROOT}/templates"
     local template_file="${template_dir}/session-agent.yaml"
@@ -81,17 +75,13 @@ register_template() {
     debug_log "Template directory: $template_dir"
     debug_log "Template file: $template_file"
     
-    echo "Registering session agent template manually..."
+    [ $DEBUG -eq 1 ] && echo "Registering session agent template..."
     
-    # Show status before registration
-    debug_log "Status before registration:"
     show_llm_status
     
-    # Create template directory if it doesn't exist
     mkdir -p "$template_dir"
     debug_log "Created/verified template directory"
     
-    # Create template file
     cat > "$template_file" << EOL
 name: session-agent
 model: llama3.2
@@ -101,33 +91,29 @@ $(cat "$SESSION_PROMPT" | sed 's/^/  /')
 EOL
     debug_log "Created template file"
 
-    # Register template with llm
-    debug_log "Registering template with llm..."
-    llm -m llama3.2 -s "$(cat $template_file)" --save session-agent
+    [ $DEBUG -eq 1 ] && echo "Registering with llm..."
+    llm -m llama3.2 -s "$(cat $template_file)" --save session-agent > /dev/null 2>&1
     
-    # Show status after registration
-    debug_log "Status after registration:"
     show_llm_status
 }
 
+# Main execution
 register_template
-echo "Session agent template registration complete!"
 
-# Verify registration
-echo -e "\nVerifying template registration..."
-llm templates list | grep "session-agent" || echo "Warning: Template verification failed"
+[ $DEBUG -eq 1 ] && echo "Session agent template registration complete!"
 
-# Final debug status
-if [ $DEBUG -eq 1 ]; then
-    debug_log "Final template status:"
-    show_llm_status
-    validate_template
+# Verify registration quietly
+if ! llm templates list | grep -q "session-agent"; then
+    echo "Warning: Template verification failed"
+    exit 1
 fi
 
-echo "Use
-  llm chat -t session-agent -c
-to continue the conversation about the calculator.
-Example Chat:
-  Summarize what we did previously and then show a Python calculator with the example test but using named ops like add sub mod div etc
+[ $DEBUG -eq 1 ] && validate_template
 
-"
+# Always show usage hint
+# Final output with easily copyable commands
+echo -e "\nReady! You can run:\n"
+echo "  llm chat -t session-agent -c "
+echo -e "\nExample chat input:\n"
+echo "  Summarize what we did previously or assume '2 + 2' and then show a Python calculator with the example test but using named ops like add sub mod div etc"
+

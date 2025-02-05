@@ -65,20 +65,20 @@ $(INIT_MARKER): $(CONFIG_FILE)
 $(CONFIG_FILE):
 	@mkdir -p config
 	@if [ ! -z "$$http_proxy" ] && curl -s localhost:11434/api/version >/dev/null 2>&1; then \
-	        echo "LLM_MODEL=ollama/deepseek-coder" > $(CONFIG_FILE); \
+	echo "LLM_MODEL=ollama/deepseek-coder" > $(CONFIG_FILE); \
 	else \
-	        echo "LLM_MODEL=gemini-2.0-flash-exp" > $(CONFIG_FILE); \
+	echo "LLM_MODEL=gemini-2.0-flash-exp" > $(CONFIG_FILE); \
 	fi
 
 git-config:
 	@if [ -f config/git.conf ]; then \
-	         echo "Using git config from config/git.conf"; \
-	         . config/git.conf && \
-	         git config user.name "$$GIT_USER" && \
-	         git config user.email "$$GIT_EMAIL" && \
-	         git config --unset commit.gpgsign || true; \
+	echo "Using git config from config/git.conf"; \
+	. config/git.conf && \
+	git config user.name "$$GIT_USER" && \
+	git config user.email "$$GIT_EMAIL" && \
+	git config --unset commit.gpgsign || true; \
 	else \
-	         echo "Using system git config (create config/git.conf to override)"; \
+	echo "Using system git config (create config/git.conf to override)"; \
 	fi
 
 # Configuration targets
@@ -97,31 +97,7 @@ run: llm-model-default ## Run the lab exercises
 
 # Development and testing
 sanity: scripts/sanity.sh ## [Dev] Run comprehensive sanity checks with multi-model analysis
-	@echo "Running sanity checks..."
-	@mkdir -p data/sanity
-	@echo "Testing init..." && make init 2>&1 | tee data/sanity/init.log
-	@echo "Testing check..." && make check 2>&1 | tee data/sanity/check.log
-	@echo "Testing check-set..." && make check-set 2>&1 | tee data/sanity/check-set.log
-	@echo "Testing tangle..." && make tangle 2>&1 | tee data/sanity/tangle.log
-	@echo "Testing run..." && make run 2>&1 | tee data/sanity/run.log
-	@echo "Pre-analyzing logs with Ollama..."
-	@for log in data/sanity/*.log; do \
-	        echo "\nPre-analyzing $${log} with llama2..."; \
-	        llm -m ollama/llama2 "Review this make target output and identify key issues and patterns. Focus on errors, warnings, and potential improvements:" "$${log}" 2>&1 | tee "$${log}.pre_analysis"; \
-	done
-	@echo "Performing detailed analysis with Anthropic Claude..."
-	@for log in data/sanity/*.log; do \
-	        echo "\nAnalyzing $${log}..."; \
-	        llm -m anthropic "Review the make target output and pre-analysis below. Provide specific, actionable recommendations for improving the Makefile target and related configuration. Focus on:\n\
-	        1. Error handling\n\
-	        2. Dependencies\n\
-	        3. Performance\n\
-	        4. User feedback\n\
-	        5. Resource management\n\n\
-	        Make Target Output:\n$$(cat $${log})\n\n\
-	        Llama2 Pre-analysis:\n$$(cat $${log}.pre_analysis)" 2>&1 | tee "$${log}.analysis"; \
-	done
-	@echo "Sanity check complete. See data/sanity/*.log.analysis for full recommendations"
+	@./scripts/sanity.sh
 
 install: ## [Dev] Install package in development mode
 	@echo "Running Python setup..."
@@ -150,18 +126,7 @@ tangle: $(ORG_FILES) ## [Core] Tangle all org files
 	@echo "Tangling org files..."
 	@$(TANGLE_SCRIPT) $(ORG_FILES) | tee $(DATA_DIR)/tangle.log
 
-docs: ## [Core] Process org files with emacs
-	@echo "Processing org files..."
-	@emacs --batch -l .emacs.d/init.el \
-	        --eval "(progn \
-	                (require 'org) \
-	                (setq org-confirm-babel-evaluate nil) \
-	                (mapc (lambda (file) \
-	                        (message \"Processing %s\" file) \
-	                        (find-file file) \
-	                        (org-babel-execute-buffer) \
-	                        (save-buffer)) \
-	                '($(ORG_FILES))))"
+docs: tangle ## [Core] Process org files with emacs (alias for tangle)
 
 layout: scripts/show-layout.sh ## Show directory purposes and descriptions
 	@./scripts/show-layout.sh
@@ -181,10 +146,10 @@ DOWNLOAD_SCRIPT = scripts/download-jwalsh-photos.sh
 EMBEDDINGS_ORG = examples/04-embeddings.org
 
 $(IMAGES_DIR): $(DOWNLOAD_SCRIPT)
-	                           @$(DOWNLOAD_SCRIPT)
+	@$(DOWNLOAD_SCRIPT)
 
 $(EMBEDDINGS_ORG): $(IMAGES_DIR) $(TANGLE_SCRIPT)
-	 @$(TANGLE_SCRIPT) $(EMBEDDINGS_ORG) | tee $(DATA_DIR)/tangle-embeddings.log
+	@$(TANGLE_SCRIPT) $(EMBEDDINGS_ORG) | tee $(DATA_DIR)/tangle-embeddings.log
 
 
 embeddings: $(EMBEDDINGS_ORG) scripts/photo-semantics.sh ## [Advanced] Try vector embeddings with image semantic analysis

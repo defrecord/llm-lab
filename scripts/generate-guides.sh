@@ -52,6 +52,9 @@ process_guides() {
     local processed_dir="$guides_dir/processed"
     mkdir -p "$processed_dir"
     
+    # Ensure initialize-guide.sh is executable
+    chmod +x scripts/initialize-guide.sh
+    
     log "Converting formats..."
     find "$guides_dir" -name "README.org" -type f | while read -r f; do
         base=$(dirname "$f")

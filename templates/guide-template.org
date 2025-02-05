@@ -1,0 +1,72 @@
+#+TITLE: ${tool} Guide
+#+AUTHOR: LLM Lab
+#+DATE: [2025-02-05]
+#+OPTIONS: ^:nil
+#+PROPERTY: header-args:sh :tangle yes
+#+PROPERTY: header-args:python :tangle yes
+#+PROPERTY: header-args :results output :exports both
+
+* Overview
+Tool description and purpose.
+
+* Installation
+:PROPERTIES:
+:header-args:sh: :tangle install-${tool}.sh
+:END:
+
+#+BEGIN_SRC sh
+# Installation commands here
+#+END_SRC
+
+* Configuration
+:PROPERTIES:
+:header-args:sh: :tangle configure-${tool}.sh
+:END:
+
+#+BEGIN_SRC sh
+# Configuration commands here
+#+END_SRC
+
+* Basic Usage
+Example usage patterns.
+
+#+BEGIN_SRC sh
+# Basic usage examples
+#+END_SRC
+
+* Advanced Features
+:PROPERTIES:
+:header-args:python: :tangle advanced_${tool}.py
+:END:
+
+#+BEGIN_SRC python
+# Advanced implementation examples
+#+END_SRC
+
+* Best Practices
+Common patterns and recommended approaches.
+
+#+BEGIN_SRC sh
+# Best practice examples
+#+END_SRC
+
+* Troubleshooting
+Common issues and solutions.
+
+#+BEGIN_SRC sh
+# Troubleshooting commands
+#+END_SRC
+
+* Integration Examples
+:PROPERTIES:
+:header-args:python: :tangle integrate_${tool}.py
+:END:
+
+#+BEGIN_SRC python
+# Integration code examples
+#+END_SRC
+
+* References
+- Documentation links
+- Community resources
+- Related tools

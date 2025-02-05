@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+# Enable logging
+uv run llm logs on
+
+# Set up logging directory
+LOGDIR="logs/guide-generation-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$LOGDIR"
+
+# Progress monitoring function
+monitor_progress() {
+    while true; do
+        echo "=== Progress Report $(date '+%Y-%m-%d %H:%M:%S') ==="
+        echo "Recent logs:"
+        uv run llm logs list --limit 5 | tee -a "$LOGDIR/progress.log"
+        echo "Generated guides:"
+        ls -l examples/.guides/*/README.org 2>/dev/null | wc -l | tee -a "$LOGDIR/progress.log"
+        sleep 60  # Check every minute
+    done
+}
+
+declare -A guides=(
+   [60]="llm"           
+   [61]="kubectl"      
+   [62]="uv"           
+   [63]="git"          
+   [64]="pre-commit"   
+   [65]="hypothesis"   
+   [66]="k6"          
+   [67]="github-actions"
+   [68]="opentelemetry"
+   [69]="dvc"
+   [70]="rfcs"         
+   [71]="adrs"         
+   [72]="distributed"  
+   [73]="consensus"    
+   [74]="profiling"    
+)
+
+# Start progress monitoring in background
+monitor_progress &
+MONITOR_PID=$!
+
+# Trap to ensure we clean up the monitor
+trap 'kill $MONITOR_PID' EXIT
+
+mkdir -p examples/.guides
+
+# Create generic org template
+echo "Creating template $(date '+%Y-%m-%d %H:%M:%S')" | tee -a "$LOGDIR/generation.log"
+uv run llm -m deepseek-r1 --system "Create org-mode documentation template with:
+- Properties for tangling
+- Setup sections for tool
+- Configuration examples
+- Practice exercises
+- Common patterns
+- Best practices
+Output as complete org document." --save org-template --log 2>&1 | tee -a "$LOGDIR/template.log"
+
+echo "Verifying template $(date '+%Y-%m-%d %H:%M:%S')" | tee -a "$LOGDIR/generation.log"
+uv run llm templates show org-template 2>&1 | tee -a "$LOGDIR/template.log"
+
+# Apply template to each guide
+for num in "${!guides[@]}"; do
+   name="${guides[$num]}"
+   dirname="examples/.guides/${num}-${name}"
+   echo "Processing $name (${num}) at $(date '+%Y-%m-%d %H:%M:%S')" | tee -a "$LOGDIR/generation.log"
+   mkdir -p "$dirname"
+   
+   time uv run llm --template org-template -p tool="$name" --log 2>&1 | tee "$LOGDIR/${name}.log" > "${dirname}/README.org"
+   echo "Completed guide for $name at $(date '+%Y-%m-%d %H:%M:%S')" | tee -a "$LOGDIR/generation.log"
+done
+
+# Generate final report
+{
+    echo "=== Final Generation Report ==="
+    echo "Completed at: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "Generated guides:"
+    ls -l examples/.guides/*/README.org
+    echo ""
+    echo "=== Recent LLM Logs ==="
+    uv run llm logs list --limit 10
+} | tee "$LOGDIR/final_report.log"
+
+# Turn off logging
+uv run llm logs off

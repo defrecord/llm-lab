@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+
+# Enable error handling
+set -euo pipefail
+
+# Set up logging directory
+LOGDIR="/tmp/guide-generation-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$LOGDIR"
+
+# Log function
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOGDIR/generation.log"
+}
+
+declare -A guides=(
+   [60]="llm"           
+   [61]="kubectl"      
+   [62]="uv"           
+   [63]="git"          
+   [64]="pre-commit"   
+   [65]="hypothesis"   
+   [66]="k6"          
+   [67]="github-actions"
+   [68]="opentelemetry"
+   [69]="dvc"
+   [70]="rfcs"         
+   [71]="adrs"         
+   [72]="distributed"  
+   [73]="consensus"    
+   [74]="profiling"    
+)
+
+mkdir -p examples/.guides
+
+# Create template with verification
+log "Creating org-mode template..."
+TEMPLATE_CONTENT=$(uv run llm -m deepseek-r1 --system "Create org-mode documentation template with:
+- Properties for tangling
+- Setup sections for tool
+- Configuration examples
+- Practice exercises
+- Common patterns
+- Best practices
+Output as complete org document." 2>&1 | tee "$LOGDIR/template_gen.log")
+
+if [ -z "$TEMPLATE_CONTENT" ]; then
+    log "ERROR: Template generation failed!"
+    exit 1
+fi
+
+echo "$TEMPLATE_CONTENT" > "$LOGDIR/template.org"
+log "Template generated successfully"
+
+# Generate guides with verification
+for num in "${!guides[@]}"; do
+    name="${guides[$num]}"
+    dirname="examples/.guides/${num}-${name}"
+    mkdir -p "$dirname"
+    
+    log "Generating guide for $name..."
+    
+    GUIDE_CONTENT=$(uv run llm -m deepseek-r1 --system "Using $name as the tool, create a comprehensive guide including:
+- Tool overview and purpose
+- Installation and setup
+- Basic usage examples
+- Advanced configurations
+- Best practices
+- Common pitfalls
+- Integration examples
+Output as org-mode document." 2>&1 | tee "$LOGDIR/${name}_gen.log")
+    
+    if [ -z "$GUIDE_CONTENT" ]; then
+        log "ERROR: Guide generation failed for $name!"
+        continue
+    fi
+    
+    echo "$GUIDE_CONTENT" > "${dirname}/README.org"
+    
+    # Verify content was written
+    if [ ! -s "${dirname}/README.org" ]; then
+        log "ERROR: Generated file is empty for $name!"
+        continue
+    fi
+    
+    log "Successfully generated guide for $name"
+    
+    # Brief pause to avoid rate limiting
+    sleep 2
+done
+
+# Generate final report
+{
+    echo "=== Final Generation Report ==="
+    echo "Completed at: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo ""
+    echo "=== Generated Guides ==="
+    for num in "${!guides[@]}"; do
+        name="${guides[$num]}"
+        size=$(wc -l < "examples/.guides/${num}-${name}/README.org" 2>/dev/null || echo "0")
+        echo "${name}: ${size} lines"
+    done
+    echo ""
+    echo "=== Log Location ==="
+    echo "$LOGDIR"
+} | tee "$LOGDIR/final_report.log"

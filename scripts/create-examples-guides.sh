@@ -2,7 +2,6 @@
 
 LLM_MODEL=gemini-2.0-flash-exp
 
-cd examples 
 
 declare -A guides=(
    [60]="llm"           
@@ -22,7 +21,8 @@ declare -A guides=(
    [74]="profiling"    
 )
 
-mkdir -p .guides
+
+mkdir -p examples/.guides
 
 # Create generic org template
 uv run llm -m deepseek-r1 --system "Create org-mode documentation template with:
@@ -39,11 +39,11 @@ uv run llm templates show org-template
 # Apply template to each guide
 for num in "${!guides[@]}"; do
    name="${guides[$num]}"
-   dirname=".guides/${num}-${name}"
+   dirname="examples/.guides/${num}-${name}"
    echo "Making $dirname"
    mkdir -p "$dirname"
    
-   time uv run llm --template org-template -p tool="$name" --log > "${dirname}/README.org"
+   time uv run llm --template org-template --log "$name explainer" | tee "${dirname}/README.org"
    echo "Generated guide for $name"
 done
 

@@ -41,6 +41,7 @@ data/
 !*.org
 !docs/*.md
 !examples/*.org
+!examples/.guides
 
 .#*
 *.tmp

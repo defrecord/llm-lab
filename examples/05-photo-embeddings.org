@@ -10,14 +10,18 @@ First, ensure we have the required model and directories.
 #+begin_src shell :llm t :results file :file ../data/photo-setup.txt :tangle ../data/photo-setup.sh
 # Register the model
 llm sentence-transformers register all-MiniLM-L6-v2
+#+end_src
 
+#+begin_src shell :llm f
 # Verify directories
-ls -la ../data/images/jwalsh_* 2>/dev/null || echo "Photo directory not found"
+ls -la ../data/images/jwalsh_*  2>/dev/null | wc -l  || echo "Photo directory not found"
 ls -la ../data/semantic-photos 2>/dev/null || echo "Semantic photos directory not found"
 #+end_src
 
 #+RESULTS:
-[[file:photo-setup.txt]]
+: 29
+: Semantic photos directory not found
+
 
 * Photo Semantics Demo
 Run the complete photo semantics demo script.
@@ -35,14 +39,23 @@ Test specific semantic searches.
 #+begin_src shell :llm t :results file :file ../data/photo-search.txt :tangle ../data/photo-search.sh
 # Food-related searches
 llm similar photo-semantics -c "japanese cuisine and sushi"
-llm similar photo-semantics -c "pasta dishes with vegetables"
+#+end_src
 
+#+begin_src shell :llm t :results file :file ../data/photo-search.txt :tangle ../data/photo-search.sh
+llm similar photo-semantics -c "pasta dishes with vegetables"
+#+end_src
+
+#+begin_src shell :llm t :results file :file ../data/photo-search.txt :tangle ../data/photo-search.sh
 # Urban scenes
 llm similar photo-semantics -c "city waterfront or harbor"
+#+end_src
 
+#+begin_src shell :llm t :results file :file ../data/photo-search.txt :tangle ../data/photo-search.sh
 # Documentation and UI
 llm similar photo-semantics -c "technical documentation or user interface"
+#+end_src
 
+#+begin_src shell :llm t :results file :file ../data/photo-search.txt :tangle ../data/photo-search.sh
 # Lifestyle
 llm similar photo-semantics -c "coffee shop and reading"
 #+end_src
@@ -74,15 +87,31 @@ done
 * Advanced Usage
 Example of more complex queries.
 
-#+begin_src shell :llm t :results file :file ../data/photo-advanced.txt :tangle ../data/photo-advanced.sh
-# Composite queries
-llm similar photo-semantics -c "food photography with natural lighting"
-llm similar photo-semantics -c "modern urban architecture near water"
-llm similar photo-semantics -c "work environment with technology"
+** Composite queries
 
-# Negative queries (should find few/no matches)
+#+begin_src shell :llm t :results file :file ../data/photo-advanced.txt :tangle ../data/photo-advanced.sh
+llm similar photo-semantics -c "food photography with natural lighting"
+#+end_src
+
+#+begin_src shell :llm t :results file :file ../data/photo-advanced.txt :tangle ../data/photo-advanced.sh
+llm similar photo-semantics -c "modern urban architecture near water"
+#+end_src
+
+#+begin_src shell :llm t :results file :file ../data/photo-advanced.txt :tangle ../data/photo-advanced.sh
+llm similar photo-semantics -c "work environment with technology"
+#+end_src
+
+** NNegative queries (should find few/no matches)
+
+#+begin_src shell :llm t :results file :file ../data/photo-advanced.txt :tangle ../data/photo-advanced.sh
 llm similar photo-semantics -c "cars and transportation"
+#+end_src
+
+#+begin_src shell :llm t :results file :file ../data/photo-advanced.txt :tangle ../data/photo-advanced.sh
 llm similar photo-semantics -c "nature and landscapes"
+#+end_src
+
+#+begin_src shell :llm t :results file :file ../data/photo-advanced.txt :tangle ../data/photo-advanced.sh
 llm similar photo-semantics -c "portraits and people"
 #+end_src
 

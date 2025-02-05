@@ -1,0 +1,476 @@
+#+TITLE: Advanced Context Management
+#+PROPERTY: header-args :mkdirp yes
+#+SETUPFILE: ../common-headers.org
+
+* Overview
+Advanced context management system for maintaining and organizing conversation state across sessions.
+
+* Current Limitations
+- Limited context persistence
+- No context pruning
+- Basic memory management
+- Limited context visualization
+- No context sharing between sessions
+
+* Proposed Implementation
+
+** Context Storage System
+
+#+begin_src shell :llm nil
+llm context create project-x \
+    --type "long-term" \
+    --retention "1 week" \
+    --metadata '{"project": "API Design", "team": "Backend"}' \
+    --show-details
+#+end_src
+
+Expected output:
+#+begin_example
+Context Created:
+ID: project-x
+Type: long-term
+Retention: 1 week
+Storage: vectorstore
+Size: 0 tokens
+Status: active
+
+Metadata:
+- Project: API Design
+- Team: Backend
+- Created: 2024-02-04T12:00:00Z
+- Expires: 2024-02-11T12:00:00Z
+#+end_example
+
+** Context Management
+
+#+begin_src shell :llm nil
+llm context manage project-x \
+    --prune "relevance<0.7" \
+    --compress "similar>0.9" \
+    --show-changes
+#+end_src
+
+Expected output:
+#+begin_example
+Context Management Report:
+
+1. Pruning Results:
+   - Analyzed: 150 entries
+   - Removed: 23 entries
+   - Reason: Low relevance (<0.7)
+   - Space saved: 45KB
+
+2. Compression Results:
+   - Similar entries found: 12 pairs
+   - Merged: 8 pairs
+   - Preserved: 4 pairs (context required)
+   - Space saved: 28KB
+
+3. Current Status:
+   - Total entries: 127
+   - Active size: 234KB
+   - Compression ratio: 1.45
+   - Health score: 0.92
+#+end_example
+
+** Memory Management
+
+#+begin_src shell :llm nil
+llm memory-policy create project-x \
+    --retention-rules project-x-retention.yaml \
+    --priority-levels "critical,important,normal" \
+    --show-policy
+#+end_src
+
+Expected output:
+#+begin_example
+Memory Policy Configuration:
+
+1. Retention Rules:
+   Critical:
+   - Retention: Permanent
+   - Backup: Yes
+   - Compression: No
+   
+   Important:
+   - Retention: 1 month
+   - Backup: Yes
+   - Compression: After 1 week
+   
+   Normal:
+   - Retention: 1 week
+   - Backup: No
+   - Compression: After 1 day
+
+2. Priority Assignment:
+   - Security discussions: Critical
+   - API design decisions: Important
+   - General discussion: Normal
+
+3. Auto-archiving:
+   - Enabled: Yes
+   - Schedule: Daily at 00:00 UTC
+   - Notification: Email
+#+end_example
+
+** Context Visualization
+
+#+begin_src shell :llm nil
+llm context visualize project-x \
+    --type "graph" \
+    --highlight-connections \
+    --export-format "html" \
+    --interactive
+#+end_src
+
+Expected output:
+#+begin_example
+Context Visualization Generated:
+
+1. Graph Overview:
+   - Nodes: 127 (Conversations)
+   - Edges: 245 (Relationships)
+   - Clusters: 5 (Topics)
+
+2. Interactive Features:
+   - Zoom and pan
+   - Node expansion
+   - Edge filtering
+   - Search functionality
+
+3. Export Details:
+   - Format: Interactive HTML
+   - File: context-graph-project-x.html
+   - Size: 856KB
+   - Dependencies: D3.js included
+
+4. Metrics:
+   - Centrality scores
+   - Connection strength
+   - Topic relevance
+   - Time distribution
+#+end_example
+
+* Configuration Management
+
+** Context Configuration
+
+#+begin_src yaml :tangle ../config/context-config.yaml
+contexts:
+  default:
+    type: session
+    retention: 1h
+    compression: true
+    backup: false
+    
+  project:
+    type: long-term
+    retention: 1w
+    compression: true
+    backup: true
+    pruning:
+      enabled: true
+      min_relevance: 0.7
+      schedule: daily
+    
+  security:
+    type: permanent
+    retention: infinite
+    compression: false
+    backup: true
+    encryption: true
+    
+storage:
+  engine: vectorstore
+  path: ~/.llm/contexts
+  backup_path: ~/.llm/backups
+  compression_algorithm: lz4
+  encryption_algorithm: aes-256-gcm
+  
+memory_management:
+  gc_interval: 1d
+  max_size_per_context: 1GB
+  compression_threshold: 100MB
+  backup_schedule: weekly
+#+end_src
+
+** Retention Rules
+
+#+begin_src yaml :tangle ../config/retention-rules.yaml
+rules:
+  - name: security-critical
+    pattern: "security|vulnerability|authentication"
+    priority: critical
+    retention: permanent
+    compression: false
+    backup: true
+    
+  - name: api-design
+    pattern: "api|endpoint|interface"
+    priority: important
+    retention: 1month
+    compression: true
+    backup: true
+    
+  - name: general
+    pattern: ".*"
+    priority: normal
+    retention: 1week
+    compression: true
+    backup: false
+    
+priorities:
+  critical:
+    max_size: unlimited
+    backup_interval: 1h
+    notification: email
+    
+  important:
+    max_size: 10GB
+    backup_interval: 1d
+    notification: slack
+    
+  normal:
+    max_size: 1GB
+    backup_interval: 1w
+    notification: none
+#+end_src
+
+* Integration Examples
+
+** Project Integration
+
+#+begin_src python :tangle ../examples/context_integration.py
+from llm.context import ContextManager
+from llm.memory import MemoryPolicy
+
+def setup_project_context(project_id: str):
+    # Initialize context manager
+    ctx_manager = ContextManager()
+    
+    # Create project context
+    context = ctx_manager.create_context(
+        id=project_id,
+        type="long-term",
+        retention="1w",
+        metadata={
+            "project": project_id,
+            "type": "development"
+        }
+    )
+    
+    # Set up memory policy
+    policy = MemoryPolicy(
+        retention_rules="config/retention-rules.yaml",
+        priorities=["critical", "important", "normal"]
+    )
+    
+    # Attach policy to context
+    context.attach_policy(policy)
+    
+    return context
+
+def manage_context(context):
+    # Analyze context health
+    health = context.analyze_health()
+    
+    if health.needs_pruning:
+        # Prune irrelevant content
+        context.prune(
+            min_relevance=0.7,
+            dry_run=False
+        )
+    
+    if health.needs_compression:
+        # Compress similar content
+        context.compress(
+            similarity_threshold=0.9,
+            algorithm="lz4"
+        )
+    
+    # Update context metadata
+    context.update_metadata({
+        "last_maintenance": datetime.now().isoformat(),
+        "health_score": health.score
+    })
+    
+    return health.report
+
+def visualize_context(context):
+    # Generate context visualization
+    viz = context.visualize(
+        type="graph",
+        interactive=True
+    )
+    
+    # Export visualization
+    viz.export(
+        format="html",
+        path=f"viz_{context.id}.html",
+        include_deps=True
+    )
+    
+    return viz.metrics
+#+end_src
+
+** CLI Integration
+
+#+begin_src python :tangle ../src/llm/cli/context.py
+import click
+from llm.context import ContextManager
+
+@click.group()
+def context():
+    """Context management commands."""
+    pass
+
+@context.command()
+@click.argument('context_id')
+@click.option('--type', default='session')
+@click.option('--retention')
+@click.option('--metadata', type=click.File('r'))
+def create(context_id, type, retention, metadata):
+    """Create a new context."""
+    ctx_manager = ContextManager()
+    context = ctx_manager.create_context(
+        id=context_id,
+        type=type,
+        retention=retention,
+        metadata=json.load(metadata) if metadata else {}
+    )
+    click.echo(f"Created context: {context.id}")
+
+@context.command()
+@click.argument('context_id')
+@click.option('--prune/--no-prune', default=True)
+@click.option('--compress/--no-compress', default=True)
+def manage(context_id, prune, compress):
+    """Manage existing context."""
+    ctx_manager = ContextManager()
+    context = ctx_manager.get_context(context_id)
+    
+    if prune:
+        context.prune()
+    if compress:
+        context.compress()
+    
+    click.echo(f"Managed context: {context.id}")
+
+@context.command()
+@click.argument('context_id')
+@click.option('--type', default='graph')
+@click.option('--format', default='html')
+def visualize(context_id, type, format):
+    """Visualize context relationships."""
+    ctx_manager = ContextManager()
+    context = ctx_manager.get_context(context_id)
+    
+    viz = context.visualize(type=type)
+    viz.export(format=format)
+    
+    click.echo(f"Visualization saved: viz_{context.id}.{format}")
+#+end_src
+
+* Testing Framework
+
+** Context Management Tests
+
+#+begin_src python :tangle ../tests/test_context_management.py
+import pytest
+from llm.context import ContextManager, Context
+from llm.memory import MemoryPolicy
+
+def test_context_creation():
+    manager = ContextManager()
+    context = manager.create_context(
+        id="test-context",
+        type="long-term",
+        retention="1w"
+    )
+    
+    assert context.id == "test-context"
+    assert context.type == "long-term"
+    assert context.retention == "1w"
+    assert context.is_active()
+
+def test_context_pruning():
+    context = Context("test-context")
+    # Add some test data
+    context.add_entry("Test message 1", relevance=0.9)
+    context.add_entry("Test message 2", relevance=0.5)
+    
+    # Prune low-relevance entries
+    report = context.prune(min_relevance=0.7)
+    
+    assert len(context.entries) == 1
+    assert report.removed == 1
+    assert report.space_saved > 0
+
+def test_memory_policy():
+    policy = MemoryPolicy()
+    policy.add_rule(
+        name="critical",
+        pattern="security",
+        retention="permanent"
+    )
+    
+    context = Context("test-context")
+    context.attach_policy(policy)
+    
+    context.add_entry("Security vulnerability found")
+    assert context.get_retention("Security vulnerability found") == "permanent"
+
+def test_context_visualization():
+    context = Context("test-context")
+    # Add test data with relationships
+    context.add_entry("API Design", tags=["design"])
+    context.add_entry("Security Review", tags=["security"])
+    context.add_relationship("API Design", "Security Review", "requires")
+    
+    viz = context.visualize(type="graph")
+    assert viz.node_count == 2
+    assert viz.edge_count == 1
+    assert viz.can_export("html")
+#+end_src
+
+* Deployment Considerations
+
+** Resource Requirements
+- Storage: 100GB+ for context data
+- Memory: 16GB recommended
+- CPU: 4+ cores for processing
+- Network: Fast storage access
+
+** Scalability
+- Distributed context storage
+- Load balancing
+- Caching layer
+- Async processing
+
+** Security
+- Context encryption
+- Access control
+- Audit logging
+- Backup strategy
+
+** Monitoring
+- Storage utilization
+- Compression ratios
+- Access patterns
+- Health metrics
+
+* Future Enhancements
+
+** Planned Features
+1. Multi-modal context storage
+2. Context federation
+3. Intelligent pruning
+4. Context analytics
+5. Custom retention policies
+
+** Research Areas
+1. Context relevance scoring
+2. Compression techniques
+3. Visualization methods
+4. Memory optimization
+5. Context sharing protocols

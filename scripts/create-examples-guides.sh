@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+LLM_MODEL=gemini-2.0-flash-exp
+
+cd examples 
+
 declare -A guides=(
    [60]="llm"           
    [61]="kubectl"      
@@ -21,7 +25,7 @@ declare -A guides=(
 mkdir -p .guides
 
 # Create generic org template
-llm template --system "Create org-mode documentation template with:
+uv run llm template -m $LLM_MODEL --system "Create org-mode documentation template with:
 - Properties for tangling
 - Setup sections for tool
 - Configuration examples
@@ -34,13 +38,14 @@ Output as complete org document." --save org-template --log -x
 for num in "${!guides[@]}"; do
    name="${guides[$num]}"
    dirname=".guides/${num}-${name}"
+   echo "Making $dirname"
    mkdir -p "$dirname"
    
-   llm --template org-template -p tool="$name" --log > "${dirname}/README.org"
+   time llm --template org-template -p tool="$name" --log > "${dirname}/README.org"
    echo "Generated guide for $name"
 done
 
 # Create index
-llm "Generate org-mode index of all guides with descriptions" --log > ".guides/00-index.org"
+# uv run llm "Generate org-mode index of all guides with descriptions" --log > ".guides/00-index.org"
 
 tree .guides/

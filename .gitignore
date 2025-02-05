@@ -10,13 +10,17 @@ dist/
 *.egg-info/
 
 # Editors
-*~
-\#*\#
-.\#*
 .idea/
 .vscode/
 *.swp
 .DS_Store
+*.bak
+
+# Emacs server/backup files
+.emacs.d/server/
+*~
+\#*\#
+.\#*
 
 # Environment
 .env

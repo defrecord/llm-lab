@@ -25,14 +25,16 @@ declare -A guides=(
 mkdir -p .guides
 
 # Create generic org template
-uv run llm template -m $LLM_MODEL --system "Create org-mode documentation template with:
+uv run llm -m deepseek-r1 --system "Create org-mode documentation template with:
 - Properties for tangling
 - Setup sections for tool
 - Configuration examples
 - Practice exercises
 - Common patterns
 - Best practices
-Output as complete org document." --save org-template --log -x
+Output as complete org document." --save org-template --log
+
+uv run llm templates show org-template
 
 # Apply template to each guide
 for num in "${!guides[@]}"; do
@@ -41,7 +43,7 @@ for num in "${!guides[@]}"; do
    echo "Making $dirname"
    mkdir -p "$dirname"
    
-   time llm --template org-template -p tool="$name" --log > "${dirname}/README.org"
+   time uv run llm --template org-template -p tool="$name" --log > "${dirname}/README.org"
    echo "Generated guide for $name"
 done
 

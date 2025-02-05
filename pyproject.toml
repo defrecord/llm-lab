@@ -11,6 +11,8 @@ dependencies = [
     "llm-bedrock",
     "llm-claude",
     "files-to-prompt>=0.4",
+    "fetch-github-issues>=0.1.2",
+    "sqlite-utils>=3.38",
 ]
 
 [project.optional-dependencies]

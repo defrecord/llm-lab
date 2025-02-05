@@ -210,6 +210,15 @@ wheels = [
 ]
 
 [[package]]
+name = "fetch-github-issues"
+version = "0.1.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a3/7c/30d38203ee02fd368ec9dbf7e30ceced743899cc89cf511d96d9aeb228df/fetch_github_issues-0.1.2.tar.gz", hash = "sha256:ff61619487ca378f81623bd7431c552b963f12f28608458b5afb082ceffc1666", size = 7587 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e4/ce/370baab045fda43c86595dc5f1ecada9cbcdc2f1b362d4806e45e92f944c/fetch_github_issues-0.1.2-py3-none-any.whl", hash = "sha256:3079355c71e96907c202bdef18f746700a769b8367a35b77d3a60a949957fbef", size = 8604 },
+]
+
+[[package]]
 name = "files-to-prompt"
 version = "0.4"
 source = { registry = "https://pypi.org/simple" }
@@ -453,11 +462,13 @@ name = "llm-lab"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "fetch-github-issues" },
     { name = "files-to-prompt" },
     { name = "llm" },
     { name = "llm-bedrock" },
     { name = "llm-claude" },
     { name = "llm-gemini" },
+    { name = "sqlite-utils" },
     { name = "strip-tags" },
     { name = "ttok" },
 ]
@@ -473,6 +484,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "black", marker = "extra == 'dev'" },
+    { name = "fetch-github-issues", specifier = ">=0.1.2" },
     { name = "files-to-prompt", specifier = ">=0.4" },
     { name = "isort", marker = "extra == 'dev'" },
     { name = "llm" },
@@ -481,6 +493,7 @@ requires-dist = [
     { name = "llm-gemini" },
     { name = "mypy", marker = "extra == 'dev'" },
     { name = "pytest", marker = "extra == 'dev'" },
+    { name = "sqlite-utils", specifier = ">=3.38" },
     { name = "strip-tags" },
     { name = "ttok" },
 ]

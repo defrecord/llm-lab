@@ -239,30 +239,10 @@ session-agent: scripts/register-session-agent-template.sh ## [Advanced] Try inte
         @uv run files-to-prompt Makefile README.org examples scripts src | llm -c -t session-agent
         @$(LLM) chat -c -t session-agent
 
-guides: ## [Core] Generate and process documentation guides
-        @echo "Generating guides..."
-        @./scripts/create-examples-guides.sh.fixed
-        @echo "Converting formats..."
-        @mkdir -p examples/.guides/processed
-        @for f in examples/.guides/*/README.org; do \
-                base=$$(dirname "$$f"); \
-                name=$$(basename "$$base"); \
-                echo "Processing $$name..."; \
-                grep -v '<think>' "$$f" | grep -v '^$$' > "examples/.guides/processed/$$name.md" && \
-                pandoc -f markdown -t org -o "examples/.guides/processed/$$name.org" "examples/.guides/processed/$$name.md" 2>/dev/null || true; \
-        done
-        @echo "Guide generation complete"
+guides: scripts/generate-guides.sh ## [Core] Generate and process documentation guides
+        @echo "Generating and processing guides..."
+        @./scripts/generate-guides.sh
 
-verify-guides: ## [Core] Verify guide format and content
+verify-guides: scripts/verify-guides.sh ## [Core] Verify guide format and content
         @echo "Verifying guides..."
-        @for f in examples/.guides/processed/*.org; do \
-                echo "Checking $$(basename $$f)..."; \
-                if [ ! -s "$$f" ]; then \
-                        echo "ERROR: Empty file $$f"; \
-                        continue; \
-                fi; \
-                if ! grep -q "^* " "$$f"; then \
-                        echo "WARNING: No org-mode headers in $$f"; \
-                fi; \
-        done
-        @echo "Verification complete"
+        @./scripts/verify-guides.sh

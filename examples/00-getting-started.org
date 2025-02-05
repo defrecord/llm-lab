@@ -1,8 +1,25 @@
 #+TITLE: LLM Command Examples
 #+SETUPFILE: ./common-headers.org
 
-* Initial Setup
-First, ensure we have a default model set.
+* Environment Setup
+These steps align with the README's Quick Start section.
+
+** 1. Initial Environment
+First, ensure the environment is set up:
+
+#+begin_src shell :llm nil :tangle ../data/shell/init.sh
+make init
+#+end_src
+
+** 2. Environment Check
+Verify the environment configuration:
+
+#+begin_src shell :llm nil :tangle ../data/shell/check-env.sh
+make check-env
+#+end_src
+
+** 3. Default Model
+Set up the default model:
 
 #+begin_src shell :llm t :results silent  :tangle ../data/llm-model-llama3.2.sh
 llm models default llama3.2

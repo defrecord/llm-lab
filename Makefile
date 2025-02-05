@@ -30,7 +30,7 @@ help:  ## Display this help
 .PHONY: test clean check run all format lint pytest docs layout register-templates
 
 # Core setup and usage
-all: clean init check check-env llm-model-default run ## Run complete setup process
+all: clean init check-env llm-model-default check run ## Run complete setup process - follows README quickstart order
 
 init: $(INIT_MARKER) docs ## [Core] Set up your environment
         @echo "Running initialization..."

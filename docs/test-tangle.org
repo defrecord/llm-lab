@@ -1,0 +1,25 @@
+#+TITLE: Test Tangle File
+#+SETUPFILE: ./common-headers.org
+
+* Test LLM Queries
+
+** Basic Math
+Let's start with a simple math query.
+
+#+begin_src shell :llm t :results output :tangle ../data/shell/math-test.sh
+llm "What is 2+2?"
+#+end_src
+
+** Coding Example
+Now let's ask for some code.
+
+#+begin_src shell :llm t :results output :tangle ../data/shell/code-test.sh
+llm "Write a Python function to check if a number is prime"
+#+end_src
+
+** Analysis Request
+Finally, let's do some analysis.
+
+#+begin_src shell :llm t :results output :tangle ../data/shell/analysis-test.sh
+llm "Analyze the pros and cons of microservices architecture"
+#+end_src

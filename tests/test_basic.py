@@ -1,11 +1,19 @@
 """Basic test suite for LLM Lab."""
+
 from pathlib import Path
 
 import pytest
 import yaml
 
-from llm_lab import (CONFIG_DIR, DATA_DIR, IMAGES_DIR, ROOT_DIR, SIN_DIR,
-                    TEMPLATES_DIR, __version__)
+from llm_lab import (
+    CONFIG_DIR,
+    DATA_DIR,
+    IMAGES_DIR,
+    ROOT_DIR,
+    SIN_DIR,
+    TEMPLATES_DIR,
+    __version__,
+)
 
 
 def test_version():
@@ -38,8 +46,12 @@ def test_template_valid(templates_dir):
         try:
             with open(template_file) as f:
                 template = yaml.safe_load(f)
-            assert isinstance(template, dict), f"Template {template_file.name} is not a dictionary"
-            assert "system" in template, f"Template {template_file.name} missing 'system' key"
+            assert isinstance(
+                template, dict
+            ), f"Template {template_file.name} is not a dictionary"
+            assert (
+                "system" in template
+            ), f"Template {template_file.name} missing 'system' key"
         except yaml.YAMLError as e:
             pytest.fail(f"Failed to parse {template_file.name}: {e}")
         except Exception as e:

@@ -1,4 +1,5 @@
 """LLM Lab - Testing environment for exploring LLM CLI tools."""
+
 from pathlib import Path
 
 __version__ = "0.1.0"

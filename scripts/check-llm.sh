@@ -9,7 +9,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 VENV_DIR=".venv"
-REQUIRED_CMDS=(llm files-to-prompt ttok stip)
+REQUIRED_CMDS=(llm files-to-prompt ttok strip-tags)
 
 echo "Checking core LLM commands..."
 

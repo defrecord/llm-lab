@@ -35,7 +35,7 @@ help:  ## Display this help
 	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 	awk 'BEGIN {FS = ":.*?## "}; {printf "$(CYAN)%-20s$(RESET) %s\n", $$1, $$2}'
 
-.PHONY: test clean check run all format lint pytest docs layout register-templates \
+.PHONY: test clean check run all format lint docs layout register-templates \
         help init check-env llm-model-default embeddings sin session-agent guides \
         verify-guides analyze-guides sanity check-set check-coverage analyze-posts logs
 
@@ -109,13 +109,9 @@ install: ## [Dev] Install package in development mode
 	@echo "Running Python setup..."
 	@UV_SYSTEM_PYTHON=1 uv pip install -e .
 
-test: format pytest ## [Dev] Run all tests and checks
+test: format ## [Dev] Run all tests and checks
 	@echo "Running tests..."
 	@UV_SYSTEM_PYTHON=1 uv run pytest $(TESTS_DIR)
-
-pytest:
-	@echo "Running pytest..."
-	@UV_SYSTEM_PYTHON=1 uv run pytest $(TESTS_DIR) -v
 
 format:
 	@echo "Formatting Python code..."
@@ -125,6 +121,9 @@ lint:
 	@echo "Running linters..."
 	@UV_SYSTEM_PYTHON=1 uv run black --check $(PYTHON_SRC) $(TESTS_DIR)
 	@UV_SYSTEM_PYTHON=1 uv run ruff check $(PYTHON_SRC) $(TESTS_DIR)
+
+emacs: scripts/start-emacs.sh
+	@./scripts/start-emacs.sh
 
 tangle: $(ORG_FILES) ## [Core] Tangle all org files
 	@echo "Tangling org files..."

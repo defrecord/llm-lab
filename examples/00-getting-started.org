@@ -8,15 +8,49 @@ These steps align with the README's Quick Start section.
 First, ensure the environment is set up:
 
 #+begin_src shell :llm nil :tangle ../data/shell/init.sh
-make init
+cd .. && make init | tee .../data/init.log | head  | tr -cd '[:print:]\n'
 #+end_src
+
+#+RESULTS:
+#+begin_example
+make[1]: Entering directory '/home/computeruse/.anthropic/sandbox/defrecord/llm-lab'
+Running initialization...
+Initializing project environment...
+[0;32m[0m Created data/sanity
+[0;32m[0m Created data/output
+[0;32m[0m Created data/sin
+[0;32m[0m Created data/images
+Installing core dependencies...
+Installing LLM providers...
+Requirement already satisfied: llm-cluster in /home/computeruse/.pyenv/versions/3.11.6/lib/python3.11/site-packages (0.2)
+#+end_example
+
 
 ** 2. Environment Check
 Verify the environment configuration:
 
 #+begin_src shell :llm nil :tangle ../data/shell/check-env.sh
-make check-env
+cd .. && make check-env | tr -cd '[:print:]\n'
 #+end_src
+
+#+RESULTS:
+#+begin_example
+make[1]: Entering directory '/home/computeruse/.anthropic/sandbox/defrecord/llm-lab'
+Checking environment...
+ ANTHROPIC_API_KEY is set
+ GEMINI_API_KEY is not set - GEMINI_API_KEY
+ GOOGLE_AI_API_KEY is not set - GOOGLE_AI_API_KEY
+ OPENAI_API_KEY is not set - OPENAI_API_KEY
+ AWS_REGION is set
+ GITHUB_TOKEN is set
+ AWS_SECRET_ACCESS_KEY is set
+ AWS_ACCESS_KEY_ID is set
+ UV_SYSTEM_PYTHON is not set - UV System Python
+ PYTHONPATH is not set - Python Path
+Model configuration:
+Using LLM model: gemini-2.0-flash-exp
+make[1]: Leaving directory '/home/computeruse/.anthropic/sandbox/defrecord/llm-lab'
+#+end_example
 
 ** 3. Default Model
 Set up the default model:
@@ -28,32 +62,50 @@ llm models default llama3.2
 * Basic LLM Usage
 Let's start with a simple prompt example.
 
-#+begin_src shell :llm t :results file :file ../data/haiku.md :tangle  ../data/haiku.sh
+#+begin_src shell :llm t :results both :file ../data/haiku.md :tangle  ../data/haiku.sh
 llm "Write a haiku about debugging"
 #+end_src
 
 #+RESULTS:
-[[file:haiku.md]]
+: Code falls, I despair
+:  Errors creep like hidden snakes
+: Fixing with each line
 
 * Model Information
 View available models and configuration.
 
-#+begin_src shell :llm t :results file :file ../data/models.txt :tangle ../data/models.sh
-llm models list | head -n 10
+#+begin_src shell :llm t :results both :file ../data/models.txt :tangle ../data/models.sh
+llm models list | head -n 5
 #+end_src
 
 #+RESULTS:
-[[file:models.txt]]
+: OpenAI Chat: gpt-4o (aliases: 4o)
+: OpenAI Chat: gpt-4o-mini (aliases: 4o-mini)
+: OpenAI Chat: gpt-4o-audio-preview
+: OpenAI Chat: gpt-4o-audio-preview-2024-12-17
+: OpenAI Chat: gpt-4o-audio-preview-2024-10-01
+
 
 * Template Management
 First, list available templates.
 
-#+begin_src shell :llm t :results file :file ../data/templates.txt :tangle ../data/templates.sh
-llm templates list
+#+begin_src shell :llm t :results both :file ../data/templates.txt :tangle ../data/templates.sh
+llm templates list | head
 #+end_src
 
 #+RESULTS:
-[[file:templates.txt]]
+#+begin_example
+clojure-function : system: Write a pure Clojure function following functional...
+commit           : system: name: commit model: llama2 temperature: 0.7 system...
+dialogue         : system: ### Dialogue Module Prompt ###  **Background-infor...
+elisp-function   : system: Write an Emacs Lisp function following elisp conve...
+go-function      : system: Write an idiomatic Go function following Go style ...
+js-function      : system: Write a modern JavaScript function using ES6+ feat...
+memory           : system: ### Memory Module Prompt ###  **Background-informa...
+org-template     : system: Create org-mode documentation template with: - Pro...
+python-function  : system: Write a clean, well-documented Python function tha...
+python-template  : system: Write Python code
+#+end_example
 
 Register a basic Python template. Note: We mark this :llm nil as it's a one-time setup.
 
@@ -66,31 +118,37 @@ llm --system "Write Python code" --save python-template
 * Session Agent Example
 Here's an example using the session agent template.
 
-#+begin_src shell :llm t :results file :file session-example.txt
+#+begin_src shell :llm t :results file :file ../data/session-example.txt
 llm -t session-agent "Reviewing LLM commands" 2>&1 | head -n 15
 #+end_src
 
 #+RESULTS:
-[[file:session-example.txt]]
+[[file:../data/session-example.txt]]
+
 
 * Command History and Logs
-View recent command history.
 
-#+begin_src shell :llm t :tangle ../data/command-history.sh
-llm logs -c | head -n 10
+** View recent command history
+
+#+begin_src shell :llm t :results file :tangle ../data/command-history.sh :file ../data/command-history.txt
+llm logs -n 10
 #+end_src
 
 #+RESULTS:
-[[file:command-history.txt]]
+[[file:../data/command-history.txt]]
 
-Analyze model usage.
 
-#+begin_src shell :llm t :results file :file ../data/model-usage.txt :tangle ../data/model-usage.sh
-llm logs --json | jq -r '.[]|.model' | sort | uniq -c | sort -rn
+** Analyze model usage
+
+#+begin_src shell :llm t :results both :file ../data/model-usage.txt :tangle ../data/model-usage.sh
+llm logs --json -n 0 | jq -r '.[]|.model' | sort | uniq -c | sort -rn
 #+end_src
 
 #+RESULTS:
-[[file:model-usage.txt]]
+:      65 llama3.2:latest
+:      33 deepseek-r1:latest
+:       7 gemini-2.0-flash-exp
+
 
 * Note on Interactive Commands
 The following commands require user interaction and are not suitable for automated execution:

@@ -25,7 +25,7 @@ fi
 
 # Install LLM providers
 echo "Installing LLM providers..."
-if ! llm install llm-cluster llm-ollama llm-claude llm-bedrock llm-gemini; then
+if ! llm install llm-anthropic llm-cluster llm-ollama llm-claude llm-bedrock llm-gemini; then
     echo -e "${RED}✗${NC} Failed to install LLM providers"
     exit 1
 fi

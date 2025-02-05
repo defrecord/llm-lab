@@ -2,93 +2,84 @@
 #+STARTUP: showeverything
 
 * Overview
-Testing environment for LLM CLI tools with metrics and comparison.
+A hands-on learning environment for exploring LLM CLI tools with practical examples and exercises.
 
 ** Key Resources
-- [[https://simonwillison.net/2023/May/18/cli-tools-for-llms/][CLI Tools for LLMs]]
 - [[https://llm.datasette.io/en/stable/help.html][LLM CLI Documentation]]
 - [[https://github.com/simonw/ttok][ttok]] - Token counting tool
 - [[https://github.com/simonw/strip-tags][strip-tags]] - HTML cleanup
 - [[https://github.com/simonw/files-to-prompt][files-to-prompt]] - File content extraction
-- [[https://github.com/simonw/sqlite-utils][sqlite-utils]] - SQLite utilities
-- [[https://github.com/simonw/fetch-github-issues][fetch-github-issues]] - GitHub issue fetching
 
-** Available Model Plugins
-- [[https://github.com/simonw/llm-claude-3/releases/tag/0.10][Claude 3]] - Anthropic's Claude 3 models
-- [[https://github.com/simonw/llm-gemini/releases/tag/0.9][Gemini]] - Google's Gemini models
-- [[https://github.com/simonw/llm-anthropic/releases/tag/0.12][Anthropic]] - Legacy Claude models
-- [[https://github.com/simonw/llm-bedrock/releases/tag/0.4][Bedrock]] - AWS Bedrock integration
-- [[https://github.com/taketwo/llm-ollama/releases/tag/0.8.2][Ollama]] - Local model support
-
-* Project Structure
-The project is organized into the following directories:
-
-- ~examples/~ :: Numbered sequence of example workflows
-- ~scripts/~ :: Utility scripts and tools
-- ~prompts/~ :: LLM system prompts
-- ~docs/~ :: Documentation and RFCs
-- ~tests/~ :: Test suite
-- ~data/~ :: Working directory for outputs
-- ~src/~ :: Core library code
-- ~config/~ :: Configuration files
-
-* Examples
-All examples are self-contained in the examples directory:
-
-1. [[file:examples/00-getting-started.org][Getting Started]] - Basic LLM usage and setup
-2. [[file:examples/01-templates.org][Templates]] - Working with system prompts and templates
-3. [[file:examples/02-context-management.org][Context Management]] - Managing conversation state
-4. [[file:examples/03-agents.org][Agents]] - Multi-agent interactions and specialized roles
-5. [[file:examples/04-embeddings-intro.org][Embeddings Introduction]] - Basic embeddings and vector search
-6. [[file:examples/05-photo-embeddings.org][Photo Embeddings]] - Semantic photo search and analysis
-7. [[file:examples/06-advanced-usage.org][Advanced Usage]] - Complex workflows and integrations
-8. [[file:examples/50-ollama-models.org][Ollama Models]] - Testing and evaluating Ollama models
-9. [[file:examples/99-feature-requests.org][Feature Requests]] - Proposed enhancements and future features
-
-
-* Development
+* Getting Started
 
 ** Quick Start
 1. Clone the repository
-2. Run ~make init~ to set up the environment
-3. Run ~make check-env~ to verify setup
-4. Run ~make sanity~ for environment validation
-5. See examples directory for usage patterns
+2. Run ~make init~ to set up your environment
+3. Run ~make check-env~ to verify your setup
+4. See examples directory to begin learning
 
-** Testing and Validation
-The project includes comprehensive testing and validation:
+** Available Models
+- Claude 3 models via llm-claude-3
+- Google's Gemini models
+- Local models via Ollama
+- AWS Bedrock integration
 
-*** Core Testing
-- Unit tests in ~tests/~ directory
-- Functional examples in ~examples/~
-- ~make test~ runs the full test suite
-- ~make pytest~ for Python unit tests only
+* Learning Path
+All examples are self-contained and build upon each other:
 
-*** Sanity Checks
-The ~make sanity~ target provides comprehensive environment validation:
-- Validates core dependencies
-- Tests initialization process
-- Verifies LLM tool functionality
-- Checks template registration
-- Analyzes logs with multiple LLM models
-See ~scripts/sanity.sh~ for implementation details.
+1. [[file:examples/00-getting-started.org][Getting Started]] - Basic LLM usage and setup
+   - First commands and responses
+   - Understanding the environment
+   - Working with models
 
-*** Structured Analysis
-The SIN (Structured Insight Navigator) framework provides systematic analysis:
-- ~make sin~ runs the complete analysis pipeline
-- Framework selection based on input context
-- Automated execution plan generation
-- Detailed documentation output
-See ~scripts/register-sin-templates.sh~ for template definitions.
+2. [[file:examples/01-templates.org][Templates]] - Working with system prompts
+   - Creating custom templates
+   - Using built-in templates
+   - Template best practices
 
-* Metrics
-Performance metrics and telemetry are available through:
-- LLM logs (~llm logs~)
-- OpenTelemetry integration
-- Custom metrics collection
+3. [[file:examples/02-context-management.org][Context Management]] - Managing conversations
+   - Maintaining context
+   - Structured interactions
+   - Memory handling
 
-See ~docs/~ directory for detailed metrics documentation.
+4. [[file:examples/03-agents.org][Agents]] - Specialized roles and interactions
+   - Agent types and purposes
+   - Multi-agent conversations
+   - Agent collaboration patterns
+
+5. [[file:examples/04-embeddings-intro.org][Embeddings Introduction]] - Vector representations
+   - Understanding embeddings
+   - Basic vector operations
+   - Similarity searches
+
+6. [[file:examples/05-photo-embeddings.org][Photo Embeddings]] - Working with images
+   - Image analysis
+   - Semantic search
+   - Visual relationships
+
+7. [[file:examples/06-advanced-usage.org][Advanced Usage]] - Complex workflows
+   - Integration patterns
+   - Custom solutions
+   - Best practices
+
+8. [[file:examples/50-ollama-models.org][Ollama Models]] - Local model usage
+   - Setting up Ollama
+   - Model management
+   - Performance considerations
+
+* Project Structure
+The workspace is organized for easy navigation:
+
+- ~examples/~ :: Step-by-step learning materials
+- ~prompts/~ :: Example system prompts
+- ~docs/~ :: Additional guides and references
+- ~data/~ :: Your working directory for outputs
+
+* Need Help?
+- Check the example documentation
+- Review the LLM CLI docs
+- See CONTRIBUTING.org for development details
 
 * References
-- [[https://github.com/open-telemetry/semantic-conventions/blob/main/docs/gen-ai/gen-ai-metrics.md][OpenTelemetry LLM Metrics]]
 - [[https://llm.datasette.io/][LLM CLI Documentation]]
+- [[https://simonwillison.net/2023/May/18/cli-tools-for-llms/][Introduction to LLM CLI Tools]]

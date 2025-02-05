@@ -1,0 +1,102 @@
+#+TITLE: Contributing to LLM Lab
+#+STARTUP: showeverything
+
+* Version Context [February 2025]
+** LLM Tool Versions
+- llm-claude-3 :: 0.10 (Claude 3 models)
+- llm-gemini :: 0.9 (Google Gemini models)
+- llm-anthropic :: 0.12 (Legacy Claude models)
+- llm-bedrock :: 0.4 (AWS Bedrock integration)
+- llm-ollama :: 0.8.2 (Local model support)
+
+** Supporting Tools
+- ttok :: Token counting tool (current as of Feb 2025)
+- strip-tags :: HTML cleanup utility
+- files-to-prompt :: File content extraction
+- sqlite-utils :: Database utilities
+- fetch-github-issues :: GitHub integration
+
+** Note on Deprecation
+This project represents a point-in-time review of LLM CLI tools as of February 2025. 
+Given the rapid evolution of LLM technology, these examples and configurations may 
+be deprecated within three months. Check the referenced repositories for current 
+versions and best practices.
+
+* Development Overview
+Testing environment for LLM CLI tools with metrics and comparison.
+
+** Status
+- Core examples up to 00-getting-started complete
+- Embeddings, SIN framework, and templates in development
+- Test infrastructure being expanded
+
+* Development Environment
+
+** Initial Setup
+1. Clone the repository
+2. Create =config/model.conf= if needed
+3. Run ~make init~ to prepare environment
+4. Run ~make check-env~ to verify setup
+
+** Configuration Notes
+- Model selection handled in =config/model.conf=
+- Proxy settings supported via environment variables
+- Git config can be overridden in =config/git.conf=
+
+* Development Tasks 
+
+** Testing Framework
+- ~make test~ :: Run all tests and checks
+- ~make sanity~ :: Run comprehensive environment validation
+- ~make format~ :: Format Python code using black
+
+** Documentation
+- ~make docs~ :: Process org files (alias for tangle)
+- ~make layout~ :: Show directory purposes
+- ~make guides~ :: Generate documentation
+
+** Advanced Features (WIP)
+- ~make embeddings~ :: Try vector embeddings with image analysis
+- ~make sin~ :: Run Structured Insight Navigator framework
+- ~make session-agent~ :: Try interactive agent tracking
+
+* Project Structure
+
+** Core Directories
+- ~examples/~ :: Numbered sequence of example workflows
+- ~scripts/~ :: Utility scripts and tools
+- ~prompts/~ :: LLM system prompts
+- ~docs/~ :: Documentation and RFCs
+- ~tests/~ :: Test suite
+- ~data/~ :: Working directory for outputs
+- ~src/~ :: Core library code
+- ~config/~ :: Configuration files
+
+** Example Workflow Status
+1. [[file:examples/00-getting-started.org][Getting Started]] - Complete
+2. [[file:examples/01-templates.org][Templates]] - Work in Progress
+3. [[file:examples/02-context-management.org][Context Management]] - Work in Progress
+4. [[file:examples/03-agents.org][Agents]] - Work in Progress
+5. [[file:examples/04-embeddings-intro.org][Embeddings Introduction]] - In Development
+6. [[file:examples/05-photo-embeddings.org][Photo Embeddings]] - In Development
+7. [[file:examples/06-advanced-usage.org][Advanced Usage]] - Planned
+8. [[file:examples/50-ollama-models.org][Ollama Models]] - Work in Progress
+9. [[file:examples/99-feature-requests.org][Feature Requests]] - Active Collection
+
+* Making Changes
+
+** Development Process
+1. Pick an area to work on (see status above)
+2. Ensure tests pass with ~make test~
+3. Format code with ~make format~
+4. Run ~make sanity~ before submitting changes
+
+** Testing Requirements
+- All Python code must pass black formatting
+- Core functionality tests should pass
+- Sanity checks must complete successfully
+
+* Key Resources
+- [[https://simonwillison.net/2023/May/18/cli-tools-for-llms/][CLI Tools for LLMs]]
+- [[https://llm.datasette.io/en/stable/help.html][LLM CLI Documentation]]
+- [[https://github.com/simonw/ttok][ttok]] - Token counting tool

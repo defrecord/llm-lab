@@ -1,10 +1,10 @@
 -- [[file:../../../examples/51-sqlite-queries.org::*Token Usage Trends][Token Usage Trends:1]]
-SELECT DATE(cr.created, 'unixepoch') as date,
-       SUM(prompt_tokens) as total_prompt_tokens,
-       SUM(completion_tokens) as total_completion_tokens,
-       COUNT(DISTINCT c.id) as num_conversations
-FROM conversation_responses cr
-JOIN conversations c ON cr.conversation_id = c.id
+SELECT DATE(r.datetime_utc) as date,
+       COUNT(DISTINCT r.conversation_id) as conversations,
+       SUM(r.input_tokens) as total_input_tokens,
+       SUM(r.output_tokens) as total_output_tokens,
+       ROUND(AVG(r.duration_ms), 2) as avg_response_time
+FROM responses r
 GROUP BY date
 ORDER BY date DESC
 LIMIT 7;

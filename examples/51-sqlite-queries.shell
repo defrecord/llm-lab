@@ -1,0 +1,1 @@
+sqlite3 ~/.config/io.datasette.llm/logs.db < ../src/sql/basic/01-total-conversations.sql

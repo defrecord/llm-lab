@@ -1,0 +1,202 @@
+#+TITLE: LLM Log Analysis with SQLite
+#+AUTHOR: AYGP
+#+DATE: 2025-02-03
+#+PROPERTY: header-args:sqlite :tangle-mode (identity #o644)
+#+PROPERTY: header-args:sqlite :comments link
+#+PROPERTY: header-args :results silent
+
+* Directory Structure
+#+begin_src elisp :results output :exports results
+(princ "
+src/
+├── elisp/
+│   └── llm-prerequisites.el
+└── sql/
+    ├── basic/
+    │   ├── 01-total-conversations.sql
+    │   ├── 02-conversations-by-date.sql
+    │   └── 03-model-usage-stats.sql
+    ├── advanced/
+    │   ├── 01-response-time.sql
+    │   ├── 02-token-trends.sql
+    │   └── 03-text-search.sql
+    ├── cost/
+    │   └── 01-token-cost-analysis.sql
+    └── usage/
+        └── 01-usage-analysis.sql
+")
+#+end_src
+
+* Emacs SQLite Prerequisites
+First, let's verify SQLite support in Emacs:
+
+#+begin_src elisp :tangle src/elisp/llm-prerequisites.el :mkdirp t
+(when (version< emacs-version "29.1")
+  (error "This configuration requires Emacs 29.1 or later"))
+(sqlite-available-p)
+#+end_src
+
+* LLM Log Database Schema Analysis
+The LLM logging database schema from Datasette includes:
+- conversations (id, name, model)
+- responses (id, model, prompt, system, response, conversation_id, etc.)
+- responses_fts (FTS5 virtual table for full-text search)
+- attachments and prompt_attachments (for handling file attachments)
+
+* Basic Usage Analytics
+
+** Total Conversations Count
+#+begin_src sqlite :db ~/.config/io.datasette.llm/logs.db :tangle ../src/sql/basic/01-total-conversations.sql :mkdirp t
+SELECT COUNT(*) as total_conversations,
+       COUNT(DISTINCT model) as unique_models
+FROM conversations;
+#+end_src
+
+** Conversations by Date
+#+begin_src sqlite :db ~/.config/io.datasette.llm/logs.db :tangle ../src/sql/basic/02-conversations-by-date.sql :mkdirp t
+SELECT DATE(r.datetime_utc) as date,
+       COUNT(DISTINCT c.id) as conversation_count,
+       COUNT(*) as response_count
+FROM conversations c
+JOIN responses r ON c.id = r.conversation_id
+GROUP BY date
+ORDER BY date DESC
+LIMIT 10;
+#+end_src
+
+** Model Usage Statistics
+#+begin_src sqlite :db ~/.config/io.datasette.llm/logs.db :tangle ../src/sql/basic/03-model-usage-stats.sql :mkdirp t
+SELECT r.model,
+       COUNT(*) as usage_count,
+       COUNT(DISTINCT r.conversation_id) as unique_conversations,
+       ROUND(AVG(r.input_tokens), 2) as avg_input_tokens,
+       ROUND(AVG(r.output_tokens), 2) as avg_output_tokens
+FROM responses r
+GROUP BY r.model
+ORDER BY usage_count DESC;
+#+end_src
+
+* Advanced Analytics
+
+** Response Time Analysis
+#+begin_src sqlite :db ~/.config/io.datasette.llm/logs.db :tangle ../src/sql/advanced/01-response-time.sql :mkdirp t
+SELECT model,
+       COUNT(*) as responses,
+       ROUND(AVG(duration_ms), 2) as avg_duration_ms,
+       ROUND(MIN(duration_ms), 2) as min_duration_ms,
+       ROUND(MAX(duration_ms), 2) as max_duration_ms,
+       ROUND(AVG(input_tokens + output_tokens), 2) as avg_total_tokens
+FROM responses
+GROUP BY model
+ORDER BY avg_duration_ms DESC;
+#+end_src
+
+** Token Usage Trends
+#+begin_src sqlite :db ~/.config/io.datasette.llm/logs.db :tangle ../src/sql/advanced/02-token-trends.sql :mkdirp t
+SELECT DATE(r.datetime_utc) as date,
+       COUNT(DISTINCT r.conversation_id) as conversations,
+       SUM(r.input_tokens) as total_input_tokens,
+       SUM(r.output_tokens) as total_output_tokens,
+       ROUND(AVG(r.duration_ms), 2) as avg_response_time
+FROM responses r
+GROUP BY date
+ORDER BY date DESC
+LIMIT 7;
+#+end_src
+
+** Full Text Search Example
+#+begin_src sqlite :db ~/.config/io.datasette.llm/logs.db :tangle ../src/sql/advanced/03-text-search.sql :mkdirp t
+-- Example searching for specific topics in prompts and responses
+SELECT r.id,
+       r.model,
+       r.prompt,
+       r.response,
+       r.datetime_utc,
+       r.input_tokens + r.output_tokens as total_tokens
+FROM responses r
+JOIN responses_fts fts ON r.id = fts.rowid
+WHERE responses_fts MATCH 'python OR javascript'
+ORDER BY r.datetime_utc DESC
+LIMIT 5;
+#+end_src
+
+* Cost Analysis
+
+** Total Token Usage and Estimated Cost
+#+begin_src sqlite :db ~/.config/io.datasette.llm/logs.db :tangle ../src/sql/cost/01-token-cost-analysis.sql :mkdirp t
+WITH model_costs AS (
+  SELECT model,
+         SUM(input_tokens) as total_input_tokens,
+         SUM(output_tokens) as total_output_tokens,
+         -- Approximate costs (modify according to actual pricing)
+         CASE 
+           WHEN model LIKE '%gpt-4%' THEN 0.03
+           WHEN model LIKE '%gpt-3.5%' THEN 0.002
+           ELSE 0.01
+         END as input_cost_per_1k,
+         CASE 
+           WHEN model LIKE '%gpt-4%' THEN 0.06
+           WHEN model LIKE '%gpt-3.5%' THEN 0.002
+           ELSE 0.03
+         END as output_cost_per_1k
+  FROM responses
+  GROUP BY model
+)
+SELECT 
+  model,
+  total_input_tokens,
+  total_output_tokens,
+  ROUND((total_input_tokens * input_cost_per_1k / 1000.0) +
+        (total_output_tokens * output_cost_per_1k / 1000.0), 2) as estimated_cost_usd,
+  ROUND((total_input_tokens + total_output_tokens) / 1000.0, 1) as total_tokens_k
+FROM model_costs
+ORDER BY estimated_cost_usd DESC;
+#+end_src
+
+* Usage Analysis
+
+** Conversation Patterns
+#+begin_src sqlite :db ~/.config/io.datasette.llm/logs.db :tangle ../src/sql/usage/01-usage-analysis.sql :mkdirp t
+WITH ConversationStats AS (
+  SELECT 
+    c.id as conversation_id,
+    c.name as conversation_name,
+    c.model as initial_model,
+    COUNT(r.id) as num_responses,
+    MIN(r.datetime_utc) as start_time,
+    MAX(r.datetime_utc) as end_time,
+    SUM(r.input_tokens) as total_input_tokens,
+    SUM(r.output_tokens) as total_output_tokens,
+    SUM(r.duration_ms) as total_duration_ms
+  FROM conversations c
+  LEFT JOIN responses r ON c.id = r.conversation_id
+  GROUP BY c.id
+)
+SELECT 
+  ROUND(AVG(num_responses), 1) as avg_responses_per_conversation,
+  ROUND(AVG(total_input_tokens), 0) as avg_input_tokens_per_conversation,
+  ROUND(AVG(total_output_tokens), 0) as avg_output_tokens_per_conversation,
+  ROUND(AVG(total_duration_ms) / 1000.0, 1) as avg_conversation_duration_sec,
+  COUNT(*) as total_conversations,
+  SUM(num_responses) as total_responses
+FROM ConversationStats;
+#+end_src
+
+* Usage Instructions
+
+To tangle all SQL files to their respective directories:
+
+#+begin_src elisp
+(org-babel-tangle)
+#+end_src
+
+This will create the directory structure shown at the top of this file and place all SQL queries in their appropriate locations. The SQL files can then be used with any SQLite client:
+
+#+begin_src shell
+sqlite3 ~/.config/io.datasette.llm/logs.db < ../src/sql/basic/01-total-conversations.sql
+#+end_src
+
+* References
+1. Datasette LLM Logging Schema: https://llm.datasette.io/en/stable/logging.html
+2. Org-mode SQLite Documentation: https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-sqlite.html
+3. Emacs Database Manual: https://www.gnu.org/software/emacs/manual/html_node/elisp/Database.html

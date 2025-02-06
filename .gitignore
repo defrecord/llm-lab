@@ -47,6 +47,9 @@ data/
 !examples/*.org
 !examples/.guides
 
+# Fix files
+*.fix
+
 .#*
 *.tmp
 codebase_review_*.md

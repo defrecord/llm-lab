@@ -42,7 +42,7 @@ help:  ## Display this help
 .PHONY: test clean check run all format lint docs layout register-templates \
         help init check-env llm-model-default embeddings sin session-agent guides \
         verify-guides analyze-guides sanity check-set check-coverage analyze-posts \
-        logs essential-examples model-usage analyze-logs register-sin
+        logs essential-examples model-usage analyze-logs register-sin math-test
 
 # Student-focused targets
 
@@ -143,7 +143,7 @@ run: llm-model-default ## Run the lab exercises
         @test -f scripts/run-without-emacs.sh && ./scripts/run-without-emacs.sh
 
 # Development and testing
-sanity: scripts/sanity.sh ## [Dev] Run comprehensive sanity checks with multi-model analysis
+sanity: scripts/sanity.sh math-test ## [Dev] Run comprehensive sanity checks with multi-model analysis
         @test -f scripts/sanity.sh && ./scripts/sanity.sh
 
 install: ## [Dev] Install package in development mode
@@ -203,12 +203,26 @@ analyze-posts: scripts/analyze-llm-posts.sh ## [Advanced] Study LLM usage patter
         @echo "Analysis complete. Reports available in data/spider/simonwillison.net/"
 
 # Analysis targets
-analyze-logs: ## [Analysis] Run SQLite analytics on LLM logs
+math-test: scripts/math-test.sh ## [Analysis] Run multi-model math test
+        @echo "Running multi-model math test..."
+        @test -f scripts/math-test.sh && ./scripts/math-test.sh | tee $(DATA_DIR)/math-test.log
+
+analyze-logs: math-test ## [Analysis] Run SQLite analytics on LLM logs
         @echo "Running SQLite log analysis..."
         @test -f examples/51-sqlite-queries.org && \
                 $(EMACS) --batch --eval "(require 'org)" --eval "(org-babel-tangle-file \"examples/51-sqlite-queries.org\")"
         @echo "Analysis queries available in src/sql/"
         @echo "Run queries with: sqlite3 ~/.config/io.datasette.llm/logs.db < src/sql/basic/01-total-conversations.sql"
+        @echo "\nRecent math test results (from logs):"
+        @sqlite3 ~/.config/io.datasette.llm/logs.db "SELECT r.model, 
+               r.prompt, 
+               r.response,
+               r.duration_ms,
+               datetime(r.datetime_utc) as time
+        FROM responses r
+        WHERE r.prompt LIKE '%Calculate exactly:%'
+        ORDER BY r.datetime_utc DESC
+        LIMIT 5;"
 
 register-sin: scripts/register-sin.sh ## [Analysis] Register SIN templates for structured analysis
         @echo "Registering SIN templates..."

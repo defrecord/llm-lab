@@ -54,6 +54,7 @@
      (python . t)
      (mermaid . t)
      (scheme . t)
+     (sqlite . t)
      (emacs-lisp . t)))
 
   ;; Tangle settings

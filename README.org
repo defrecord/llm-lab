@@ -16,7 +16,8 @@ A hands-on learning environment for exploring LLM CLI tools with practical examp
 1. Clone the repository
 2. Run ~make init~ to set up your environment
 3. Run ~make check-env~ to verify your setup
-4. See examples directory to begin learning
+4. Run ~make essential-examples~ to process introductory examples
+5. See examples directory to begin learning
 
 ** Available Models
 - Claude 3 models via llm-claude-3
@@ -27,14 +28,34 @@ A hands-on learning environment for exploring LLM CLI tools with practical examp
 * Learning Path
 All examples are self-contained and build upon each other:
 
+** Essential Examples
+These are the core examples to get started:
+
 1. [[file:examples/00-getting-started.org][Getting Started]] - Basic LLM usage and setup
    - First commands and responses
    - Understanding the environment
    - Working with models
+   - Practice: Basic prompts and responses
 
 2. [[file:examples/01-templates.org][Templates]] - Working with system prompts
    - Creating custom templates
    - Using built-in templates
+   - Template best practices
+   - Practice: Create and use custom templates
+
+3. [[file:examples/02-context-management.org][Context Management]] - Managing conversations
+   - Project analysis frameworks
+   - Memory and state management
+   - Template selection
+   - Practice: Analyze a project structure
+
+** Advanced Topics
+After completing the essential examples, explore these advanced topics:
+
+1. [[file:examples/03-agents.org][Agents]] - Specialized roles and interactions
+   - Agent types and purposes
+   - Multi-agent conversations
+   - Agent collaboration patterns
    - Template best practices
 
 3. [[file:examples/02-context-management.org][Context Management]] - Managing conversations
@@ -71,9 +92,64 @@ All examples are self-contained and build upon each other:
 The workspace is organized for easy navigation:
 
 - ~examples/~ :: Step-by-step learning materials
+  - ~51-sqlite-queries.org~ :: SQLite analytics for LLM logs
+  - ~src/~ :: Tangled code from examples
+- ~templates/~ :: Analysis templates and frameworks
+  - ~sin-framework.md~ :: System analysis framework
+  - ~sin-execution-plan.md~ :: Implementation planning
+  - ~sin-execute-and-document.md~ :: Results documentation
+- ~src/sql/~ :: Organized SQL queries for analysis
+  - ~advanced/~ :: Complex analytics queries
+  - ~basic/~ :: Basic usage statistics
+  - ~cost/~ :: Token cost analysis
+  - ~usage/~ :: Usage pattern analysis
+- ~scripts/~ :: Utility scripts
+  - ~register-sin.sh~ :: SIN template registration
 - ~prompts/~ :: Example system prompts
 - ~docs/~ :: Additional guides and references
 - ~data/~ :: Your working directory for outputs
+
+** SQLite Analytics
+Comprehensive SQLite queries for analyzing LLM usage logs:
+
+*** Basic Analytics
+- Conversation counts and trends
+- Model usage statistics
+- Temporal analysis
+
+*** Advanced Analytics
+- Response time analysis
+- Token usage patterns
+- Full-text search capabilities
+
+*** Cost Analysis
+- Token usage tracking
+- Cost estimation by model
+- Usage optimization insights
+
+** SIN Templates
+The Structured Intelligence Network (SIN) provides a systematic approach to LLM analysis:
+
+*** Framework Analysis
+- Analysis categories and metrics
+- Data collection methods
+- Evaluation criteria
+- Implementation steps
+- Reporting structure
+
+*** Execution Planning
+- Implementation schedule
+- Data collection plan
+- Analysis procedures
+- Resource allocation
+- Risk management
+
+*** Documentation
+- Executive summary
+- Analysis results
+- Technical details
+- Recommendations
+- Next steps
 
 * Need Help?
 - Check the example documentation

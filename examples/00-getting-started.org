@@ -22,7 +22,7 @@ Initializing project environment...
 [0;32m[0m Created data/images
 Installing core dependencies...
 Installing LLM providers...
-Requirement already satisfied: llm-cluster in /home/computeruse/.pyenv/versions/3.11.6/lib/python3.11/site-packages (0.2)
+Requirement already satisfied: llm-anthropic in ./.venv/lib/python3.11/site-packages (0.12)
 #+end_example
 
 
@@ -67,9 +67,9 @@ llm "Write a haiku about debugging"
 #+end_src
 
 #+RESULTS:
-: Code falls, I despair
-:  Errors creep like hidden snakes
-: Fixing with each line
+: Lines of code confound
+: Error messages whisper fate
+: Solutions slowly rise
 
 * Model Information
 View available models and configuration.
@@ -145,7 +145,7 @@ llm logs --json -n 0 | jq -r '.[]|.model' | sort | uniq -c | sort -rn
 #+end_src
 
 #+RESULTS:
-:      65 llama3.2:latest
+:      66 llama3.2:latest
 :      33 deepseek-r1:latest
 :       7 gemini-2.0-flash-exp
 
@@ -159,6 +159,10 @@ llm chat -m llama3.2
 #+end_src
 
 #+RESULTS:
+: Chatting with llama3.2:latest
+: Type 'exit' or 'quit' to exit
+: Type '!multi' to enter multiple lines, then '!end' to finish
+: > 
 
 # Git operations - marked as :llm nil
 #+begin_src shell :llm nil
@@ -166,3 +170,81 @@ git diff --staged | llm -t commit
 #+end_src
 
 #+RESULTS:
+#+begin_example
+class CommitMessageGenerator {
+  generate(message) {
+    const diff = this.analyzeDiff(message);
+    return this.formatCommitMessage(diff);
+  }
+
+  analyzeDiff(diff) {
+    let type;
+    if (diff.includes('---')) {
+      // Extract the patch set number
+      const match = diff.match(/-- patch-set (\d+)/);
+      if (match) {
+        type = 'fix';
+      }
+    } else if (diff.includes('+')) {
+      // Check for a new file or modification
+      return;
+    }
+
+    let body;
+    let footer = '';
+    if (diff.includes('---') && diff.includes('++')) {
+      const scopeMatch = diff.match(/-- (.+) \+/);
+      if (scopeMatch) {
+        type += ` ${scopeMatch[1].trim()}`;
+      }
+    } else if (diff.includes('+')) {
+      // Check for a new file or modification
+      body = this.extractChanges(diff);
+    }
+
+    return { type, body, footer };
+  }
+
+  formatCommitMessage(diff) {
+    const { type, body, footer } = diff;
+    let commitMessage = `${type}:\n`;
+    if (body) {
+      commitMessage += `  ${body}\n`;
+    }
+    if (footer) {
+      commitMessage += `\n${footer}`;
+    }
+
+    return commitMessage.trim();
+  }
+
+  extractChanges(diff) {
+    const changes = [];
+    let i = diff.indexOf('+');
+    while (i !== -1) {
+      let line = diff.slice(i + 1, diff.indexOf('\n', i)).trim();
+      if (!line.startsWith('---')) {
+        changes.push(line);
+      }
+      i = diff.indexOf('\n', i + 1);
+    }
+
+    return changes.join('\n');
+  }
+}
+
+const generator = new CommitMessageGenerator();
+
+// Example usage
+const message = `--- a/test.js
++++ b/test.js
+
+@@ -1,3 + 1,5 @@
+- console.log('Hello World');
++ console.log('Hello Universe');
++ const foo = 'bar';
++ bar();
++ baz()`;
+
+console.log(generator.generate(message));
+#+end_example

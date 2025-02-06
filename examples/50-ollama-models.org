@@ -20,6 +20,10 @@ echo $HTTP_PROXY
 echo $HTTPS_PROXY
 #+end_src
 
+#+RESULTS:
+: http://host.docker.internal:8080
+: http://host.docker.internal:8080
+
 * Available Ollama Models
 List all available Ollama models excluding custom ones.
 
@@ -28,7 +32,7 @@ llm models list | grep ^Ollama | grep -v jwalsh | grep -v legal-specialist | gre
 #+end_src
 
 #+RESULTS:
-[[file:ollama-models.txt]]
+[[file:../data/ollama-models.txt]]
 
 * Model Testing Framework
 
@@ -45,7 +49,7 @@ done
 #+end_src
 
 #+RESULTS:
-[[file:ollama-basic.txt]]
+[[file:../data/ollama-basic.txt]]
 
 ** Code Generation Test
 Compare code generation capabilities.
@@ -60,7 +64,7 @@ done
 #+end_src
 
 #+RESULTS:
-[[file:ollama-code.txt]]
+[[file:../data/ollama-code.txt]]
 
 ** Response Time Analysis
 Measure and compare response times.
@@ -74,7 +78,7 @@ done
 #+end_src
 
 #+RESULTS:
-[[file:ollama-timing.txt]]
+[[file:../data/ollama-timing.txt]]
 
 * Log Analysis
 
@@ -90,7 +94,7 @@ fi
 #+end_src
 
 #+RESULTS:
-[[file:proxy-logs.txt]]
+[[file:../data/proxy-logs.txt]]
 
 ** LLM Command Logs
 Analyze LLM command history specific to Ollama models.
@@ -100,7 +104,7 @@ llm logs --json | jq -r '.[] | select(.model | startswith("ollama/")) | {model: 
 #+end_src
 
 #+RESULTS:
-[[file:ollama-logs.txt]]
+[[file:../data/ollama-logs.txt]]
 
 ** Performance Metrics
 Generate performance statistics for Ollama models.
@@ -110,7 +114,7 @@ llm logs --json | jq -r '.[] | select(.model | startswith("ollama/")) | .model' 
 #+end_src
 
 #+RESULTS:
-[[file:ollama-metrics.txt]]
+[[file:../data/ollama-metrics.txt]]
 
 * Error Handling and Recovery
 Example of handling common Ollama model errors.
@@ -127,7 +131,7 @@ llm -m ollama/llama2 "$(yes 'test' | head -n 1000)" 2>&1 || echo "Long prompt ha
 #+end_src
 
 #+RESULTS:
-[[file:ollama-errors.txt]]
+[[file:../data/ollama-errors.txt]]
 
 * Interactive Examples
 Note: These examples require user interaction and are not suitable for automated execution.

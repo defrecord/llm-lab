@@ -12,6 +12,9 @@ First, ensure we have the required model and directories.
 llm sentence-transformers register all-MiniLM-L6-v2
 #+end_src
 
+#+RESULTS:
+[[file:../data/photo-setup.txt]]
+
 #+begin_src shell :llm f
 # Verify directories
 ls -la ../data/images/jwalsh_*  2>/dev/null | wc -l  || echo "Photo directory not found"
@@ -31,7 +34,7 @@ Run the complete photo semantics demo script.
 #+end_src
 
 #+RESULTS:
-[[file:photo-demo.txt]]
+[[file:../data/photo-demo.txt]]
 
 * Semantic Search Examples
 Test specific semantic searches.
@@ -41,19 +44,31 @@ Test specific semantic searches.
 llm similar photo-semantics -c "japanese cuisine and sushi"
 #+end_src
 
+#+RESULTS:
+[[file:../data/photo-search.txt]]
+
 #+begin_src shell :llm t :results file :file ../data/photo-search.txt :tangle ../data/photo-search.sh
 llm similar photo-semantics -c "pasta dishes with vegetables"
 #+end_src
+
+#+RESULTS:
+[[file:../data/photo-search.txt]]
 
 #+begin_src shell :llm t :results file :file ../data/photo-search.txt :tangle ../data/photo-search.sh
 # Urban scenes
 llm similar photo-semantics -c "city waterfront or harbor"
 #+end_src
 
+#+RESULTS:
+[[file:../data/photo-search.txt]]
+
 #+begin_src shell :llm t :results file :file ../data/photo-search.txt :tangle ../data/photo-search.sh
 # Documentation and UI
 llm similar photo-semantics -c "technical documentation or user interface"
 #+end_src
+
+#+RESULTS:
+[[file:../data/photo-search.txt]]
 
 #+begin_src shell :llm t :results file :file ../data/photo-search.txt :tangle ../data/photo-search.sh
 # Lifestyle
@@ -61,7 +76,7 @@ llm similar photo-semantics -c "coffee shop and reading"
 #+end_src
 
 #+RESULTS:
-[[file:photo-search.txt]]
+[[file:../data/photo-search.txt]]
 
 * Analyzing Results
 Review embedding effectiveness.
@@ -82,7 +97,7 @@ done
 #+end_src
 
 #+RESULTS:
-[[file:photo-analysis.txt]]
+[[file:../data/photo-analysis.txt]]
 
 * Advanced Usage
 Example of more complex queries.
@@ -93,13 +108,22 @@ Example of more complex queries.
 llm similar photo-semantics -c "food photography with natural lighting"
 #+end_src
 
+#+RESULTS:
+[[file:../data/photo-advanced.txt]]
+
 #+begin_src shell :llm t :results file :file ../data/photo-advanced.txt :tangle ../data/photo-advanced.sh
 llm similar photo-semantics -c "modern urban architecture near water"
 #+end_src
 
+#+RESULTS:
+[[file:../data/photo-advanced.txt]]
+
 #+begin_src shell :llm t :results file :file ../data/photo-advanced.txt :tangle ../data/photo-advanced.sh
 llm similar photo-semantics -c "work environment with technology"
 #+end_src
+
+#+RESULTS:
+[[file:../data/photo-advanced.txt]]
 
 ** NNegative queries (should find few/no matches)
 
@@ -107,16 +131,22 @@ llm similar photo-semantics -c "work environment with technology"
 llm similar photo-semantics -c "cars and transportation"
 #+end_src
 
+#+RESULTS:
+[[file:../data/photo-advanced.txt]]
+
 #+begin_src shell :llm t :results file :file ../data/photo-advanced.txt :tangle ../data/photo-advanced.sh
 llm similar photo-semantics -c "nature and landscapes"
 #+end_src
+
+#+RESULTS:
+[[file:../data/photo-advanced.txt]]
 
 #+begin_src shell :llm t :results file :file ../data/photo-advanced.txt :tangle ../data/photo-advanced.sh
 llm similar photo-semantics -c "portraits and people"
 #+end_src
 
 #+RESULTS:
-[[file:photo-advanced.txt]]
+[[file:../data/photo-advanced.txt]]
 
 * Notes
 - The demo uses the all-MiniLM-L6-v2 model for embeddings

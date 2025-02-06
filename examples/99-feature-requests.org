@@ -10,6 +10,8 @@ Intelligent model selection based on task characteristics:
 llm --auto-model "Analyze this complex technical document"
 #+end_src
 
+#+RESULTS:
+
 Features needed:
 - Task complexity analysis
 - Performance history tracking
@@ -24,6 +26,8 @@ llm --workflow code-review \
     --agents "code-reviewer,security-analyst,performance-expert" \
     --input "path/to/code/*.py"
 #+end_src
+
+#+RESULTS:
 
 Requirements:
 - Agent role definitions
@@ -42,6 +46,8 @@ llm --context-id project-x \
     "Continue our discussion about the API design"
 #+end_src
 
+#+RESULTS:
+
 Needed capabilities:
 - Persistent context storage
 - Context pruning and relevance scoring
@@ -57,6 +63,8 @@ llm debug --show-reasoning \
     --visualize-attention \
     "Explain how you reached this conclusion"
 #+end_src
+
+#+RESULTS:
 
 Features needed:
 - Thought process visualization
@@ -74,6 +82,8 @@ llm templates version \
     --changelog "Improved security checks"
 #+end_src
 
+#+RESULTS:
+
 Requirements:
 - Template versioning
 - Changelog tracking
@@ -89,6 +99,8 @@ llm analytics \
     --metrics "accuracy,latency,cost" \
     --format dashboard
 #+end_src
+
+#+RESULTS:
 
 Needed features:
 - Usage statistics
@@ -106,6 +118,8 @@ llm test \
     --coverage full \
     --report detailed
 #+end_src
+
+#+RESULTS:
 
 Requirements:
 - Test case generation

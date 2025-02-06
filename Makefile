@@ -212,17 +212,7 @@ analyze-logs: math-test ## [Analysis] Run SQLite analytics on LLM logs
         @test -f examples/51-sqlite-queries.org && \
                 $(EMACS) --batch --eval "(require 'org)" --eval "(org-babel-tangle-file \"examples/51-sqlite-queries.org\")"
         @echo "Analysis queries available in src/sql/"
-        @echo "Run queries with: sqlite3 ~/.config/io.datasette.llm/logs.db < src/sql/basic/01-total-conversations.sql"
-        @echo "\nRecent math test results (from logs):"
-        @sqlite3 ~/.config/io.datasette.llm/logs.db "SELECT r.model, 
-               r.prompt, 
-               r.response,
-               r.duration_ms,
-               datetime(r.datetime_utc) as time
-        FROM responses r
-        WHERE r.prompt LIKE '%Calculate exactly:%'
-        ORDER BY r.datetime_utc DESC
-        LIMIT 5;"
+        @test -f scripts/analyze-llm-logs.sh && ./scripts/analyze-llm-logs.sh
 
 register-sin: scripts/register-sin.sh ## [Analysis] Register SIN templates for structured analysis
         @echo "Registering SIN templates..."

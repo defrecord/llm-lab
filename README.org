@@ -43,12 +43,6 @@ These are the core examples to get started:
    - Template best practices
    - Practice: Create and use custom templates
 
-3. [[file:examples/02-context-management.org][Context Management]] - Managing conversations
-   - Project analysis frameworks
-   - Memory and state management
-   - Template selection
-   - Practice: Analyze a project structure
-
 ** Advanced Topics
 After completing the essential examples, explore these advanced topics:
 
@@ -58,32 +52,27 @@ After completing the essential examples, explore these advanced topics:
    - Agent collaboration patterns
    - Template best practices
 
-3. [[file:examples/02-context-management.org][Context Management]] - Managing conversations
+2. [[file:examples/02-context-management.org][Context Management]] - Managing conversations
    - Maintaining context
    - Structured interactions
    - Memory handling
 
-4. [[file:examples/03-agents.org][Agents]] - Specialized roles and interactions
-   - Agent types and purposes
-   - Multi-agent conversations
-   - Agent collaboration patterns
-
-5. [[file:examples/04-embeddings-intro.org][Embeddings Introduction]] - Vector representations
+3. [[file:examples/04-embeddings-intro.org][Embeddings Introduction]] - Vector representations
    - Understanding embeddings
    - Basic vector operations
    - Similarity searches
 
-6. [[file:examples/05-photo-embeddings.org][Photo Embeddings]] - Working with images
+4. [[file:examples/05-photo-embeddings.org][Photo Embeddings]] - Working with images
    - Image analysis
    - Semantic search
    - Visual relationships
 
-7. [[file:examples/06-advanced-usage.org][Advanced Usage]] - Complex workflows
+5. [[file:examples/06-advanced-usage.org][Advanced Usage]] - Complex workflows
    - Integration patterns
    - Custom solutions
    - Best practices
 
-8. [[file:examples/50-ollama-models.org][Ollama Models]] - Local model usage
+6. [[file:examples/50-ollama-models.org][Ollama Models]] - Local model usage
    - Setting up Ollama
    - Model management
    - Performance considerations

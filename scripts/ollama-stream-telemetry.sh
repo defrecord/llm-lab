@@ -15,12 +15,21 @@ build_curl_cmd() {
     # Add proxy settings if they exist
     if [[ -n "${HTTP_PROXY}" ]]; then
         cmd+=" --proxy ${HTTP_PROXY}"
+        # Add custom headers for mitmproxy filtering
+        cmd+=" -H 'X-Request-ID: ollama-telemetry'"
+        cmd+=" -H 'X-Client-Type: ollama-cli'"
         [[ -n "${DEBUG}" ]] && echo "Debug: Using HTTP proxy: ${HTTP_PROXY}" >&2
     fi
     
     # Add common options
-    cmd+=" -s"
-    [[ -n "${DEBUG}" ]] && cmd+=" -v"
+    cmd+=" -s"                        # silent mode
+    cmd+=" --compressed"              # handle compressed responses
+    cmd+=" --tcp-nodelay"            # optimize for streaming
+    cmd+=" -H 'Accept-Encoding: gzip, deflate'" # explicit encoding
+    [[ -n "${DEBUG}" ]] && cmd+=" -v" # verbose in debug mode
+    
+    # Add user agent for tracking in mitmproxy
+    cmd+=" -A 'ollama-telemetry/1.0 (telemetry-script)'"
     
     echo "$cmd"
 }
@@ -87,12 +96,39 @@ if [[ -n "${MOCK}" ]]; then
     if [[ -n "${DEBUG}" ]]; then
         echo "Debug: Using mock data" >&2
     fi
-    # Simulate streaming response
+    # Simulate streaming responses with properly formatted JSON
     RESPONSE='{
-      "model":"llama3.2",
-      "response":"42",
+      "model":"llama3.2:latest",
+      "created_at":"2025-02-08T02:59:33.336236Z",
+      "response":"The",
+      "done":false
+    }
+{
+      "model":"llama3.2:latest",
+      "created_at":"2025-02-08T02:59:33.354739Z",
+      "response":" answer",
+      "done":false
+    }
+{
+      "model":"llama3.2:latest",
+      "created_at":"2025-02-08T02:59:33.373535Z",
+      "response":" is",
+      "done":false
+    }
+{
+      "model":"llama3.2:latest",
+      "created_at":"2025-02-08T02:59:33.392696Z",
+      "response":" 42",
+      "done":false
+    }
+{
+      "model":"llama3.2:latest",
+      "created_at":"2025-02-08T02:59:34.950514Z",
+      "response":"",
       "done":true,
+      "done_reason":"stop",
       "total_duration":295031000,
+      "prompt_eval_count":35,
       "eval_count":485,
       "eval_duration":134610000
     }'
@@ -123,12 +159,18 @@ if [[ -z "${MOCK}" ]]; then
         fi
     fi
     
-    # Make the request
-    RESPONSE=$($curl_cmd -X POST http://localhost:11434/api/generate \
+    # Make the request with explicit accept header for streaming
+    RESPONSE=$($curl_cmd \
+      -X POST \
       -H "Content-Type: application/json" \
+      -H "Accept: application/x-ndjson" \
+      --connect-timeout 10 \
+      --max-time 300 \
+      http://localhost:11434/api/generate \
       -d "{
         \"model\": \"$MODEL\",
-        \"prompt\": \"40 - -7 - 6 + 1\"
+        \"prompt\": \"40 - -7 - 6 + 1\",
+        \"stream\": true
       }" 2> >(if [[ -n "${DEBUG}" ]]; then cat >&2; else cat > /dev/null; fi))
 fi
 
@@ -137,13 +179,28 @@ if [[ -n "${DEBUG}" ]]; then
     echo "$RESPONSE" | jq '.' >&2
 fi
 
-echo "$RESPONSE" | \
-tee >(jq -r 'select(.response != null) | .response' >&2) | \
-jq -c 'select(.done==true) | {
+# Process the response through two parallel streams:
+#
+# Stream 1: Content output
+# - Extract only response content
+# - Display incrementally to stderr for live output
+echo "$RESPONSE" | jq -r 'select(.response != null) | .response' >&2
+
+# Stream 2: Telemetry metrics
+# - Wait for completion (done=true)
+# - Extract and format relevant metrics
+# - Output as structured JSON to stdout
+echo "$RESPONSE" | jq -c 'select(.done==true) | {
+  timestamp: .created_at,
+  model: .model,
   done_reason,
-  total_duration: (.total_duration/1e9),
-  eval_count,
-  eval_duration: (.eval_duration/1e9)
+  telemetry: {
+    total_duration_sec: (.total_duration/1e9),
+    prompt_tokens: .prompt_eval_count,
+    completion_tokens: .eval_count,
+    eval_duration_sec: (.eval_duration/1e9),
+    tokens_sec: (.eval_count / (.eval_duration/1e9))
+  }
 }'
 
 # Example output:

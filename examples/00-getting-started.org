@@ -38,9 +38,9 @@ cd .. && make check-env | tr -cd '[:print:]\n'
 make[1]: Entering directory '/home/computeruse/.anthropic/sandbox/defrecord/llm-lab'
 Checking environment...
  ANTHROPIC_API_KEY is set
- GEMINI_API_KEY is not set - GEMINI_API_KEY
- GOOGLE_AI_API_KEY is not set - GOOGLE_AI_API_KEY
- OPENAI_API_KEY is not set - OPENAI_API_KEY
+ GEMINI_API_KEY is set
+ GOOGLE_AI_API_KEY is set
+ OPENAI_API_KEY is set
  AWS_REGION is set
  GITHUB_TOKEN is set
  AWS_SECRET_ACCESS_KEY is set
@@ -67,9 +67,9 @@ llm "Write a haiku about debugging"
 #+end_src
 
 #+RESULTS:
-: Lines of code confound
-: Error messages whisper fate
-: Solutions slowly rise
+: Gears twist, clues elusive
+:  Error's bitter, cold grasp
+: Code's stubborn delight
 
 * Model Information
 View available models and configuration.
@@ -95,16 +95,16 @@ llm templates list | head
 
 #+RESULTS:
 #+begin_example
-clojure-function : system: Write a pure Clojure function following functional...
-commit           : system: name: commit model: llama2 temperature: 0.7 system...
-dialogue         : system: ### Dialogue Module Prompt ###  **Background-infor...
-elisp-function   : system: Write an Emacs Lisp function following elisp conve...
-go-function      : system: Write an idiomatic Go function following Go style ...
-js-function      : system: Write a modern JavaScript function using ES6+ feat...
-memory           : system: ### Memory Module Prompt ###  **Background-informa...
-org-template     : system: Create org-mode documentation template with: - Pro...
-python-function  : system: Write a clean, well-documented Python function tha...
-python-template  : system: Write Python code
+clojure-function         : system: Write a pure Clojure function following fu...
+commit                   : system: name: commit model: llama2 temperature: 0....
+dialogue                 : system: ### Dialogue Module Prompt ###  **Backgrou...
+elisp-function           : system: Write an Emacs Lisp function following eli...
+go-function              : system: Write an idiomatic Go function following G...
+js-function              : system: Write a modern JavaScript function using E...
+memory                   : system: ### Memory Module Prompt ###  **Background...
+org-template             : system: Create org-mode documentation template wit...
+python-function          : system: Write a clean, well-documented Python func...
+python-numpy             : system: Write a Python function optimized for nume...
 #+end_example
 
 Register a basic Python template. Note: We mark this :llm nil as it's a one-time setup.
@@ -145,9 +145,49 @@ llm logs --json -n 0 | jq -r '.[]|.model' | sort | uniq -c | sort -rn
 #+end_src
 
 #+RESULTS:
-:      66 llama3.2:latest
-:      33 deepseek-r1:latest
-:       7 gemini-2.0-flash-exp
+#+begin_example
+     77 llama3.2:latest
+     34 deepseek-r1:latest
+     10 gemini-2.0-flash-exp
+      1 zephyr:latest
+      1 session-agent:latest
+      1 phi:latest
+      1 phi3:latest
+      1 mistral:latest
+      1 llava:latest
+      1 llama3.1:latest
+      1 legal-specialist:latest
+      1 learnlm-1.5-pro-experimental
+      1 jwalsh:latest
+      1 jwalsh/technical-writer:latest
+      1 jwalsh/staff-engineers:latest
+      1 jwalsh/sofia:latest
+      1 jwalsh/marcus:latest
+      1 jwalsh/jwalsh:latest
+      1 jwalsh/jihye:latest
+      1 jwalsh/jason:latest
+      1 jwalsh/galina:latest
+      1 jwalsh/emma:latest
+      1 jwalsh/coordinator:latest
+      1 jwalsh/alex:latest
+      1 gemini-pro
+      1 gemini-exp-1206
+      1 gemini-2.0-flash-thinking-exp-1219
+      1 gemini-2.0-flash-thinking-exp-01-21
+      1 gemini-1.5-pro-latest
+      1 gemini-1.5-pro-002
+      1 gemini-1.5-pro-001
+      1 gemini-1.5-flash-latest
+      1 gemini-1.5-flash-8b-latest
+      1 gemini-1.5-flash-8b-001
+      1 gemini-1.5-flash-002
+      1 gemini-1.5-flash-001
+      1 french-translator:latest
+      1 codellama:latest
+      1 anthropic/claude-3-opus-20240229
+      1 anthropic/claude-3-5-sonnet-20241022
+      1 anthropic/claude-3-5-sonnet-20240620
+#+end_example
 
 
 * Note on Interactive Commands
@@ -171,80 +211,79 @@ git diff --staged | llm -t commit
 
 #+RESULTS:
 #+begin_example
-class CommitMessageGenerator {
-  generate(message) {
-    const diff = this.analyzeDiff(message);
-    return this.formatCommitMessage(diff);
-  }
+import re
 
-  analyzeDiff(diff) {
-    let type;
-    if (diff.includes('---')) {
-      // Extract the patch set number
-      const match = diff.match(/-- patch-set (\d+)/);
-      if (match) {
-        type = 'fix';
-      }
-    } else if (diff.includes('+')) {
-      // Check for a new file or modification
-      return;
-    }
+def generate_commit_message(diff):
+    lines = diff.split('\n')
 
-    let body;
-    let footer = '';
-    if (diff.includes('---') && diff.includes('++')) {
-      const scopeMatch = diff.match(/-- (.+) \+/);
-      if (scopeMatch) {
-        type += ` ${scopeMatch[1].trim()}`;
-      }
-    } else if (diff.includes('+')) {
-      // Check for a new file or modification
-      body = this.extractChanges(diff);
-    }
+    # Determine the type of commit based on the first line
+    if lines[0].startswith('diff'):
+        type = 'feat'
+    elif lines[0].startswith('---'):
+        type = 'docs'
+    elif lines[0].startswith('@@'):
+        type = 'refactor'
+    elif lines[0].startswith('?'):
+        type = 'test'
+    elif re.match(r'^fix:.+?$', lines[0]):
+        type = 'fix'
+    else:
+        # If none of the above conditions match, default to 'style' and refactor if diff is not empty
+        if lines[0] == '':
+            type = 'style'
+            if len(lines) > 1:
+                type = 'refactor'
+        else:
+            return None
 
-    return { type, body, footer };
-  }
+    scope = ''
+    description = ''
 
-  formatCommitMessage(diff) {
-    const { type, body, footer } = diff;
-    let commitMessage = `${type}:\n`;
-    if (body) {
-      commitMessage += `  ${body}\n`;
-    }
-    if (footer) {
-      commitMessage += `\n${footer}`;
-    }
+    for line in lines[1:]:
+        # Parse the commit description
+        if line.startswith('++'):
+            scope += line[2:]
+        elif line == '-':
+            continue
+        elif line == '+':
+            description += line + ' '
+        else:
+            match = re.match(r'^(\-|--|+)(.*)$', line)
+            if match:
+                action, action_body = match.groups()
+                if action != '-' and action != '+':
+                    description += action_body.strip() + ' '
 
-    return commitMessage.trim();
-  }
+    # Remove any leading or trailing whitespace from the description
+    description = description.strip()
 
-  extractChanges(diff) {
-    const changes = [];
-    let i = diff.indexOf('+');
-    while (i !== -1) {
-      let line = diff.slice(i + 1, diff.indexOf('\n', i)).trim();
-      if (!line.startsWith('---')) {
-        changes.push(line);
-      }
-      i = diff.indexOf('\n', i + 1);
-    }
+    # Check for breaking changes
+    if re.search(r'BREAKING CHANGE', description):
+        prefix = 'BREAKING CHANGE:'
+        description = description.replace('BREAKING CHANGE', '')
+    else:
+        prefix = ''
 
-    return changes.join('\n');
-  }
-}
+    # Format the commit message according to conventional format
+    body = f'{prefix}{description}\n\n'
 
-const generator = new CommitMessageGenerator();
+    return f'{type} {scope}: {description}' + body
 
-// Example usage
-const message = `--- a/test.js
-+++ b/test.js
+# Example usage
+diff = """
+@@ -1,5 + 1,8 @@
+- This is a test line.
+- This is another test line.
 
-@@ -1,3 + 1,5 @@
-- console.log('Hello World');
-+ console.log('Hello Universe');
-+ const foo = 'bar';
-+ bar();
-+ baz()`;
++ This is a new line added by me.
++ This is another new line added by me.
+ 
+@@ -2,3 + 2,4 @@
+ This is a test line in the middle.
+ This is another test line in the middle.
+ This is yet another test line in the middle.
+"""
 
-console.log(generator.generate(message));
+commit_message = generate_commit_message(diff)
+print(commit_message)
 #+end_example

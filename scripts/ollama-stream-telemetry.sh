@@ -14,10 +14,10 @@ build_curl_cmd() {
     
     # Add proxy settings if they exist
     if [[ -n "${HTTP_PROXY}" ]]; then
-        cmd+=" --proxy ${HTTP_PROXY}"
+        cmd+=" --proxy \"${HTTP_PROXY}\""
         # Add custom headers for mitmproxy filtering
-        cmd+=" -H 'X-Request-ID: ollama-telemetry'"
-        cmd+=" -H 'X-Client-Type: ollama-cli'"
+        cmd+=" -H \"X-Request-ID: ollama-telemetry\""
+        cmd+=" -H \"X-Client-Type: ollama-cli\""
         [[ -n "${DEBUG}" ]] && echo "Debug: Using HTTP proxy: ${HTTP_PROXY}" >&2
     fi
     
@@ -25,26 +25,46 @@ build_curl_cmd() {
     cmd+=" -s"                        # silent mode
     cmd+=" --compressed"              # handle compressed responses
     cmd+=" --tcp-nodelay"            # optimize for streaming
-    cmd+=" -H 'Accept-Encoding: gzip, deflate'" # explicit encoding
+    cmd+=" -H \"Accept-Encoding: gzip, deflate\"" # explicit encoding
+    cmd+=" -w \"%{time_connect},%{time_starttransfer},%{time_total}\"" # timing metrics
     [[ -n "${DEBUG}" ]] && cmd+=" -v" # verbose in debug mode
     
     # Add user agent for tracking in mitmproxy
-    cmd+=" -A 'ollama-telemetry/1.0 (telemetry-script)'"
+    cmd+=" -A \"ollama-telemetry/1.0 (telemetry-script)\"" 
+    
+    # Add retry logic with exponential backoff
+    cmd+=" --retry 3"
+    cmd+=" --retry-delay 1"
+    cmd+=" --retry-max-time 30"
     
     echo "$cmd"
 }
 
-# Function to check if Ollama is running
+# Function to check if Ollama is running and determine connection details
 check_ollama() {
     local curl_cmd=$(build_curl_cmd)
+    
+    # First try local connection
     if ! $curl_cmd "http://localhost:11434/api/version" > /dev/null; then
-        echo "Error: Cannot connect to Ollama at http://localhost:11434" >&2
-        echo "Please ensure Ollama is running and accessible" >&2
+        # If local fails and we have a proxy, try through host.docker.internal
         if [[ -n "${HTTP_PROXY}" ]]; then
-            echo "Using proxy: ${HTTP_PROXY}" >&2
+            [[ -n "${DEBUG}" ]] && echo "Debug: Local connection failed, trying through host.docker.internal" >&2
+            # Update to use host.docker.internal instead of localhost
+            OLLAMA_HOST="host.docker.internal"
+            if $curl_cmd "http://${OLLAMA_HOST}:11434/api/version" > /dev/null; then
+                [[ -n "${DEBUG}" ]] && echo "Debug: Successfully connected to Ollama through ${OLLAMA_HOST}" >&2
+                export OLLAMA_HOST
+                return 0
+            fi
         fi
+        echo "Error: Cannot connect to Ollama" >&2
+        echo "- Tried localhost:11434" >&2
+        [[ -n "${HTTP_PROXY}" ]] && echo "- Tried ${OLLAMA_HOST}:11434 through ${HTTP_PROXY}" >&2
+        echo "Please ensure Ollama is running and accessible" >&2
         exit 1
     fi
+    OLLAMA_HOST="localhost"
+    export OLLAMA_HOST
 }
 
 # Function to get model name from available models
@@ -195,11 +215,23 @@ echo "$RESPONSE" | jq -c 'select(.done==true) | {
   model: .model,
   done_reason,
   telemetry: {
-    total_duration_sec: (.total_duration/1e9),
-    prompt_tokens: .prompt_eval_count,
-    completion_tokens: .eval_count,
-    eval_duration_sec: (.eval_duration/1e9),
-    tokens_sec: (.eval_count / (.eval_duration/1e9))
+    time: {
+      total_duration_sec: (.total_duration/1e9),
+      eval_duration_sec: (.eval_duration/1e9),
+      connect_time: (input | split(",") | .[0] | tonumber),
+      time_to_first_byte: (input | split(",") | .[1] | tonumber),
+      total_transfer_time: (input | split(",") | .[2] | tonumber)
+    },
+    tokens: {
+      prompt_tokens: .prompt_eval_count,
+      completion_tokens: .eval_count,
+      tokens_sec: (.eval_count / (.eval_duration/1e9))
+    },
+    network: {
+      proxy_enabled: (env.HTTP_PROXY != null),
+      proxy_url: env.HTTP_PROXY,
+      host: env.OLLAMA_HOST
+    }
   }
 }'
 

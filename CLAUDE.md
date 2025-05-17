@@ -1,6 +1,6 @@
-# DEPRECATED - See CLAUDE.org instead
+# CLAUDE.md
 
-This CLAUDE.md file is deprecated. Please use CLAUDE.org for all project preferences and documentation.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 # LLM Lab Development Guidelines
 
@@ -8,10 +8,10 @@ This CLAUDE.md file is deprecated. Please use CLAUDE.org for all project prefere
 - `make test` - Run all tests
 - `make format` - Format code with black
 - `make lint` - Run linters (black --check and ruff)
-- `UV_SYSTEM_PYTHON=1 uv run pytest tests` - Run all tests directly
+- `UV_SYSTEM_PYTHON=1 uv run pytest tests` - Run all tests directly 
 - Single test: `UV_SYSTEM_PYTHON=1 uv run pytest tests/path/to/test_file.py::test_function_name`
 - `make clean` - Reset environment
-- `make sanity` - Comprehensive checks
+- `make sanity` - Comprehensive checks including math tests
 
 ## Code Style
 - **Formatting**: Black for code, Ruff for linting
@@ -19,13 +19,14 @@ This CLAUDE.md file is deprecated. Please use CLAUDE.org for all project prefere
 - **Types**: Use type annotations with standard library typing
 - **Naming**: snake_case (functions/variables), PascalCase (classes), UPPER_CASE (constants)
 - **Error handling**: Use specific exception types with helpful messages
-- **Commits**: Follow conventional commits format
+- **Commits**: Follow conventional commits format (feat, fix, docs, style, refactor, test, chore)
 
 ## Project Structure
-- Uses src layout pattern
-- Modules organized by functionality in src/llm_lab/
+- Uses src layout pattern with code in src/llm_lab/
 - Tests mirror the package structure in tests/
 - Configuration in pyproject.toml
 
 ## Important Notes
 - **Git commits**: Never use GPG signing in commits (`git commit -S` or `-S` flag) as this will freeze the UI
+- **Dependencies**: Project requires Python >=3.11
+- **Org format**: When possible, prefer .org files with proper header structure

@@ -55,3 +55,4 @@ data/
 codebase_review_*.md
 language-templates.org
 tmp.*
+**/.claude/settings.local.json

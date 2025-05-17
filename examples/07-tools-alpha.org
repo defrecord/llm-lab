@@ -1,0 +1,144 @@
+#+TITLE: Testing LLM 0.26a0 Tools Feature
+#+AUTHOR: aygp-dr
+#+DATE: 2025-05-17
+#+PROPERTY: header-args :mkdirp yes
+#+PROPERTY: header-args:shell :results output :exports both
+
+* LLM Tools Alpha Testing
+
+This example explores the new tools functionality in LLM 0.26a0, announced at PyCon US 2025.
+
+** Setup
+
+First, ensure you have the alpha versions installed:
+
+#+begin_src shell
+python -c "import llm; print(f'LLM version: {llm.__version__}')"
+python -c "import llm_anthropic; print(f'LLM-Anthropic version: {llm_anthropic.__version__}')" 2>/dev/null || echo "llm-anthropic not installed"
+python -c "import llm_gemini; print(f'LLM-Gemini version: {llm_gemini.__version__}')" 2>/dev/null || echo "llm-gemini not installed"
+#+end_src
+
+** Basic CLI Usage
+
+Test the basic multiplication tool via CLI:
+
+#+begin_src shell :eval no
+llm --functions '
+def multiply(x: int, y: int) -> int:
+    """Multiply two numbers."""
+    return x * y
+' 'what is 123 * 456' -m gemini-1.5-flash
+#+end_src
+
+Add debug output to see tool execution:
+
+#+begin_src shell :eval no
+llm --functions '
+def multiply(x: int, y: int) -> int:
+    """Multiply two numbers."""
+    return x * y
+' 'what is 123 * 456' -m gemini-1.5-flash --tools-debug
+#+end_src
+
+Test with more complex input/output types:
+
+#+begin_src shell :eval no
+llm --functions '
+def get_weather(location: str) -> dict:
+    """Get the current weather for a location (mock implementation)."""
+    return {
+        "location": location,
+        "temperature": 72,
+        "conditions": "sunny",
+        "humidity": 45
+    }
+' 'Whats the weather in New York? Is it hot or cold?' -m gemini-1.5-flash
+#+end_src
+
+** Python API Usage
+
+Create a file named =tools_test.py= with the following content:
+
+#+begin_src python :tangle src/examples/tools_test.py
+import sys
+import llm
+
+def multiply(x: int, y: int) -> int:
+    """Multiply two numbers."""
+    return x * y
+
+def get_weather(location: str) -> dict:
+    """Get the current weather for a location (mock implementation)."""
+    return {
+        "location": location,
+        "temperature": 72,
+        "conditions": "sunny",
+        "humidity": 45
+    }
+
+def main():
+    model_name = sys.argv[1] if len(sys.argv) > 1 else "gemini-1.5-flash"
+    try:
+        model = llm.get_model(model_name)
+        
+        # Test basic multiplication
+        print(f"\nTesting multiplication with {model_name}...")
+        response = model.chain(
+            "What is 123 * 456?",
+            tools=[multiply]
+        )
+        print(response.text())
+        
+        # Test complex data structure
+        print(f"\nTesting weather data with {model_name}...")
+        response = model.chain(
+            "What's the weather in New York? And is it hot or cold?",
+            tools=[get_weather]
+        )
+        print(response.text())
+        
+    except Exception as e:
+        print(f"Error testing with {model_name}: {e}")
+
+if __name__ == "__main__":
+    main()
+#+end_src
+
+Run the test with:
+
+#+begin_src shell :eval no
+python src/examples/tools_test.py gemini-1.5-flash
+#+end_src
+
+** Testing with Different Models
+
+Test compatibility across different model providers:
+
+#+begin_src shell :eval no
+# Claude test
+python src/examples/tools_test.py claude-3-haiku
+
+# Gemini test
+python src/examples/tools_test.py gemini-1.5-flash
+
+# OpenAI test (if available)
+python src/examples/tools_test.py gpt-4o-mini
+
+# Ollama test (if available)
+python src/examples/tools_test.py ollama/codellama
+#+end_src
+
+** Automated Testing
+
+Run the full test suite:
+
+#+begin_src shell :eval no
+UV_SYSTEM_PYTHON=1 uv run pytest tests/test_tools_alpha.py -v
+#+end_src
+
+** Next Steps
+
+- Explore custom tool sets for different use cases
+- Test with async functionality when available
+- Create examples of tool registration via plugins
+- Document model-specific differences in tool handling

@@ -53,6 +53,10 @@ use uv
 #export GOOGLE_AI_DEBUG=1
 #export REQUESTS_CA_BUNDLE="/path/to/mitmproxy-ca-cert.pem"  # If using MITM
 
+# Default Models (ref: https://github.com/simonw/llm/issues/932)
+export LLM_MODEL="gemini-1.5-flash"  # Set default model for all LLM commands
+export LLM_EMBEDDING_MODEL="sentence-transformers/all-MiniLM-L6-v2"  # Default embedding model
+
 # Reference Documentation:
 # llm: https://llm.datasette.io/en/stable/
 # llm-bedrock: https://github.com/simonw/llm-bedrock

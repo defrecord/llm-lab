@@ -1,0 +1,373 @@
+#+TITLE: Chat With Your Database
+#+AUTHOR: aygp-dr
+#+DATE: 2025-05-17
+#+PROPERTY: header-args :mkdirp yes
+#+PROPERTY: header-args:python :results output :exports both
+
+* Chat With Your Database Demo
+
+This example demonstrates how to use LLM tools to create a natural language interface to a SQLite database. It leverages the new tool support in LLM 0.26a0, as discussed in Simon Willison's [[https://building-with-llms-pycon-2025.readthedocs.io/en/latest/tools.html#tools][PyCon 2025 workshop]] and [[https://simonwillison.net/2025/May/14/llm-adds-support-for-tools/][blog post]].
+
+** 1. Introduction
+
+LLM 0.26a0 adds support for tools - specialized functions that the model can use to perform specific tasks. In this example, we'll create a tool that allows the LLM to execute SQL queries against a database and then interpret the results.
+
+This enables us to build a natural language interface where users can ask questions about data in plain English, and the LLM will:
+1. Translate the question into SQL
+2. Execute the SQL query
+3. Interpret the results in a user-friendly way
+
+** 2. Core Implementation
+
+First, let's create our chat with database script that implements the ~execute_sql()~ tool:
+
+#+begin_src python :tangle ../examples/chat_with_database.py
+#!/usr/bin/env python
+"""
+Chat with your database example - demo for LLM 0.26a0 tools feature
+Based on Simon Willison's PyCon 2025 workshop materials
+
+This script creates a simple chat interface where users can ask questions about a database
+in natural language. It uses an LLM to translate those questions into SQL queries and 
+then executes them against a SQLite database.
+"""
+
+import json
+import os
+import sqlite3
+import sys
+import llm
+
+# Use a sample database or create one if it doesn't exist
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_database.db")
+
+def setup_sample_database():
+    """Create a sample database with some tables and data if it doesn't exist"""
+    if os.path.exists(DB_PATH):
+        return
+    
+    print("Creating sample database...")
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # Create tables
+    cursor.execute('''
+    CREATE TABLE customers (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        email TEXT,
+        signup_date TEXT
+    )
+    ''')
+    
+    cursor.execute('''
+    CREATE TABLE orders (
+        id INTEGER PRIMARY KEY,
+        customer_id INTEGER,
+        product TEXT NOT NULL,
+        amount REAL NOT NULL,
+        order_date TEXT,
+        FOREIGN KEY (customer_id) REFERENCES customers (id)
+    )
+    ''')
+    
+    # Insert sample data
+    cursor.executemany(
+        "INSERT INTO customers (name, email, signup_date) VALUES (?, ?, ?)",
+        [
+            ("Alice Smith", "alice@example.com", "2024-01-15"),
+            ("Bob Jones", "bob@example.com", "2024-02-20"),
+            ("Charlie Brown", "charlie@example.com", "2024-03-05"),
+            ("Diana Prince", "diana@example.com", "2024-04-10"),
+        ]
+    )
+    
+    cursor.executemany(
+        "INSERT INTO orders (customer_id, product, amount, order_date) VALUES (?, ?, ?, ?)",
+        [
+            (1, "Laptop", 1299.99, "2024-01-20"),
+            (1, "Mouse", 25.99, "2024-01-20"),
+            (2, "Keyboard", 89.99, "2024-02-25"),
+            (3, "Monitor", 349.99, "2024-03-10"),
+            (4, "Headphones", 159.99, "2024-04-15"),
+            (1, "Phone", 899.99, "2024-04-30"),
+        ]
+    )
+    
+    conn.commit()
+    conn.close()
+    print("Sample database created!")
+
+def get_schema():
+    """Get the schema of all tables in the database"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # Get list of tables
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = cursor.fetchall()
+    
+    schema = []
+    for table in tables:
+        table_name = table[0]
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        columns = cursor.fetchall()
+        
+        schema.append(f"Table: {table_name}")
+        for col in columns:
+            schema.append(f"  - {col[1]} ({col[2]})")
+    
+    conn.close()
+    return "\n".join(schema)
+
+def execute_sql(sql: str):
+    """
+    Tool for the LLM: run arbitrary SQL against the SQLite DB
+    and return the rows as a list of dicts.
+    """
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        
+        # Convert rows to list of dicts
+        result = [dict(row) for row in rows]
+        
+        conn.close()
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+def pretty_print_json(data):
+    """Print JSON data in a readable format"""
+    print(json.dumps(data, indent=2, default=str))
+
+def main():
+    setup_sample_database()
+    
+    # Get database schema for the system prompt
+    schema = get_schema()
+    
+    system_prompt = f"""
+    You are a helpful assistant that helps users query a SQLite database.
+    
+    The database has the following schema:
+    
+    {schema}
+    
+    When users ask questions about the data, you should:
+    1. Translate their question into a SQL query
+    2. Use the execute_sql tool to run that query
+    3. Explain the results in a helpful way
+    
+    If the query fails, explain why and suggest a corrected query.
+    Always show the SQL you're executing to the user.
+    """
+    
+    # Get available model
+    try:
+        model = llm.get_model("o4-mini")
+    except Exception:
+        print("Model o4-mini not available, using default model")
+        model = llm.get_model()
+    
+    print("\nWelcome to the database chat interface!")
+    print("Ask questions about the customers and orders in the database.")
+    print("Type 'exit' or 'quit' to end the session.\n")
+    
+    while True:
+        # Get user input
+        try:
+            user_input = input("\nYour question: ").strip()
+        except (KeyboardInterrupt, EOFError):
+            print("\nExiting...")
+            break
+        
+        if user_input.lower() in ('exit', 'quit', 'q'):
+            print("Exiting...")
+            break
+        
+        if not user_input:
+            continue
+        
+        try:
+            print("\nThinking...")
+            
+            # Send the question to the LLM with the execute_sql tool
+            response = model.chain(
+                user_input,
+                system=system_prompt,
+                tools=[execute_sql],
+                reasoning_effort="high"
+            )
+            
+            result = response.text().strip()
+            print(f"\n{result}")
+            
+        except Exception as e:
+            print(f"Error: {e}")
+
+if __name__ == "__main__":
+    main()
+#+end_src
+
+** 3. How It Works
+
+The key components of this example are:
+
+*** The ~execute_sql()~ Tool
+The core of this implementation is the ~execute_sql()~ tool function:
+
+#+begin_src python :eval no
+def execute_sql(sql: str):
+    """
+    Tool for the LLM: run arbitrary SQL against the SQLite DB
+    and return the rows as a list of dicts.
+    """
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        
+        # Convert rows to list of dicts
+        result = [dict(row) for row in rows]
+        
+        conn.close()
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+#+end_src
+
+This function:
+1. Takes a SQL query string as input
+2. Connects to the SQLite database
+3. Executes the query
+4. Returns the results as a list of dictionaries
+5. Handles errors gracefully
+
+*** The LLM Chain
+We integrate the tool with the LLM using the ~model.chain()~ method:
+
+#+begin_src python :eval no
+response = model.chain(
+    user_input,
+    system=system_prompt,
+    tools=[execute_sql],
+    reasoning_effort="high"
+)
+#+end_src
+
+This connects the user's natural language question to our SQL execution tool.
+
+*** The System Prompt
+The system prompt provides critical context to the LLM:
+
+#+begin_src text :eval no
+You are a helpful assistant that helps users query a SQLite database.
+
+The database has the following schema:
+
+{schema}
+
+When users ask questions about the data, you should:
+1. Translate their question into a SQL query
+2. Use the execute_sql tool to run that query
+3. Explain the results in a helpful way
+
+If the query fails, explain why and suggest a corrected query.
+Always show the SQL you're executing to the user.
+#+end_src
+
+This prompt:
+1. Informs the LLM about the database schema
+2. Provides clear instructions on how to process user questions
+3. Sets expectations for error handling and explanation
+
+** 4. Running the Example
+
+To run this example:
+
+#+begin_src shell :eval no
+# Make sure your environment is set up
+source .venv/bin/activate
+
+# Run the script
+uv run python examples/chat_with_database.py
+#+end_src
+
+** 5. Example Interaction
+
+Here's a sample conversation with the database:
+
+#+begin_example
+Welcome to the database chat interface!
+Ask questions about the customers and orders in the database.
+Type 'exit' or 'quit' to end the session.
+
+Your question: How many customers do we have?
+
+Thinking...
+
+I'll run a query to count the number of customers in the database.
+
+SQL: SELECT COUNT(*) as customer_count FROM customers;
+
+Result: There are 4 customers in the database.
+
+Your question: What's the total amount spent by each customer?
+
+Thinking...
+
+I'll run a query to calculate the total amount spent by each customer.
+
+SQL:
+SELECT c.name, SUM(o.amount) as total_spent
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+GROUP BY c.name
+ORDER BY total_spent DESC;
+
+Results:
+Alice Smith has spent the most at $2,225.97 in total.
+Charlie Brown has spent $349.99.
+Diana Prince has spent $159.99.
+Bob Jones has spent $89.99.
+
+Your question: Who bought a laptop?
+
+Thinking...
+
+I'll search for customers who purchased a laptop.
+
+SQL: 
+SELECT c.name, o.product, o.amount, o.order_date 
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+WHERE o.product = 'Laptop';
+
+Result:
+Alice Smith purchased a Laptop for $1,299.99 on 2024-01-20.
+#+end_example
+
+** 6. Customization Ideas
+
+Here are some ways you could extend this example:
+
+- Connect to other database engines like PostgreSQL or MySQL
+- Add additional tools for more capabilities (e.g., data visualization)
+- Enhance the system prompt for more specialized querying behaviors
+- Store conversation history to build context over time
+- Add authentication for secure database access
+
+** 7. References
+
+- [[https://building-with-llms-pycon-2025.readthedocs.io/en/latest/tools.html#tools][Building with LLMs Workshop - Tools Section]]
+- [[https://simonwillison.net/2025/May/14/llm-adds-support-for-tools/][LLM 0.26a0 Tools Feature Announcement]]
+- [[https://gist.github.com/simonw/cc303e503baa8ae263ad5e0c11750c25][Original script by Simon Willison]]
+- [[https://gist.github.com/simonw/b0bacce9b495b81921c25c2581507f54][Example interaction transcript]]

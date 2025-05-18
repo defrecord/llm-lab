@@ -6,6 +6,8 @@ A hands-on learning environment for exploring LLM CLI tools with practical examp
 
 ** Key Resources
 - [[https://llm.datasette.io/en/stable/help.html][LLM CLI Documentation]]
+- [[https://building-with-llms-pycon-2025.readthedocs.io/en/latest/][Building with LLMs Workshop]] - PyCon 2025 materials
+- [[https://simonwillison.net/2025/May/15/building-on-llms/][Building on LLMs]] - Simon Willison's notes on building with LLMs
 - [[https://github.com/simonw/ttok][ttok]] - Token counting tool
 - [[https://github.com/simonw/strip-tags][strip-tags]] - HTML cleanup
 - [[https://github.com/simonw/files-to-prompt][files-to-prompt]] - File content extraction
@@ -148,3 +150,4 @@ The Structured Intelligence Network (SIN) provides a systematic approach to LLM 
 * References
 - [[https://llm.datasette.io/][LLM CLI Documentation]]
 - [[https://simonwillison.net/2023/May/18/cli-tools-for-llms/][Introduction to LLM CLI Tools]]
+- [[https://simonwillison.net/2025/May/14/llm-adds-support-for-tools/][LLM 0.26a0 Tools Feature Announcement]]

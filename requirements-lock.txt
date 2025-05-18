@@ -7,5 +7,5 @@ llm-claude==0.1       # Anthropic Claude
 
 # Development
 pytest==8.1.1
-black==24.2.0
+black==24.3.0
 mypy==1.8.0

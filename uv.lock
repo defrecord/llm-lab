@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = ">=3.11"
 
 [[package]]
@@ -12,7 +13,7 @@ wheels = [
 
 [[package]]
 name = "anthropic"
-version = "0.45.2"
+version = "0.51.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -23,9 +24,9 @@ dependencies = [
     { name = "sniffio" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/15/74/2b2485fc120da834c0c5be07462541ec082e9fa8851d845f2587e480535a/anthropic-0.45.2.tar.gz", hash = "sha256:32a18b9ecd12c91b2be4cae6ca2ab46a06937b5aa01b21308d97a6d29794fb5e", size = 200901 }
+sdist = { url = "https://files.pythonhosted.org/packages/63/4a/96f99a61ae299f9e5aa3e765d7342d95ab2e2ba5b69a3ffedb00ef779651/anthropic-0.51.0.tar.gz", hash = "sha256:6f824451277992af079554430d5b2c8ff5bc059cc2c968cdc3f06824437da201", size = 219063 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/74/86/e81814e542d1eaeec84d2312bec93a99b9ef1d78d9bfae1fc5dd74abdf15/anthropic-0.45.2-py3-none-any.whl", hash = "sha256:ecd746f7274451dfcb7e1180571ead624c7e1195d1d46cb7c70143d2aedb4d35", size = 222797 },
+    { url = "https://files.pythonhosted.org/packages/8c/6e/9637122c5f007103bd5a259f4250bd8f1533dd2473227670fd10a1457b62/anthropic-0.51.0-py3-none-any.whl", hash = "sha256:b8b47d482c9aa1f81b923555cebb687c2730309a20d01be554730c8302e0f62a", size = 263957 },
 ]
 
 [[package]]
@@ -198,6 +199,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d8/53/6f443c9a4a8358a93a6792e2acffb9d9d5cb0a5cfd8802644b7b1c9a02e4/colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44", size = 27697 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6", size = 25335 },
+]
+
+[[package]]
+name = "condense-json"
+version = "0.1.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/94/b3/d784cbc05556192ea1e798cae96363835d649fe7420ff030190789645be1/condense_json-0.1.3.tar.gz", hash = "sha256:25fe8d434fdafd849e8d98f21a3e18f96ae2d6dbc2c17565f29e4843d039d2bc", size = 8697 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/28/5f/63badd4924358fad1efa6defd66eef700ccf8783c0e44098987f867e8b1f/condense_json-0.1.3-py3-none-any.whl", hash = "sha256:e0a3d42db4f44a89e74af8737d8e517e97420be0f7e5437087f4decfd38c3366", size = 8432 },
 ]
 
 [[package]]
@@ -395,11 +405,12 @@ wheels = [
 
 [[package]]
 name = "llm"
-version = "0.20"
+version = "0.26a0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "click-default-group" },
+    { name = "condense-json" },
     { name = "openai" },
     { name = "pip" },
     { name = "pluggy" },
@@ -412,9 +423,22 @@ dependencies = [
     { name = "sqlite-migrate" },
     { name = "sqlite-utils" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e9/64/b49f49506d21167389cd845d1276300d1ac3b2acb3ef32b8717275d5e1cb/llm-0.20.tar.gz", hash = "sha256:7f185db83d9e433923fe78fdd4ce4923952fb2c642273e3c099c03b0b48c1ad5", size = 44246 }
+sdist = { url = "https://files.pythonhosted.org/packages/3f/dd/177ef725e6a7e0da14e316991a2198503ce851edeef307609ae5072a8b39/llm-0.26a0.tar.gz", hash = "sha256:66676fcc6542b9070af37cb57097e64e10892bb80b9498b62be06ad3118ffad3", size = 64902 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0d/5a/60bacc305c578c74f995f90498856dd3121ee054aef4f8038c6fe9bd0334/llm-0.20-py3-none-any.whl", hash = "sha256:530d8e88a9e662376360a8ec17bcd603d6ed5812c69766ef5a146189839d0f08", size = 45792 },
+    { url = "https://files.pythonhosted.org/packages/15/3c/681b0a07c7802540c057bee8449ae193bdacf166a674f78e6c69f3acd163/llm-0.26a0-py3-none-any.whl", hash = "sha256:927e7413b73c4aa590aba6f8361dfc39c36dc057ddffc58b995f87d750328e16", size = 66417 },
+]
+
+[[package]]
+name = "llm-anthropic"
+version = "0.16a0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anthropic" },
+    { name = "llm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ed/bc/c346ba7bd9605456c2d9c9a14dba49e62c035564cdb7ea7d5a1a85650e2f/llm_anthropic-0.16a0.tar.gz", hash = "sha256:1ea15552933745f11fedfb2fba46a18dba5241fe389a77dd0f6fe7e027c610d6", size = 16091 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/30/36/171b050c9f251dba0f55081b7afc74df64ee6771745fa1376703cb8fe4b8/llm_anthropic-0.16a0-py3-none-any.whl", hash = "sha256:65a39a6552998de6eb34119c299e8765bb2fe355cdf33bcacb92dbafcec2a250", size = 13651 },
 ]
 
 [[package]]
@@ -445,16 +469,16 @@ wheels = [
 
 [[package]]
 name = "llm-gemini"
-version = "0.9"
+version = "0.20a1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
     { name = "ijson" },
     { name = "llm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fb/4e/97fb810041536683dd2638fa07486ca3e0c784e299d86ce3a233de1b04b2/llm_gemini-0.9.tar.gz", hash = "sha256:0938c3c25d5502c6cec85c1ad5396066149717f88cbaa1b55f9e91b9b43f658b", size = 11351 }
+sdist = { url = "https://files.pythonhosted.org/packages/68/99/2ab14b1888e9267448b8c53dd845c7098ebb50802818283eb43f8d3a7a70/llm_gemini-0.20a1.tar.gz", hash = "sha256:6aa0e3f6003546e6d80a642a1fa0e3c639e1c81a7c0dc0456e5099cd02f24e93", size = 14928 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/98/a3/114a4f4276d681e7d637e58b4c5d1d449fcec561b563101f5680e73cb869/llm_gemini-0.9-py3-none-any.whl", hash = "sha256:bc763d341f960415fb15d9ba2ca0c16f03e7bbf18cae4726d5a034bad132503b", size = 11423 },
+    { url = "https://files.pythonhosted.org/packages/e7/99/0fea2073bd240e65485d7a9bfe372c71102fa88f5bf00a6ddd67bc603428/llm_gemini-0.20a1-py3-none-any.whl", hash = "sha256:b8a573c53eeee548f65e5d5432e2a683e973c31b0075cff1988efcfc7f1fb656", size = 13558 },
 ]
 
 [[package]]
@@ -465,6 +489,7 @@ dependencies = [
     { name = "fetch-github-issues" },
     { name = "files-to-prompt" },
     { name = "llm" },
+    { name = "llm-anthropic" },
     { name = "llm-bedrock" },
     { name = "llm-claude" },
     { name = "llm-gemini" },
@@ -487,16 +512,18 @@ requires-dist = [
     { name = "fetch-github-issues", specifier = ">=0.1.2" },
     { name = "files-to-prompt", specifier = ">=0.4" },
     { name = "isort", marker = "extra == 'dev'" },
-    { name = "llm" },
+    { name = "llm", specifier = ">=0.26a0" },
+    { name = "llm-anthropic", specifier = ">=0.16a0" },
     { name = "llm-bedrock" },
     { name = "llm-claude" },
-    { name = "llm-gemini" },
+    { name = "llm-gemini", specifier = ">=0.20a0" },
     { name = "mypy", marker = "extra == 'dev'" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "sqlite-utils", specifier = ">=3.38" },
     { name = "strip-tags" },
     { name = "ttok" },
 ]
+provides-extras = ["dev"]
 
 [[package]]
 name = "mypy"
